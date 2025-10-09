@@ -7,10 +7,7 @@ import pytest
 import torch
 
 from vllm.platforms import current_platform
-from vllm.v1.attention.backends.flash_attn import (
-    cascade_attention,
-    merge_attn_states,
-)
+from vllm.v1.attention.backends.flash_attn import cascade_attention, merge_attn_states
 from vllm.vllm_flash_attn import (
     fa_version_unsupported_reason,
     flash_attn_varlen_func,
