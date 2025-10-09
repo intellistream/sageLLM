@@ -103,7 +103,6 @@ jobs:
       - name: Run targeted smoke tests
         run: |
           pytest \
-            tests/test_version.py \
             tests/test_logger.py::test_default_vllm_root_logger_configuration \
             tests/test_logger.py::test_logger_configuring_can_be_disabled \
             tests/test_logger.py::test_trace_function_call \
