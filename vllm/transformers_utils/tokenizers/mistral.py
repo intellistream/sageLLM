@@ -351,6 +351,7 @@ class MistralTokenizer(TokenizerBase):
         if is_list_of(text, str):
             input_ids_: list[list[int]] = []
             for p in text:
+                assert isinstance(p, str)  # type: ignore[arg-type]
                 each_input_ids = self.encode_one(p, truncation, max_length)
                 input_ids_.append(each_input_ids)
             input_ids = input_ids_
@@ -359,6 +360,7 @@ class MistralTokenizer(TokenizerBase):
             input_ids = text
         # For str, single prompt text
         else:
+            assert isinstance(text, str)  # type: ignore[arg-type]
             input_ids = self.encode_one(text, truncation, max_length)
         return BatchEncoding({"input_ids": input_ids})
 
