@@ -98,7 +98,7 @@ jobs:
 
       - name: Prepare source package for testing
         run: |
-          echo "PYTHONPATH=${PYTHONPATH}:$PWD" >> $GITHUB_ENV
+          echo "PYTHONPATH=${PYTHONPATH}:$PWD" >> "$GITHUB_ENV"
 
       - name: Run targeted smoke tests
         run: |
