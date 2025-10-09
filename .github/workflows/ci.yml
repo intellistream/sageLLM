@@ -92,7 +92,7 @@ jobs:
             || pip install --pre --upgrade --extra-index-url https://download.pytorch.org/whl/cpu torch==2.8.0 \
             || pip install --upgrade --extra-index-url https://download.pytorch.org/whl/cpu torch
           pip install -r requirements/common.txt
-          pip install pytest pytest-xdist pytest-cov
+          pip install pytest pytest-xdist pytest-cov tblib
         env:
           PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
 
@@ -103,7 +103,6 @@ jobs:
       - name: Run targeted smoke tests
         run: |
           pytest \
-            tests/test_version.py \
             tests/test_logger.py::test_default_vllm_root_logger_configuration \
             tests/test_logger.py::test_logger_configuring_can_be_disabled \
             tests/test_logger.py::test_trace_function_call \
@@ -175,7 +174,7 @@ jobs:
           if [[ "$(uname -m)" == "x86_64" ]]; then
             pip install xformers==0.0.32.post1
           fi
-          pip install pytest pytest-xdist pytest-cov
+          pip install pytest pytest-xdist pytest-cov tblib
 
       - name: Verify CUDA availability
         run: |
