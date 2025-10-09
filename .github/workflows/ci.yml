@@ -45,13 +45,13 @@ jobs:
       - name: Install lint toolchain
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy
+          pip install ruff
 
       - name: Run ruff format check
-        run: ruff format --check .
+        run: ruff format --check --exclude vllm/third_party .
 
       - name: Run ruff lint
-        run: ruff check .
+        run: ruff check --exclude vllm/third_party .
 
   build-and-test:
     name: Build (CPU) & Smoke Tests
