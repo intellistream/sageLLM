@@ -16,11 +16,11 @@ from vllm.control_plane.types import (
 
 class RequestRouter:
     """Routes requests to execution instances."""
-    
+
     def __init__(self, routing_strategy: str = "load_balanced"):
         """
         Initialize request router.
-        
+
         Args:
             routing_strategy: Strategy to use for routing
                 - "load_balanced": Route to least loaded instance
@@ -32,7 +32,7 @@ class RequestRouter:
         self.routing_strategy = routing_strategy
         self.round_robin_index = 0
         self.affinity_map: Dict[str, str] = {}  # user_id -> instance_id
-    
+
     def route(
         self,
         request: RequestMetadata,
@@ -41,27 +41,27 @@ class RequestRouter:
     ) -> Optional[ExecutionInstance]:
         """
         Route a request to an execution instance.
-        
+
         Args:
             request: Request to route
             instances: Available execution instances
             decision: Optional scheduling decision with target instance
-            
+
         Returns:
             Selected execution instance or None if no instance available
         """
-        
+
         # Filter available instances
         available = [i for i in instances if i.can_accept_request]
         if not available:
             return None
-        
+
         # If decision specifies target instance, use it
         if decision and decision.target_instance_id:
             for instance in available:
                 if instance.instance_id == decision.target_instance_id:
                     return instance
-        
+
         # Apply routing strategy
         if self.routing_strategy == "load_balanced":
             return self._load_balanced_route(available)
@@ -75,14 +75,14 @@ class RequestRouter:
             return self._locality_route(request, available)
         else:
             return self._load_balanced_route(available)
-    
+
     def _load_balanced_route(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route to least loaded instance."""
         return min(instances, key=lambda i: i.current_load)
-    
+
     def _round_robin_route(
         self,
         instances: List[ExecutionInstance],
@@ -91,56 +91,56 @@ class RequestRouter:
         instance = instances[self.round_robin_index % len(instances)]
         self.round_robin_index += 1
         return instance
-    
+
     def _random_route(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route randomly."""
         return random.choice(instances)
-    
+
     def _affinity_route(
         self,
         request: RequestMetadata,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route with user affinity."""
-        
+
         if not request.user_id:
             return self._load_balanced_route(instances)
-        
+
         # Check if user has affinity to an instance
         if request.user_id in self.affinity_map:
             target_id = self.affinity_map[request.user_id]
             for instance in instances:
                 if instance.instance_id == target_id:
                     return instance
-        
+
         # Create new affinity
         instance = self._load_balanced_route(instances)
         self.affinity_map[request.user_id] = instance.instance_id
         return instance
-    
+
     def _locality_route(
         self,
         request: RequestMetadata,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route based on locality (e.g., cached prefixes)."""
-        
+
         # Hash request to determine preferred instance
         # This helps with prefix caching - similar requests go to same instance
         request_hash = hashlib.md5(
             f"{request.model_name}:{request.user_id}".encode()
         ).hexdigest()
-        
+
         index = int(request_hash[:8], 16) % len(instances)
         return instances[index]
-    
+
     def update_affinity(self, user_id: str, instance_id: str):
         """Update user affinity mapping."""
         self.affinity_map[user_id] = instance_id
-    
+
     def clear_affinity(self, user_id: Optional[str] = None):
         """Clear affinity mapping for a user or all users."""
         if user_id:
@@ -151,11 +151,11 @@ class RequestRouter:
 
 class LoadBalancer:
     """Advanced load balancer with multiple algorithms."""
-    
+
     def __init__(self):
         self.request_counts: Dict[str, int] = {}
         self.latency_history: Dict[str, List[float]] = {}
-    
+
     def select_instance(
         self,
         instances: List[ExecutionInstance],
@@ -163,7 +163,7 @@ class LoadBalancer:
     ) -> Optional[ExecutionInstance]:
         """
         Select instance using specified algorithm.
-        
+
         Args:
             instances: Available instances
             algorithm: Load balancing algorithm
@@ -172,11 +172,11 @@ class LoadBalancer:
                 - "least_response_time": Prefer instance with lowest latency
                 - "power_of_two": Random choice between two random instances
         """
-        
+
         available = [i for i in instances if i.can_accept_request]
         if not available:
             return None
-        
+
         if algorithm == "weighted_round_robin":
             return self._weighted_round_robin(available)
         elif algorithm == "least_connections":
@@ -187,80 +187,80 @@ class LoadBalancer:
             return self._power_of_two(available)
         else:
             return min(available, key=lambda i: i.current_load)
-    
+
     def _weighted_round_robin(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Weighted round-robin based on available capacity."""
-        
+
         weights = [i.available_capacity for i in instances]
         total_weight = sum(weights)
-        
+
         if total_weight == 0:
             return instances[0]
-        
+
         # Random selection weighted by capacity
         rand = random.uniform(0, total_weight)
         cumulative = 0
-        
+
         for instance, weight in zip(instances, weights):
             cumulative += weight
             if rand <= cumulative:
                 return instance
-        
+
         return instances[-1]
-    
+
     def _least_connections(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Select instance with fewest active requests."""
         return min(instances, key=lambda i: i.active_requests)
-    
+
     def _least_response_time(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Select instance with lowest average latency."""
         return min(instances, key=lambda i: i.avg_latency_ms)
-    
+
     def _power_of_two(
         self,
         instances: List[ExecutionInstance],
     ) -> ExecutionInstance:
         """Power of two choices algorithm."""
-        
+
         if len(instances) <= 2:
             return min(instances, key=lambda i: i.current_load)
-        
+
         # Randomly select two instances
         choices = random.sample(instances, 2)
-        
+
         # Return the one with lower load
         return min(choices, key=lambda i: i.current_load)
-    
+
     def record_request(self, instance_id: str):
         """Record request sent to instance."""
         self.request_counts[instance_id] = self.request_counts.get(instance_id, 0) + 1
-    
+
     def record_latency(self, instance_id: str, latency_ms: float):
         """Record latency for instance."""
         if instance_id not in self.latency_history:
             self.latency_history[instance_id] = []
-        
+
         self.latency_history[instance_id].append(latency_ms)
-        
+
         # Keep only last 100 samples
         if len(self.latency_history[instance_id]) > 100:
             self.latency_history[instance_id].pop(0)
-    
+
     def get_stats(self, instance_id: str) -> Dict[str, float]:
         """Get statistics for an instance."""
         return {
             "request_count": self.request_counts.get(instance_id, 0),
             "avg_latency_ms": (
-                sum(self.latency_history.get(instance_id, [])) /
-                len(self.latency_history.get(instance_id, [1]))
+                sum(self.latency_history.get(instance_id, []))
+                / len(self.latency_history.get(instance_id, [1]))
             ),
         }
