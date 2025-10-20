@@ -4,16 +4,14 @@
 """Scheduling policies for the Control Plane."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from datetime import datetime
-import heapq
 
 from vllm.control_plane.types import (
-    RequestMetadata,
     ExecutionInstance,
-    SchedulingDecision,
-    RequestPriority,
     ParallelismType,
+    RequestMetadata,
+    RequestPriority,
+    SchedulingDecision,
 )
 
 
@@ -26,9 +24,9 @@ class SchedulingPolicy(ABC):
     @abstractmethod
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """
         Schedule requests to instances.
 
@@ -42,7 +40,7 @@ class SchedulingPolicy(ABC):
         pass
 
     @abstractmethod
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """
         Prioritize requests for scheduling.
 
@@ -63,9 +61,9 @@ class FIFOPolicy(SchedulingPolicy):
 
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """Schedule requests in FIFO order to least loaded instances."""
         decisions = []
 
@@ -94,7 +92,7 @@ class FIFOPolicy(SchedulingPolicy):
 
         return decisions
 
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Prioritize by arrival time (FIFO)."""
         return sorted(requests, key=lambda r: r.arrival_time)
 
@@ -107,9 +105,9 @@ class PriorityPolicy(SchedulingPolicy):
 
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """Schedule high-priority requests first."""
         decisions = []
 
@@ -141,7 +139,7 @@ class PriorityPolicy(SchedulingPolicy):
 
         return decisions
 
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Prioritize by priority level then arrival time."""
         return sorted(requests, key=lambda r: (r.priority.value, r.arrival_time))
 
@@ -154,9 +152,9 @@ class SLOAwarePolicy(SchedulingPolicy):
 
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """Schedule requests considering SLO deadlines."""
         decisions = []
 
@@ -191,7 +189,7 @@ class SLOAwarePolicy(SchedulingPolicy):
 
         return decisions
 
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Prioritize by deadline urgency."""
         return sorted(requests, key=lambda r: self._calculate_urgency(r), reverse=True)
 
@@ -219,9 +217,9 @@ class CostOptimizedPolicy(SchedulingPolicy):
 
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """Schedule to minimize cost while meeting requirements."""
         decisions = []
 
@@ -257,7 +255,7 @@ class CostOptimizedPolicy(SchedulingPolicy):
 
         return decisions
 
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Prioritize by cost budget and priority."""
         return sorted(
             requests, key=lambda r: (r.priority.value, r.cost_budget or float("inf"))
@@ -299,9 +297,9 @@ class AdaptivePolicy(SchedulingPolicy):
 
     def schedule(
         self,
-        requests: List[RequestMetadata],
-        instances: List[ExecutionInstance],
-    ) -> List[SchedulingDecision]:
+        requests: list[RequestMetadata],
+        instances: list[ExecutionInstance],
+    ) -> list[SchedulingDecision]:
         """Adaptively choose scheduling strategy."""
 
         # Calculate system metrics
@@ -337,6 +335,6 @@ class AdaptivePolicy(SchedulingPolicy):
 
         return decisions
 
-    def prioritize(self, requests: List[RequestMetadata]) -> List[RequestMetadata]:
+    def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Use priority policy for prioritization."""
         return self.priority_policy.prioritize(requests)

@@ -4,9 +4,9 @@
 """Common types and data structures for Control Plane."""
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from enum import Enum
+from typing import Any, Optional
 
 
 class RequestPriority(Enum):
@@ -70,7 +70,7 @@ class RequestMetadata:
     billing_tier: str = "standard"
 
     # Additional metadata
-    tags: Dict[str, Any] = field(default_factory=dict)
+    tags: dict[str, Any] = field(default_factory=dict)
 
     @property
     def latency_ms(self) -> Optional[float]:
@@ -120,7 +120,7 @@ class ExecutionInstance:
     max_concurrent_requests: int = 100
 
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def available_capacity(self) -> float:
@@ -157,7 +157,7 @@ class SchedulingDecision:
     reason: str = ""
     confidence: float = 1.0  # 0.0 to 1.0
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -196,4 +196,4 @@ class PerformanceMetrics:
     slo_violations: int = 0
     slo_compliance_rate: float = 1.0
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)

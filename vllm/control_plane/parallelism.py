@@ -3,15 +3,14 @@
 
 """Parallelism strategies for model execution."""
 
+import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional
-import math
 
 from vllm.control_plane.types import (
-    RequestMetadata,
     ExecutionInstance,
     ParallelismType,
+    RequestMetadata,
 )
 
 
@@ -90,7 +89,7 @@ class ParallelismStrategy(ABC):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Estimate performance metrics for a configuration.
 
@@ -139,7 +138,7 @@ class TensorParallelStrategy(ParallelismStrategy):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate performance for tensor parallelism."""
 
         # Tensor parallelism has communication overhead
@@ -189,14 +188,13 @@ class PipelineParallelStrategy(ParallelismStrategy):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate performance for pipeline parallelism."""
 
         # Pipeline parallelism has bubble overhead
         bubble_overhead = 1.0 + (0.15 * config.pipeline_parallel_size)
 
         # Memory efficiency improved
-        memory_multiplier = config.pipeline_parallel_size
 
         base_latency_ms = 100.0
         estimated_latency = base_latency_ms * bubble_overhead
@@ -239,7 +237,7 @@ class DataParallelStrategy(ParallelismStrategy):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate performance for data parallelism."""
 
         # Data parallelism scales well for throughput
@@ -286,7 +284,7 @@ class ExpertParallelStrategy(ParallelismStrategy):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate performance for expert parallelism."""
 
         # Expert parallelism has routing overhead
@@ -359,7 +357,7 @@ class HybridParallelStrategy(ParallelismStrategy):
         self,
         config: ParallelismConfig,
         request: RequestMetadata,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate performance for hybrid parallelism."""
 
         # Combine overhead from different parallelism types
@@ -425,7 +423,7 @@ class ParallelismOptimizer:
         request: RequestMetadata,
         instance: ExecutionInstance,
         available_gpus: int,
-    ) -> Dict[ParallelismType, Dict[str, float]]:
+    ) -> dict[ParallelismType, dict[str, float]]:
         """Compare all strategies and return performance estimates."""
 
         results = {}

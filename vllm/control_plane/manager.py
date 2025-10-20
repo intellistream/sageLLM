@@ -4,33 +4,29 @@
 """Main Control Plane Manager."""
 
 import asyncio
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import logging
 from collections import deque
+from datetime import datetime
+from typing import Any, Optional
 
-from vllm.control_plane.types import (
-    RequestMetadata,
-    ExecutionInstance,
-    SchedulingDecision,
-    RequestStatus,
-    RequestPriority,
-    PerformanceMetrics,
-)
+from vllm.control_plane.executor import ExecutionCoordinator
+from vllm.control_plane.parallelism import ParallelismOptimizer
 from vllm.control_plane.policies import (
-    SchedulingPolicy,
+    AdaptivePolicy,
+    CostOptimizedPolicy,
     FIFOPolicy,
     PriorityPolicy,
+    SchedulingPolicy,
     SLOAwarePolicy,
-    CostOptimizedPolicy,
-    AdaptivePolicy,
 )
-from vllm.control_plane.parallelism import (
-    ParallelismOptimizer,
-    ParallelismConfig,
+from vllm.control_plane.router import LoadBalancer, RequestRouter
+from vllm.control_plane.types import (
+    ExecutionInstance,
+    PerformanceMetrics,
+    RequestMetadata,
+    RequestStatus,
+    SchedulingDecision,
 )
-from vllm.control_plane.router import RequestRouter, LoadBalancer
-from vllm.control_plane.executor import ExecutionCoordinator
 
 logger = logging.getLogger(__name__)
 
@@ -76,19 +72,20 @@ class ControlPlaneManager:
 
         # Request queues
         self.pending_queue: deque[RequestMetadata] = deque()
-        self.running_requests: Dict[str, RequestMetadata] = {}
+        self.running_requests: dict[str, RequestMetadata] = {}
 
         # Configuration
         self.enable_auto_scaling = enable_auto_scaling
         self.enable_monitoring = enable_monitoring
 
         # Background tasks
-        self.background_tasks: List[asyncio.Task] = []
+        self.background_tasks: list[asyncio.Task] = []
         self._running = False
 
         logger.info(
-            f"Control Plane initialized with policy={scheduling_policy}, "
-            f"routing={routing_strategy}"
+            "Control Plane initialized with policy=%s, routing=%s",
+            scheduling_policy,
+            routing_strategy,
         )
 
     def _create_policy(self, policy_name: str) -> SchedulingPolicy:
@@ -164,8 +161,10 @@ class ControlPlaneManager:
         self.pending_queue.append(request)
 
         logger.info(
-            f"Request {request.request_id} submitted "
-            f"(priority={request.priority.name}, queue_size={len(self.pending_queue)})"
+            "Request %s submitted (priority=%s, queue_size=%d)",
+            request.request_id,
+            request.priority.name,
+            len(self.pending_queue),
         )
 
         return request.request_id
@@ -191,10 +190,10 @@ class ControlPlaneManager:
         for i, req in enumerate(self.pending_queue):
             if req.request_id == request_id:
                 self.pending_queue.remove(req)
-                logger.info(f"Request {request_id} cancelled")
+                logger.info("Request %s cancelled", request_id)
                 return True
 
-        logger.warning(f"Request {request_id} not found or already running")
+        logger.warning("Request %s not found or already running", request_id)
         return False
 
     async def _scheduling_loop(self):
@@ -205,7 +204,7 @@ class ControlPlaneManager:
                 await self._schedule_pending_requests()
                 await asyncio.sleep(0.1)  # Schedule every 100ms
             except Exception as e:
-                logger.error(f"Scheduling loop error: {e}")
+                logger.error("Scheduling loop error: %s", e)
 
     async def _schedule_pending_requests(self):
         """Schedule pending requests to instances."""
@@ -272,9 +271,12 @@ class ControlPlaneManager:
         self.running_requests[request.request_id] = request
 
         logger.info(
-            f"Scheduling request {request.request_id} to instance "
-            f"{instance.instance_id} with {strategy.name} "
-            f"(TP={config.tensor_parallel_size}, PP={config.pipeline_parallel_size})"
+            "Scheduling request %s to instance %s with %s (TP=%d, PP=%d)",
+            request.request_id,
+            instance.instance_id,
+            strategy.name,
+            config.tensor_parallel_size,
+            config.pipeline_parallel_size,
         )
 
         # Execute asynchronously
@@ -289,15 +291,16 @@ class ControlPlaneManager:
         """Execute request and cleanup."""
 
         try:
-            result = await self.executor.execute_request(request, instance, decision)
+            await self.executor.execute_request(request, instance, decision)
 
             logger.info(
-                f"Request {request.request_id} completed "
-                f"(latency={request.latency_ms:.2f}ms)"
+                "Request %s completed (latency=%.2fms)",
+                request.request_id,
+                request.latency_ms,
             )
 
         except Exception as e:
-            logger.error(f"Request {request.request_id} failed: {e}")
+            logger.error("Request %s failed: %s", request.request_id, e)
 
         finally:
             # Cleanup
@@ -311,7 +314,7 @@ class ControlPlaneManager:
                 await self.executor.health_check_all()
                 await asyncio.sleep(10)  # Check every 10 seconds
             except Exception as e:
-                logger.error(f"Health check loop error: {e}")
+                logger.error("Health check loop error: %s", e)
 
     async def _monitoring_loop(self):
         """Periodic monitoring and metrics collection."""
@@ -322,17 +325,19 @@ class ControlPlaneManager:
 
                 # Log metrics
                 logger.info(
-                    f"Metrics: active={metrics.active_requests}, "
-                    f"queued={len(self.pending_queue)}, "
-                    f"completed={metrics.completed_requests}, "
-                    f"failed={metrics.failed_requests}, "
-                    f"avg_latency={metrics.avg_latency_ms:.2f}ms, "
-                    f"slo_compliance={metrics.slo_compliance_rate:.2%}"
+                    "Metrics: active=%d, queued=%d, completed=%d, failed=%d, "
+                    "avg_latency=%.2fms, slo_compliance=%.2f%%",
+                    metrics.active_requests,
+                    len(self.pending_queue),
+                    metrics.completed_requests,
+                    metrics.failed_requests,
+                    metrics.avg_latency_ms,
+                    metrics.slo_compliance_rate * 100,
                 )
 
                 await asyncio.sleep(5)  # Monitor every 5 seconds
             except Exception as e:
-                logger.error(f"Monitoring loop error: {e}")
+                logger.error("Monitoring loop error: %s", e)
 
     def get_metrics(self) -> PerformanceMetrics:
         """Get current performance metrics."""
@@ -340,20 +345,20 @@ class ControlPlaneManager:
         metrics.queued_requests = len(self.pending_queue)
         return metrics
 
-    def get_instances(self) -> List[ExecutionInstance]:
+    def get_instances(self) -> list[ExecutionInstance]:
         """Get all registered instances."""
         return self.executor.get_all_instances()
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[Dict[str, Any]]:
+    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
         """Get metrics for a specific instance."""
         return self.executor.get_instance_metrics(instance_id)
 
     def update_policy(self, policy_name: str):
         """Update scheduling policy."""
         self.scheduling_policy = self._create_policy(policy_name)
-        logger.info(f"Scheduling policy updated to: {policy_name}")
+        logger.info("Scheduling policy updated to: %s", policy_name)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get Control Plane status."""
 
         return {

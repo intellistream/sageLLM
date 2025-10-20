@@ -3,13 +3,13 @@
 
 """Request router for the Control Plane."""
 
-from typing import Dict, List, Optional
-import random
 import hashlib
+import random
+from typing import Optional
 
 from vllm.control_plane.types import (
-    RequestMetadata,
     ExecutionInstance,
+    RequestMetadata,
     SchedulingDecision,
 )
 
@@ -31,12 +31,12 @@ class RequestRouter:
         """
         self.routing_strategy = routing_strategy
         self.round_robin_index = 0
-        self.affinity_map: Dict[str, str] = {}  # user_id -> instance_id
+        self.affinity_map: dict[str, str] = {}  # user_id -> instance_id
 
     def route(
         self,
         request: RequestMetadata,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
         decision: Optional[SchedulingDecision] = None,
     ) -> Optional[ExecutionInstance]:
         """
@@ -78,14 +78,14 @@ class RequestRouter:
 
     def _load_balanced_route(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route to least loaded instance."""
         return min(instances, key=lambda i: i.current_load)
 
     def _round_robin_route(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route in round-robin fashion."""
         instance = instances[self.round_robin_index % len(instances)]
@@ -94,7 +94,7 @@ class RequestRouter:
 
     def _random_route(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route randomly."""
         return random.choice(instances)
@@ -102,7 +102,7 @@ class RequestRouter:
     def _affinity_route(
         self,
         request: RequestMetadata,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route with user affinity."""
 
@@ -124,7 +124,7 @@ class RequestRouter:
     def _locality_route(
         self,
         request: RequestMetadata,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Route based on locality (e.g., cached prefixes)."""
 
@@ -153,12 +153,12 @@ class LoadBalancer:
     """Advanced load balancer with multiple algorithms."""
 
     def __init__(self):
-        self.request_counts: Dict[str, int] = {}
-        self.latency_history: Dict[str, List[float]] = {}
+        self.request_counts: dict[str, int] = {}
+        self.latency_history: dict[str, list[float]] = {}
 
     def select_instance(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
         algorithm: str = "weighted_round_robin",
     ) -> Optional[ExecutionInstance]:
         """
@@ -190,7 +190,7 @@ class LoadBalancer:
 
     def _weighted_round_robin(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Weighted round-robin based on available capacity."""
 
@@ -213,21 +213,21 @@ class LoadBalancer:
 
     def _least_connections(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Select instance with fewest active requests."""
         return min(instances, key=lambda i: i.active_requests)
 
     def _least_response_time(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Select instance with lowest average latency."""
         return min(instances, key=lambda i: i.avg_latency_ms)
 
     def _power_of_two(
         self,
-        instances: List[ExecutionInstance],
+        instances: list[ExecutionInstance],
     ) -> ExecutionInstance:
         """Power of two choices algorithm."""
 
@@ -255,7 +255,7 @@ class LoadBalancer:
         if len(self.latency_history[instance_id]) > 100:
             self.latency_history[instance_id].pop(0)
 
-    def get_stats(self, instance_id: str) -> Dict[str, float]:
+    def get_stats(self, instance_id: str) -> dict[str, float]:
         """Get statistics for an instance."""
         return {
             "request_count": self.request_counts.get(instance_id, 0),

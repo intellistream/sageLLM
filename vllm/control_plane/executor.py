@@ -4,16 +4,15 @@
 """Execution coordinator for managing vLLM instances."""
 
 import asyncio
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Optional
 
 from vllm.control_plane.types import (
-    RequestMetadata,
     ExecutionInstance,
-    SchedulingDecision,
-    RequestStatus,
     PerformanceMetrics,
+    RequestMetadata,
+    SchedulingDecision,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,9 +22,9 @@ class ExecutionCoordinator:
     """Coordinates execution across multiple vLLM instances."""
 
     def __init__(self):
-        self.instances: Dict[str, ExecutionInstance] = {}
-        self.active_requests: Dict[str, RequestMetadata] = {}
-        self.request_to_instance: Dict[str, str] = {}  # request_id -> instance_id
+        self.instances: dict[str, ExecutionInstance] = {}
+        self.active_requests: dict[str, RequestMetadata] = {}
+        self.request_to_instance: dict[str, str] = {}  # request_id -> instance_id
 
         # Monitoring
         self.metrics = PerformanceMetrics()
@@ -33,19 +32,19 @@ class ExecutionCoordinator:
     def register_instance(self, instance: ExecutionInstance):
         """Register a new vLLM execution instance."""
         self.instances[instance.instance_id] = instance
-        logger.info(f"Registered instance: {instance.instance_id}")
+        logger.info("Registered instance: %s", instance.instance_id)
 
     def unregister_instance(self, instance_id: str):
         """Unregister an execution instance."""
         if instance_id in self.instances:
             del self.instances[instance_id]
-            logger.info(f"Unregistered instance: {instance_id}")
+            logger.info("Unregistered instance: %s", instance_id)
 
     def get_instance(self, instance_id: str) -> Optional[ExecutionInstance]:
         """Get instance by ID."""
         return self.instances.get(instance_id)
 
-    def get_available_instances(self) -> List[ExecutionInstance]:
+    def get_available_instances(self) -> list[ExecutionInstance]:
         """Get all available instances."""
         return [
             instance
@@ -53,7 +52,7 @@ class ExecutionCoordinator:
             if instance.can_accept_request
         ]
 
-    def get_all_instances(self) -> List[ExecutionInstance]:
+    def get_all_instances(self) -> list[ExecutionInstance]:
         """Get all registered instances."""
         return list(self.instances.values())
 
@@ -62,7 +61,7 @@ class ExecutionCoordinator:
         request: RequestMetadata,
         instance: ExecutionInstance,
         decision: SchedulingDecision,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute a request on a specific instance.
 
@@ -101,7 +100,7 @@ class ExecutionCoordinator:
             return result
 
         except Exception as e:
-            logger.error(f"Execution failed for request {request.request_id}: {e}")
+            logger.error("Execution failed for request %s: %s", request.request_id, e)
             request.end_time = datetime.now()
             self._update_metrics(request, instance, success=False)
             raise
@@ -121,16 +120,18 @@ class ExecutionCoordinator:
         request: RequestMetadata,
         instance: ExecutionInstance,
         decision: SchedulingDecision,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute request on vLLM instance (placeholder)."""
 
         # This is where you would integrate with actual vLLM API
         # For now, simulate execution
 
         logger.info(
-            f"Executing request {request.request_id} on instance "
-            f"{instance.instance_id} with TP={decision.tensor_parallel_size}, "
-            f"PP={decision.pipeline_parallel_size}"
+            "Executing request %s on instance %s with TP=%d, PP=%d",
+            request.request_id,
+            instance.instance_id,
+            decision.tensor_parallel_size,
+            decision.pipeline_parallel_size,
         )
 
         # Simulate execution time
@@ -168,9 +169,12 @@ class ExecutionCoordinator:
             self.metrics.failed_requests += 1
 
         # Check SLO compliance
-        if request.slo_deadline_ms and request.latency_ms:
-            if request.latency_ms > request.slo_deadline_ms:
-                self.metrics.slo_violations += 1
+        if (
+            request.slo_deadline_ms
+            and request.latency_ms
+            and request.latency_ms > request.slo_deadline_ms
+        ):
+            self.metrics.slo_violations += 1
 
         # Update SLO compliance rate
         if self.metrics.completed_requests > 0:
@@ -194,12 +198,12 @@ class ExecutionCoordinator:
             return True
 
         except Exception as e:
-            logger.error(f"Health check failed for {instance_id}: {e}")
+            logger.error("Health check failed for %s: %s", instance_id, e)
             instance.is_healthy = False
             instance.is_available = False
             return False
 
-    async def health_check_all(self) -> Dict[str, bool]:
+    async def health_check_all(self) -> dict[str, bool]:
         """Health check all instances."""
 
         results = {}
@@ -227,7 +231,7 @@ class ExecutionCoordinator:
 
         return self.metrics
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[Dict[str, Any]]:
+    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
         """Get metrics for a specific instance."""
 
         instance = self.get_instance(instance_id)
@@ -260,8 +264,10 @@ class ExecutionCoordinator:
         current_count = len(self.instances)
 
         if target_count > current_count:
-            logger.info(f"Scaling up from {current_count} to {target_count} instances")
+            logger.info(
+                "Scaling up from %d to %d instances", current_count, target_count
+            )
         elif target_count < current_count:
             logger.info(
-                f"Scaling down from {current_count} to {target_count} instances"
+                "Scaling down from %d to %d instances", current_count, target_count
             )

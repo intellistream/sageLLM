@@ -13,44 +13,44 @@ The Control Plane sits between users and vLLM execution instances, providing:
 """
 
 # Import types
-from vllm.control_plane.types import (
-    RequestPriority,
-    RequestStatus,
-    ParallelismType,
-    RequestMetadata,
-    ExecutionInstance,
-    SchedulingDecision,
-    PerformanceMetrics,
-)
-
-# Import policies
-from vllm.control_plane.policies import (
-    SchedulingPolicy,
-    FIFOPolicy,
-    PriorityPolicy,
-    SLOAwarePolicy,
-    CostOptimizedPolicy,
-    AdaptivePolicy,
-)
-
-# Import parallelism strategies
-from vllm.control_plane.parallelism import (
-    ParallelismConfig,
-    ParallelismStrategy,
-    TensorParallelStrategy,
-    PipelineParallelStrategy,
-    DataParallelStrategy,
-    ExpertParallelStrategy,
-    HybridParallelStrategy,
-    ParallelismOptimizer,
-)
-
-# Import router and coordinator
-from vllm.control_plane.router import RequestRouter, LoadBalancer
 from vllm.control_plane.executor import ExecutionCoordinator
 
 # Import manager
 from vllm.control_plane.manager import ControlPlaneManager
+
+# Import parallelism strategies
+from vllm.control_plane.parallelism import (
+    DataParallelStrategy,
+    ExpertParallelStrategy,
+    HybridParallelStrategy,
+    ParallelismConfig,
+    ParallelismOptimizer,
+    ParallelismStrategy,
+    PipelineParallelStrategy,
+    TensorParallelStrategy,
+)
+
+# Import policies
+from vllm.control_plane.policies import (
+    AdaptivePolicy,
+    CostOptimizedPolicy,
+    FIFOPolicy,
+    PriorityPolicy,
+    SchedulingPolicy,
+    SLOAwarePolicy,
+)
+
+# Import router and coordinator
+from vllm.control_plane.router import LoadBalancer, RequestRouter
+from vllm.control_plane.types import (
+    ExecutionInstance,
+    ParallelismType,
+    PerformanceMetrics,
+    RequestMetadata,
+    RequestPriority,
+    RequestStatus,
+    SchedulingDecision,
+)
 
 __all__ = [
     # Types

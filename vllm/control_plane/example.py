@@ -14,12 +14,11 @@ This example demonstrates:
 
 import asyncio
 import random
-from datetime import datetime
 
 from vllm.control_plane import (
     ControlPlaneManager,
-    RequestMetadata,
     ExecutionInstance,
+    RequestMetadata,
     RequestPriority,
 )
 from vllm.control_plane.types import ParallelismType
@@ -129,7 +128,7 @@ async def submit_sample_requests(cp: ControlPlaneManager):
         tags={"type": "interactive", "service": "chatbot"},
     )
     await cp.submit_request(critical_req)
-    print(f"✓ Submitted CRITICAL request (SLO: 500ms)")
+    print("✓ Submitted CRITICAL request (SLO: 500ms)")
 
     # High priority request
     high_req = RequestMetadata(
@@ -142,7 +141,7 @@ async def submit_sample_requests(cp: ControlPlaneManager):
         tags={"type": "generation", "customer": "enterprise"},
     )
     await cp.submit_request(high_req)
-    print(f"✓ Submitted HIGH priority request (SLO: 1000ms)")
+    print("✓ Submitted HIGH priority request (SLO: 1000ms)")
 
     # Normal requests with different configurations
     for i in range(5):
@@ -155,7 +154,7 @@ async def submit_sample_requests(cp: ControlPlaneManager):
             model_name="llama-3-70b",
         )
         await cp.submit_request(normal_req)
-    print(f"✓ Submitted 5 NORMAL priority requests")
+    print("✓ Submitted 5 NORMAL priority requests")
 
     # Low priority batch request
     low_req = RequestMetadata(
@@ -168,7 +167,7 @@ async def submit_sample_requests(cp: ControlPlaneManager):
         tags={"type": "batch", "urgency": "low"},
     )
     await cp.submit_request(low_req)
-    print(f"✓ Submitted LOW priority batch request")
+    print("✓ Submitted LOW priority batch request")
 
     # Background request with parallelism hint
     bg_req = RequestMetadata(
@@ -181,7 +180,7 @@ async def submit_sample_requests(cp: ControlPlaneManager):
         tags={"type": "analytics", "async": True},
     )
     await cp.submit_request(bg_req)
-    print(f"✓ Submitted BACKGROUND request with DP hint")
+    print("✓ Submitted BACKGROUND request with DP hint")
 
 
 async def monitor_performance(cp: ControlPlaneManager, duration_sec: int = 5):
@@ -207,7 +206,7 @@ async def monitor_performance(cp: ControlPlaneManager, duration_sec: int = 5):
         print(f"  SLO Compliance: {metrics.slo_compliance_rate:.2%}")
 
         # Get instance metrics
-        print(f"\n  Instance Status:")
+        print("\n  Instance Status:")
         for instance in cp.get_instances():
             inst_metrics = cp.get_instance_metrics(instance.instance_id)
             if inst_metrics:
