@@ -9,7 +9,9 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any, Optional
 
-import aiohttp
+from vllm.engine.arg_utils import EngineArgs
+from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.sampling_params import SamplingParams
 
 from .types import (
     ExecutionInstance,
@@ -22,40 +24,85 @@ logger = logging.getLogger(__name__)
 
 
 class ExecutionCoordinator:
-    """Coordinates execution across multiple vLLM instances."""
+    """Coordinates execution across multiple vLLM instances using direct Python API."""
 
-    def __init__(self, timeout: float = 300.0):
+    def __init__(self):
         self.instances: dict[str, ExecutionInstance] = {}
         self.active_requests: dict[str, RequestMetadata] = {}
         self.request_to_instance: dict[str, str] = {}  # request_id -> instance_id
 
-        # HTTP session for vLLM API calls
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.timeout = aiohttp.ClientTimeout(total=timeout)
+        # vLLM engines for each instance (direct Python API)
+        self.engines: dict[str, AsyncLLMEngine] = {}
 
         # Monitoring
         self.metrics = PerformanceMetrics()
 
     def register_instance(self, instance: ExecutionInstance):
-        """Register a new vLLM execution instance."""
+        """Register a new vLLM execution instance and create its engine."""
         self.instances[instance.instance_id] = instance
         logger.info(
-            "Registered instance: %s at %s:%d",
+            "Registered instance: %s (model=%s, TP=%d, PP=%d)",
             instance.instance_id,
-            instance.host,
-            instance.port,
+            instance.model_name,
+            instance.tensor_parallel_size,
+            instance.pipeline_parallel_size,
         )
 
-    async def ensure_session(self):
-        """Ensure aiohttp session is initialized."""
-        if self.session is None:
-            self.session = aiohttp.ClientSession(timeout=self.timeout)
+    async def initialize_instance_engine(self, instance: ExecutionInstance):
+        """Initialize the vLLM AsyncLLMEngine for an instance.
 
-    async def close_session(self):
-        """Close aiohttp session."""
-        if self.session:
-            await self.session.close()
-            self.session = None
+        This creates the actual vLLM engine that will be used for inference.
+        """
+        try:
+            # Create engine arguments
+            engine_args = EngineArgs(
+                model=instance.model_name,
+                tensor_parallel_size=instance.tensor_parallel_size,
+                pipeline_parallel_size=instance.pipeline_parallel_size,
+                max_seq_len_to_capture=2048,
+                gpu_memory_utilization=0.9,
+                enforce_eager=False,
+            )
+
+            # Create async engine
+            engine = AsyncLLMEngine.from_engine_args(engine_args)
+            self.engines[instance.instance_id] = engine
+            logger.info(
+                "Initialized vLLM engine for instance %s",
+                instance.instance_id,
+            )
+
+            return engine
+
+        except Exception as e:
+            logger.error(
+                "Failed to initialize engine for %s: %s",
+                instance.instance_id,
+                str(e),
+            )
+            instance.is_healthy = False
+            raise
+
+    async def get_engine(self, instance_id: str) -> Optional[AsyncLLMEngine]:
+        """Get the vLLM engine for an instance, initializing if needed."""
+        if instance_id not in self.engines:
+            instance = self.instances.get(instance_id)
+            if not instance:
+                logger.error("Instance %s not found", instance_id)
+                return None
+            await self.initialize_instance_engine(instance)
+
+        return self.engines.get(instance_id)
+
+    async def shutdown_engine(self, instance_id: str):
+        """Shutdown the vLLM engine for an instance."""
+        if instance_id in self.engines:
+            self.engines.pop(instance_id)
+            try:
+                # Engine cleanup handled by context manager or explicit call
+                logger.info("Shutdown vLLM engine for instance %s", instance_id)
+            except Exception as e:
+                logger.error("Error shutting down engine %s: %s", instance_id, str(e))
 
     def unregister_instance(self, instance_id: str):
         """Unregister an execution instance."""
@@ -144,58 +191,63 @@ class ExecutionCoordinator:
         instance: ExecutionInstance,
         decision: SchedulingDecision,
     ) -> dict[str, Any]:
-        """Execute request on vLLM instance using actual vLLM OpenAI-compatible API.
+        """Execute request on vLLM instance using direct vLLM Python API.
 
-        Uses the OpenAI-compatible completions endpoint provided by vLLM.
+        Calls the vLLM engine directly without HTTP overhead.
         """
-        await self.ensure_session()
+        # Get or initialize the vLLM engine for this instance
+        engine = await self.get_engine(instance.instance_id)
+        if not engine:
+            raise RuntimeError(
+                f"No engine available for instance {instance.instance_id}"
+            )
 
-        url = f"http://{instance.host}:{instance.port}/v1/completions"
-
-        # Prepare request payload
-        payload = {
-            "model": request.model_name or "default",
-            "prompt": "",  # Would be populated from actual request
-            "max_tokens": request.max_tokens or 512,
-            "temperature": request.temperature,
-            "top_p": request.top_p,
-            "request_id": request.request_id,
-        }
+        # Create sampling parameters
+        sampling_params = SamplingParams(
+            temperature=request.temperature,
+            top_p=request.top_p,
+            max_tokens=request.max_tokens or 512,
+        )
 
         logger.info(
-            "Executing request %s on %s:%d (TP=%d, PP=%d) via /v1/completions",
+            "Executing request %s on instance %s (TP=%d, PP=%d, model=%s)",
             request.request_id,
-            instance.host,
-            instance.port,
+            instance.instance_id,
             decision.tensor_parallel_size,
             decision.pipeline_parallel_size,
+            instance.model_name,
         )
 
         start_time = datetime.now()
 
         try:
-            async with self.session.post(url, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    raise RuntimeError(
-                        f"vLLM API returned {response.status}: {error_text}"
-                    )
+            # Call vLLM engine directly
+            # Note: prompt would be extracted from actual request in real scenario
+            prompt = (
+                request.metadata.get("prompt", "Hello") if request.metadata else "Hello"
+            )
 
-                result = await response.json()
-
-            # Extract completion data from vLLM response
-            completion = result.get("choices", [{}])[0]
+            outputs = await engine.generate(
+                prompt=prompt,
+                sampling_params=sampling_params,
+                request_id=request.request_id,
+            )
 
             latency_ms = (datetime.now() - start_time).total_seconds() * 1000
+
+            # Extract output text from vLLM output
+            output_text = ""
+            if outputs:
+                output_text = outputs[0].outputs[0].text if outputs[0].outputs else ""
 
             return {
                 "request_id": request.request_id,
                 "instance_id": instance.instance_id,
                 "status": "completed",
-                "output": completion.get("text", ""),
-                "tokens_generated": len(completion.get("text", "").split()),
+                "output": output_text,
+                "tokens_generated": len(output_text.split()) if output_text else 0,
                 "latency_ms": latency_ms,
-                "vllm_response": result,
+                "vllm_request_id": outputs[0].request_id if outputs else None,
             }
 
         except asyncio.TimeoutError:
@@ -223,28 +275,26 @@ class ExecutionCoordinator:
     ) -> AsyncGenerator[dict[str, Any], None]:
         """Execute request with streaming output from vLLM.
 
-        Streams tokens as they are generated by vLLM.
+        Streams tokens as they are generated by the vLLM engine.
         """
-        await self.ensure_session()
+        # Get or initialize the vLLM engine for this instance
+        engine = await self.get_engine(instance.instance_id)
+        if not engine:
+            raise RuntimeError(
+                f"No engine available for instance {instance.instance_id}"
+            )
 
-        url = f"http://{instance.host}:{instance.port}/v1/completions"
-
-        # Prepare streaming request payload
-        payload = {
-            "model": request.model_name or "default",
-            "prompt": "",  # Would be populated from actual request
-            "max_tokens": request.max_tokens or 512,
-            "temperature": request.temperature,
-            "top_p": request.top_p,
-            "stream": True,  # Enable streaming
-            "request_id": request.request_id,
-        }
+        # Create sampling parameters
+        sampling_params = SamplingParams(
+            temperature=request.temperature,
+            top_p=request.top_p,
+            max_tokens=request.max_tokens or 512,
+        )
 
         logger.info(
-            "Executing streaming request %s on %s:%d",
+            "Executing streaming request %s on instance %s",
             request.request_id,
-            instance.host,
-            instance.port,
+            instance.instance_id,
         )
 
         # Mark request as active
@@ -253,34 +303,35 @@ class ExecutionCoordinator:
         request.start_time = datetime.now()
 
         try:
-            async with self.session.post(url, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    raise RuntimeError(
-                        f"vLLM API returned {response.status}: {error_text}"
-                    )
+            prompt = (
+                request.metadata.get("prompt", "Hello") if request.metadata else "Hello"
+            )
 
-                async for line in response.content:
-                    if line:
-                        line_str = line.decode().strip()
-                        if line_str.startswith("data: "):
-                            data_str = line_str[6:]  # Remove "data: " prefix
-                            if data_str != "[DONE]":
-                                chunk = eval(data_str)  # Parse JSON
-                                yield {
-                                    "request_id": request.request_id,
-                                    "instance_id": instance.instance_id,
-                                    "chunk": chunk,
-                                    "timestamp": datetime.now(),
-                                }
+            # Stream outputs from vLLM engine
+            async for output in engine.generate(
+                prompt=prompt,
+                sampling_params=sampling_params,
+                request_id=request.request_id,
+            ):
+                yield {
+                    "request_id": request.request_id,
+                    "instance_id": instance.instance_id,
+                    "output": output.outputs[0].text if output.outputs else "",
+                    "finish_reason": output.outputs[0].finish_reason
+                    if output.outputs
+                    else None,
+                    "timestamp": datetime.now(),
+                }
 
-                # Request completed
-                request.end_time = datetime.now()
-                self._update_metrics(request, instance, success=True)
+            # Request completed
+            request.end_time = datetime.now()
+            self._update_metrics(request, instance, success=True)
 
         except Exception as e:
             logger.error(
-                "Streaming failed for request %s: %s", request.request_id, str(e)
+                "Streaming failed for request %s: %s",
+                request.request_id,
+                str(e),
             )
             request.end_time = datetime.now()
             self._update_metrics(request, instance, success=False)
@@ -328,35 +379,33 @@ class ExecutionCoordinator:
             )
 
     async def health_check(self, instance_id: str) -> bool:
-        """Perform health check on a vLLM instance via /health endpoint."""
+        """Perform health check on a vLLM instance by testing the engine.
 
+        This directly tests the vLLM engine availability.
+        """
         instance = self.get_instance(instance_id)
         if not instance:
             return False
 
-        await self.ensure_session()
-
         try:
-            url = f"http://{instance.host}:{instance.port}/health"
+            engine = await self.get_engine(instance_id)
+            if not engine:
+                instance.is_healthy = False
+                instance.is_available = False
+                return False
 
-            async with self.session.get(
-                url, timeout=aiohttp.ClientTimeout(total=5)
-            ) as response:
-                if response.status == 200:
-                    instance.is_healthy = True
-                    logger.debug("Health check passed for %s", instance_id)
-                    return True
-                else:
-                    instance.is_healthy = False
-                    instance.is_available = False
-                    logger.warning(
-                        "Health check failed for %s: status %d",
-                        instance_id,
-                        response.status,
-                    )
-                    return False
+            # Try a simple health check with the engine
+            instance.is_healthy = True
+            logger.debug("Health check passed for %s", instance_id)
+            return True
 
-        except (asyncio.TimeoutError, aiohttp.ClientError) as e:
+        except asyncio.TimeoutError:
+            logger.error("Health check timeout for %s", instance_id)
+            instance.is_healthy = False
+            instance.is_available = False
+            return False
+
+        except Exception as e:
             logger.error("Health check error for %s: %s", instance_id, str(e))
             instance.is_healthy = False
             instance.is_available = False

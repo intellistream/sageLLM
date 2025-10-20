@@ -11,6 +11,7 @@ from typing import Any, Optional
 
 from .executor import ExecutionCoordinator
 from .parallelism import ParallelismOptimizer
+from .pd_routing import PDRoutingStrategy
 from .policies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
@@ -22,6 +23,7 @@ from .policies import (
 from .router import LoadBalancer, RequestRouter
 from .types import (
     ExecutionInstance,
+    PDSeparationConfig,
     PerformanceMetrics,
     RequestMetadata,
     RequestStatus,
@@ -45,6 +47,8 @@ class ControlPlaneManager:
         routing_strategy: str = "load_balanced",
         enable_auto_scaling: bool = False,
         enable_monitoring: bool = True,
+        enable_pd_separation: bool = True,
+        pd_config: Optional[PDSeparationConfig] = None,
     ):
         """
         Initialize Control Plane Manager.
@@ -59,6 +63,8 @@ class ControlPlaneManager:
             routing_strategy: Request routing strategy
             enable_auto_scaling: Enable automatic instance scaling
             enable_monitoring: Enable performance monitoring
+            enable_pd_separation: Enable Prefilling/Decoding separation
+            pd_config: PD separation configuration
         """
 
         # Core components
@@ -66,6 +72,13 @@ class ControlPlaneManager:
         self.router = RequestRouter(routing_strategy)
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
+
+        # PD Separation routing
+        self.enable_pd_separation = enable_pd_separation
+        self.pd_config = pd_config or PDSeparationConfig()
+        self.pd_router = (
+            PDRoutingStrategy(self.pd_config) if enable_pd_separation else None
+        )
 
         # Scheduling policy
         self.scheduling_policy = self._create_policy(scheduling_policy)
@@ -83,9 +96,10 @@ class ControlPlaneManager:
         self._running = False
 
         logger.info(
-            "Control Plane initialized with policy=%s, routing=%s",
+            "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s",
             scheduling_policy,
             routing_strategy,
+            enable_pd_separation,
         )
 
     def _create_policy(self, policy_name: str) -> SchedulingPolicy:
@@ -245,38 +259,81 @@ class ControlPlaneManager:
         request: RequestMetadata,
         decision: SchedulingDecision,
     ):
-        """Execute a scheduled request."""
+        """Execute a scheduled request with PD-aware routing if enabled."""
 
-        # Get target instance
+        # Get target instance (may be adjusted by PD router)
         instance = self.executor.get_instance(decision.target_instance_id)
         if not instance or not instance.can_accept_request:
             # Re-queue if instance not available
             self.pending_queue.appendleft(request)
             return
 
-        # Optimize parallelism strategy
-        strategy, config = self.parallelism_optimizer.select_strategy(
-            request,
-            instance,
-            instance.gpu_count,
-        )
+        # PD-aware routing: determine request phase and route to appropriate instance
+        if self.enable_pd_separation and self.pd_router:
+            target_phase = self.pd_router.determine_request_phase(request)
 
-        # Update decision with optimized config
-        decision.tensor_parallel_size = config.tensor_parallel_size
-        decision.pipeline_parallel_size = config.pipeline_parallel_size
-        decision.parallelism_strategy = strategy.strategy_type
+            logger.debug(
+                "PD routing: request %s routed to phase %s",
+                request.request_id,
+                target_phase.name,
+            )
+
+            # Filter instances by target phase
+            compatible_instances = self.pd_router.filter_instances_by_type(
+                self.executor.get_all_instances(),
+                target_phase,
+            )
+
+            if compatible_instances:
+                # Select best instance based on PD specialization
+                best_instance = max(
+                    compatible_instances,
+                    key=lambda inst: self.pd_router.get_instance_specialization(
+                        inst, target_phase
+                    ),
+                )
+                instance = best_instance
+                logger.debug(
+                    "Selected PD-specialized instance %s for request %s",
+                    instance.instance_id,
+                    request.request_id,
+                )
+
+        # Recommend parallelism config based on instance type
+        if self.enable_pd_separation and self.pd_router:
+            parallelism_config = self.pd_router.recommend_parallelism_config(instance)
+            if parallelism_config:
+                decision.tensor_parallel_size = parallelism_config.tensor_parallel_size
+                decision.pipeline_parallel_size = (
+                    parallelism_config.pipeline_parallel_size
+                )
+
+        # Otherwise optimize parallelism strategy
+        else:
+            strategy, config = self.parallelism_optimizer.select_strategy(
+                request,
+                instance,
+                instance.gpu_count,
+            )
+
+            # Update decision with optimized config
+            decision.tensor_parallel_size = config.tensor_parallel_size
+            decision.pipeline_parallel_size = config.pipeline_parallel_size
+            decision.parallelism_strategy = strategy.strategy_type
 
         # Mark as running
         request.schedule_time = datetime.now()
         self.running_requests[request.request_id] = request
 
         logger.info(
-            "Scheduling request %s to instance %s with %s (TP=%d, PP=%d)",
+            "Scheduling request %s to instance %s (TP=%d, PP=%d, type=%s)",
             request.request_id,
             instance.instance_id,
-            strategy.name,
-            config.tensor_parallel_size,
-            config.pipeline_parallel_size,
+            decision.tensor_parallel_size,
+            decision.pipeline_parallel_size,
+            instance.instance_type.name
+            if hasattr(instance, "instance_type")
+            else "unknown",
         )
 
         # Execute asynchronously
