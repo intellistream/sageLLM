@@ -108,6 +108,10 @@ jobs:
             tests/test_logger.py::test_trace_function_call \
             tests/test_envs.py
 
+      - name: Run Control Plane pytest tests
+        run: |
+          cd tests/control_plane && python -m pytest -v --tb=short
+
       - name: Verify import of key modules
         run: |
           python - <<'PY'

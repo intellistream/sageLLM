@@ -167,6 +167,43 @@ If you use vLLM for your research, please cite our [paper](https://arxiv.org/abs
 }
 ```
 
+## Environment Setup
+
+### CUDA Compilation Requirements
+
+This sageLLM project includes vLLM source code with CUDA kernel optimizations. To enable GPU acceleration:
+
+**Option 1: Full CUDA Support (Recommended for Development)**
+
+```bash
+# Install CUDA Toolkit
+sudo apt update && sudo apt install -y nvidia-cuda-toolkit
+
+# Verify installation
+nvcc --version
+
+# Rebuild sageLLM
+pip install -e .
+```
+
+**Option 2: Use Pre-compiled vLLM Package**
+
+```bash
+# Install official pre-built vLLM package
+pip uninstall -y vllm
+pip install vllm
+```
+
+**Option 3: Run pytest without GPU (Tests Only)**
+
+```bash
+# Tests work without CUDA Toolkit installation
+cd tests/control_plane
+python -m pytest -v
+```
+
+See `control_plane/INTEGRATION.md` for complete integration details.
+
 ## Contact Us
 
 <!-- --8<-- [start:contact-us] -->
