@@ -5,10 +5,13 @@
 
 import asyncio
 import logging
+from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any, Optional
 
-from vllm.control_plane.types import (
+import aiohttp
+
+from .types import (
     ExecutionInstance,
     PerformanceMetrics,
     RequestMetadata,
@@ -21,10 +24,14 @@ logger = logging.getLogger(__name__)
 class ExecutionCoordinator:
     """Coordinates execution across multiple vLLM instances."""
 
-    def __init__(self):
+    def __init__(self, timeout: float = 300.0):
         self.instances: dict[str, ExecutionInstance] = {}
         self.active_requests: dict[str, RequestMetadata] = {}
         self.request_to_instance: dict[str, str] = {}  # request_id -> instance_id
+
+        # HTTP session for vLLM API calls
+        self.session: Optional[aiohttp.ClientSession] = None
+        self.timeout = aiohttp.ClientTimeout(total=timeout)
 
         # Monitoring
         self.metrics = PerformanceMetrics()
@@ -32,7 +39,23 @@ class ExecutionCoordinator:
     def register_instance(self, instance: ExecutionInstance):
         """Register a new vLLM execution instance."""
         self.instances[instance.instance_id] = instance
-        logger.info("Registered instance: %s", instance.instance_id)
+        logger.info(
+            "Registered instance: %s at %s:%d",
+            instance.instance_id,
+            instance.host,
+            instance.port,
+        )
+
+    async def ensure_session(self):
+        """Ensure aiohttp session is initialized."""
+        if self.session is None:
+            self.session = aiohttp.ClientSession(timeout=self.timeout)
+
+    async def close_session(self):
+        """Close aiohttp session."""
+        if self.session:
+            await self.session.close()
+            self.session = None
 
     def unregister_instance(self, instance_id: str):
         """Unregister an execution instance."""
@@ -121,30 +144,152 @@ class ExecutionCoordinator:
         instance: ExecutionInstance,
         decision: SchedulingDecision,
     ) -> dict[str, Any]:
-        """Execute request on vLLM instance (placeholder)."""
+        """Execute request on vLLM instance using actual vLLM OpenAI-compatible API.
 
-        # This is where you would integrate with actual vLLM API
-        # For now, simulate execution
+        Uses the OpenAI-compatible completions endpoint provided by vLLM.
+        """
+        await self.ensure_session()
+
+        url = f"http://{instance.host}:{instance.port}/v1/completions"
+
+        # Prepare request payload
+        payload = {
+            "model": request.model_name or "default",
+            "prompt": "",  # Would be populated from actual request
+            "max_tokens": request.max_tokens or 512,
+            "temperature": request.temperature,
+            "top_p": request.top_p,
+            "request_id": request.request_id,
+        }
 
         logger.info(
-            "Executing request %s on instance %s with TP=%d, PP=%d",
+            "Executing request %s on %s:%d (TP=%d, PP=%d) via /v1/completions",
             request.request_id,
-            instance.instance_id,
+            instance.host,
+            instance.port,
             decision.tensor_parallel_size,
             decision.pipeline_parallel_size,
         )
 
-        # Simulate execution time
-        await asyncio.sleep(0.1)
+        start_time = datetime.now()
 
-        return {
+        try:
+            async with self.session.post(url, json=payload) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise RuntimeError(
+                        f"vLLM API returned {response.status}: {error_text}"
+                    )
+
+                result = await response.json()
+
+            # Extract completion data from vLLM response
+            completion = result.get("choices", [{}])[0]
+
+            latency_ms = (datetime.now() - start_time).total_seconds() * 1000
+
+            return {
+                "request_id": request.request_id,
+                "instance_id": instance.instance_id,
+                "status": "completed",
+                "output": completion.get("text", ""),
+                "tokens_generated": len(completion.get("text", "").split()),
+                "latency_ms": latency_ms,
+                "vllm_response": result,
+            }
+
+        except asyncio.TimeoutError:
+            logger.error(
+                "Timeout executing request %s on %s",
+                request.request_id,
+                instance.instance_id,
+            )
+            raise
+
+        except Exception as e:
+            logger.error(
+                "Failed to execute request %s on %s: %s",
+                request.request_id,
+                instance.instance_id,
+                str(e),
+            )
+            raise
+
+    async def execute_request_streaming(
+        self,
+        request: RequestMetadata,
+        instance: ExecutionInstance,
+        decision: SchedulingDecision,
+    ) -> AsyncGenerator[dict[str, Any], None]:
+        """Execute request with streaming output from vLLM.
+
+        Streams tokens as they are generated by vLLM.
+        """
+        await self.ensure_session()
+
+        url = f"http://{instance.host}:{instance.port}/v1/completions"
+
+        # Prepare streaming request payload
+        payload = {
+            "model": request.model_name or "default",
+            "prompt": "",  # Would be populated from actual request
+            "max_tokens": request.max_tokens or 512,
+            "temperature": request.temperature,
+            "top_p": request.top_p,
+            "stream": True,  # Enable streaming
             "request_id": request.request_id,
-            "instance_id": instance.instance_id,
-            "status": "completed",
-            "output": "Simulated output",
-            "tokens_generated": request.max_tokens or 100,
-            "latency_ms": decision.estimated_latency_ms,
         }
+
+        logger.info(
+            "Executing streaming request %s on %s:%d",
+            request.request_id,
+            instance.host,
+            instance.port,
+        )
+
+        # Mark request as active
+        self.active_requests[request.request_id] = request
+        self.request_to_instance[request.request_id] = instance.instance_id
+        request.start_time = datetime.now()
+
+        try:
+            async with self.session.post(url, json=payload) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise RuntimeError(
+                        f"vLLM API returned {response.status}: {error_text}"
+                    )
+
+                async for line in response.content:
+                    if line:
+                        line_str = line.decode().strip()
+                        if line_str.startswith("data: "):
+                            data_str = line_str[6:]  # Remove "data: " prefix
+                            if data_str != "[DONE]":
+                                chunk = eval(data_str)  # Parse JSON
+                                yield {
+                                    "request_id": request.request_id,
+                                    "instance_id": instance.instance_id,
+                                    "chunk": chunk,
+                                    "timestamp": datetime.now(),
+                                }
+
+                # Request completed
+                request.end_time = datetime.now()
+                self._update_metrics(request, instance, success=True)
+
+        except Exception as e:
+            logger.error(
+                "Streaming failed for request %s: %s", request.request_id, str(e)
+            )
+            request.end_time = datetime.now()
+            self._update_metrics(request, instance, success=False)
+            raise
+
+        finally:
+            # Clean up
+            self.active_requests.pop(request.request_id, None)
+            self.request_to_instance.pop(request.request_id, None)
 
     def _update_metrics(
         self,
@@ -183,22 +328,36 @@ class ExecutionCoordinator:
             )
 
     async def health_check(self, instance_id: str) -> bool:
-        """Perform health check on an instance."""
+        """Perform health check on a vLLM instance via /health endpoint."""
 
         instance = self.get_instance(instance_id)
         if not instance:
             return False
 
+        await self.ensure_session()
+
         try:
-            # Perform health check (placeholder)
-            # In real implementation, ping the vLLM instance
-            await asyncio.sleep(0.01)
+            url = f"http://{instance.host}:{instance.port}/health"
 
-            instance.is_healthy = True
-            return True
+            async with self.session.get(
+                url, timeout=aiohttp.ClientTimeout(total=5)
+            ) as response:
+                if response.status == 200:
+                    instance.is_healthy = True
+                    logger.debug("Health check passed for %s", instance_id)
+                    return True
+                else:
+                    instance.is_healthy = False
+                    instance.is_available = False
+                    logger.warning(
+                        "Health check failed for %s: status %d",
+                        instance_id,
+                        response.status,
+                    )
+                    return False
 
-        except Exception as e:
-            logger.error("Health check failed for %s: %s", instance_id, e)
+        except (asyncio.TimeoutError, aiohttp.ClientError) as e:
+            logger.error("Health check error for %s: %s", instance_id, str(e))
             instance.is_healthy = False
             instance.is_available = False
             return False

@@ -7,7 +7,7 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from vllm.control_plane.types import (
+from .types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,

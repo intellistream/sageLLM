@@ -7,7 +7,7 @@ import hashlib
 import random
 from typing import Optional
 
-from vllm.control_plane.types import (
+from .types import (
     ExecutionInstance,
     RequestMetadata,
     SchedulingDecision,

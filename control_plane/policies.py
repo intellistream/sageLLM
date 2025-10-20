@@ -6,7 +6,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from vllm.control_plane.types import (
+from .types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,

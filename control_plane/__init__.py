@@ -13,13 +13,13 @@ The Control Plane sits between users and vLLM execution instances, providing:
 """
 
 # Import types
-from vllm.control_plane.executor import ExecutionCoordinator
+from .executor import ExecutionCoordinator
 
 # Import manager
-from vllm.control_plane.manager import ControlPlaneManager
+from .manager import ControlPlaneManager
 
 # Import parallelism strategies
-from vllm.control_plane.parallelism import (
+from .parallelism import (
     DataParallelStrategy,
     ExpertParallelStrategy,
     HybridParallelStrategy,
@@ -31,10 +31,10 @@ from vllm.control_plane.parallelism import (
 )
 
 # Import PD separation routing
-from vllm.control_plane.pd_routing import PDRoutingStrategy
+from .pd_routing import PDRoutingStrategy
 
 # Import policies
-from vllm.control_plane.policies import (
+from .policies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
     FIFOPolicy,
@@ -44,8 +44,8 @@ from vllm.control_plane.policies import (
 )
 
 # Import router and coordinator
-from vllm.control_plane.router import LoadBalancer, RequestRouter
-from vllm.control_plane.types import (
+from .router import LoadBalancer, RequestRouter
+from .types import (
     DecodingConfig,
     ExecutionInstance,
     ExecutionInstanceType,

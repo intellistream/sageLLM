@@ -15,13 +15,13 @@ This example demonstrates:
 import asyncio
 import random
 
-from vllm.control_plane import (
+from . import (
     ControlPlaneManager,
     ExecutionInstance,
     RequestMetadata,
     RequestPriority,
 )
-from vllm.control_plane.types import ParallelismType
+from .types import ParallelismType
 
 
 async def setup_control_plane():

@@ -9,9 +9,9 @@ from collections import deque
 from datetime import datetime
 from typing import Any, Optional
 
-from vllm.control_plane.executor import ExecutionCoordinator
-from vllm.control_plane.parallelism import ParallelismOptimizer
-from vllm.control_plane.policies import (
+from .executor import ExecutionCoordinator
+from .parallelism import ParallelismOptimizer
+from .policies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
     FIFOPolicy,
@@ -19,8 +19,8 @@ from vllm.control_plane.policies import (
     SchedulingPolicy,
     SLOAwarePolicy,
 )
-from vllm.control_plane.router import LoadBalancer, RequestRouter
-from vllm.control_plane.types import (
+from .router import LoadBalancer, RequestRouter
+from .types import (
     ExecutionInstance,
     PerformanceMetrics,
     RequestMetadata,

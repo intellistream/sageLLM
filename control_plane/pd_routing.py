@@ -6,7 +6,7 @@
 import logging
 from typing import Optional
 
-from vllm.control_plane.types import (
+from .types import (
     ExecutionInstance,
     ExecutionInstanceType,
     PDSeparationConfig,
