@@ -30,6 +30,9 @@ from vllm.control_plane.parallelism import (
     TensorParallelStrategy,
 )
 
+# Import PD separation routing
+from vllm.control_plane.pd_routing import PDRoutingStrategy
+
 # Import policies
 from vllm.control_plane.policies import (
     AdaptivePolicy,
@@ -43,9 +46,14 @@ from vllm.control_plane.policies import (
 # Import router and coordinator
 from vllm.control_plane.router import LoadBalancer, RequestRouter
 from vllm.control_plane.types import (
+    DecodingConfig,
     ExecutionInstance,
+    ExecutionInstanceType,
     ParallelismType,
+    PDMetrics,
+    PDSeparationConfig,
     PerformanceMetrics,
+    PreffillingConfig,
     RequestMetadata,
     RequestPriority,
     RequestStatus,
@@ -53,7 +61,7 @@ from vllm.control_plane.types import (
 )
 
 __all__ = [
-    # Types
+    # Types - Core
     "RequestPriority",
     "RequestStatus",
     "ParallelismType",
@@ -61,6 +69,12 @@ __all__ = [
     "ExecutionInstance",
     "SchedulingDecision",
     "PerformanceMetrics",
+    # Types - PD Separation
+    "ExecutionInstanceType",
+    "PreffillingConfig",
+    "DecodingConfig",
+    "PDSeparationConfig",
+    "PDMetrics",
     # Policies
     "SchedulingPolicy",
     "FIFOPolicy",
@@ -81,6 +95,8 @@ __all__ = [
     "RequestRouter",
     "LoadBalancer",
     "ExecutionCoordinator",
+    # PD Routing
+    "PDRoutingStrategy",
     # Manager
     "ControlPlaneManager",
 ]

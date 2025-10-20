@@ -41,6 +41,15 @@ class ParallelismType(Enum):
     HYBRID = "hybrid"
 
 
+class ExecutionInstanceType(Enum):
+    """Types/roles of execution instances for PD separation."""
+
+    GENERAL = "general"  # General-purpose instance
+    PREFILLING = "prefilling"  # Specialized for prefilling phase
+    DECODING = "decoding"  # Specialized for decoding phase
+    HYBRID = "hybrid"  # Handles both prefilling and decoding
+
+
 @dataclass
 class RequestMetadata:
     """Metadata for an inference request."""
@@ -88,6 +97,46 @@ class RequestMetadata:
 
 
 @dataclass
+class PreffillingConfig:
+    """Configuration for prefilling-specialized instances."""
+
+    # Optimization target
+    target_batch_size: int = 64
+    target_throughput_tokens_per_sec: float = 1000.0
+
+    # Parallelism settings
+    tensor_parallel_size: int = 4
+    pipeline_parallel_size: int = 1
+
+    # Performance tuning
+    enable_kv_cache: bool = True
+    enable_chunked_prefill: bool = True
+    max_chunk_size_tokens: int = 4096
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class DecodingConfig:
+    """Configuration for decoding-specialized instances."""
+
+    # Optimization target
+    target_latency_ms: float = 50.0
+    target_tokens_per_sec_per_gpu: float = 100.0
+
+    # Parallelism settings (typically minimal)
+    tensor_parallel_size: int = 1
+    pipeline_parallel_size: int = 1
+
+    # Performance tuning
+    enable_prefix_caching: bool = True
+    max_parallel_requests: int = 200
+    kv_cache_memory_fraction: float = 0.85
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
 class ExecutionInstance:
     """Represents a vLLM execution instance."""
 
@@ -100,6 +149,11 @@ class ExecutionInstance:
     tensor_parallel_size: int = 1
     pipeline_parallel_size: int = 1
     data_parallel_size: int = 1
+
+    # PD Separation: Instance type and specialized configs
+    instance_type: ExecutionInstanceType = ExecutionInstanceType.GENERAL
+    prefilling_config: Optional[PreffillingConfig] = None
+    decoding_config: Optional[DecodingConfig] = None
 
     # Resource information
     gpu_count: int = 1
@@ -119,6 +173,10 @@ class ExecutionInstance:
     active_requests: int = 0
     max_concurrent_requests: int = 100
 
+    # PD Separation: Request type tracking
+    prefilling_active_requests: int = 0
+    decoding_active_requests: int = 0
+
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -136,6 +194,18 @@ class ExecutionInstance:
             and self.active_requests < self.max_concurrent_requests
             and self.current_load < 0.95
         )
+
+    def can_accept_prefilling_request(self) -> bool:
+        """Check if instance can accept prefilling requests."""
+        if self.instance_type == ExecutionInstanceType.DECODING:
+            return False
+        return self.can_accept_request
+
+    def can_accept_decoding_request(self) -> bool:
+        """Check if instance can accept decoding requests."""
+        if self.instance_type == ExecutionInstanceType.PREFILLING:
+            return False
+        return self.can_accept_request
 
 
 @dataclass
@@ -195,5 +265,80 @@ class PerformanceMetrics:
     # SLO metrics
     slo_violations: int = 0
     slo_compliance_rate: float = 1.0
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class PDSeparationConfig:
+    """Configuration for Prefilling/Decoding separation."""
+
+    # Enable/disable PD separation
+    enabled: bool = True
+
+    # Dynamic scaling configuration
+    enable_dynamic_scaling: bool = True
+    prefilling_min_instances: int = 1
+    prefilling_max_instances: int = 5
+    decoding_min_instances: int = 2
+    decoding_max_instances: int = 8
+
+    # Routing decision thresholds
+    routing_policy: str = "adaptive"  # adaptive | threshold | ml
+    prefilling_threshold_input_tokens: int = 800
+    prefilling_threshold_ratio: float = 4.0  # input_tokens / output_tokens
+
+    # KV-Cache management
+    kv_cache_storage: str = "gpu"  # gpu | cpu | shared
+    kv_cache_eviction_policy: str = "lru"  # lru | lfu | fifo
+    kv_cache_memory_fraction: float = 0.85
+
+    # Inter-cluster communication
+    enable_kv_cache_transfer: bool = True
+    kv_cache_transfer_buffer_mb: int = 2048
+    max_transfer_latency_ms: float = 100.0
+
+    # Monitoring and metrics
+    collect_pd_metrics: bool = True
+    pd_metrics_interval_sec: int = 10
+    enable_pd_tracing: bool = False
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class PDMetrics:
+    """Metrics specific to PD separation."""
+
+    timestamp: datetime = field(default_factory=datetime.now)
+
+    # Prefilling metrics
+    prefilling_throughput_tokens_per_sec: float = 0.0
+    prefilling_latency_avg_ms: float = 0.0
+    prefilling_latency_p99_ms: float = 0.0
+    prefilling_gpu_util: float = 0.0
+    prefilling_active_requests: int = 0
+
+    # Decoding metrics
+    decoding_latency_avg_ms: float = 0.0
+    decoding_latency_p99_ms: float = 0.0
+    decoding_gpu_util: float = 0.0
+    decoding_active_requests: int = 0
+
+    # Inter-cluster metrics
+    kv_cache_hit_rate: float = 0.0  # Cache hit rate 0.0-1.0
+    inter_cluster_transfer_latency_avg_ms: float = 0.0
+    kv_cache_evictions_per_sec: float = 0.0
+
+    # Cost metrics
+    prefilling_cost_per_token: float = 0.0
+    decoding_cost_per_token: float = 0.0
+    total_cost_optimization_percent: float = 0.0  # vs mixed baseline
+
+    # Routing statistics
+    requests_routed_to_prefilling: int = 0
+    requests_routed_to_decoding: int = 0
+    requests_routed_to_hybrid: int = 0
+    avg_routing_decision_time_us: float = 0.0
 
     metadata: dict[str, Any] = field(default_factory=dict)
