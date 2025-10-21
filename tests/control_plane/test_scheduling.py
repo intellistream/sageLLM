@@ -71,6 +71,7 @@ async def test_priority_scheduling():
         port=8000,
         model_name="meta-llama/Llama-2-7b",
         tensor_parallel_size=2,
+        pipeline_parallel_size=1,
         gpu_count=2,
     )
 
