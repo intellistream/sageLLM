@@ -303,9 +303,9 @@ class ControlPlaneManager:
         if self.enable_pd_separation and self.pd_router:
             parallelism_config = self.pd_router.recommend_parallelism_config(instance)
             if parallelism_config:
-                decision.tensor_parallel_size = parallelism_config.tensor_parallel_size
+                decision.tensor_parallel_size = parallelism_config['tensor_parallel_size']
                 decision.pipeline_parallel_size = (
-                    parallelism_config.pipeline_parallel_size
+                    parallelism_config['pipeline_parallel_size']
                 )
 
         # Otherwise optimize parallelism strategy
