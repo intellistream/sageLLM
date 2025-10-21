@@ -97,7 +97,7 @@ class RequestMetadata:
 
 
 @dataclass
-class PreffillingConfig:
+class PrefillingConfig:
     """Configuration for prefilling-specialized instances."""
 
     # Optimization target
