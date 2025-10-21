@@ -288,9 +288,7 @@ class ControlPlaneManager:
                 # Select best instance based on PD specialization
                 best_instance = max(
                     compatible_instances,
-                    key=lambda inst: self.pd_router.get_instance_specialization(
-                        inst, target_phase
-                    ),
+                    key=lambda inst: self.pd_router.get_instance_specialization(inst).get(target_phase, 0),
                 )
                 instance = best_instance
                 logger.debug(
