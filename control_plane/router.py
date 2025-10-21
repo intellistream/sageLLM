@@ -257,10 +257,12 @@ class LoadBalancer:
 
     def get_stats(self, instance_id: str) -> dict[str, float]:
         """Get statistics for an instance."""
+        latencies = self.latency_history.get(instance_id, [])
+        if latencies:
+            avg_latency = sum(latencies) / len(latencies)
+        else:
+            avg_latency = 0.0
         return {
             "request_count": self.request_counts.get(instance_id, 0),
-            "avg_latency_ms": (
-                sum(self.latency_history.get(instance_id, []))
-                / len(self.latency_history.get(instance_id, [1]))
-            ),
+            "avg_latency_ms": avg_latency,
         }
