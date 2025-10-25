@@ -2,9 +2,8 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-from transformers import AutoTokenizer
-
 from tests.reasoning.utils import run_reasoning_extraction
+from transformers import AutoTokenizer
 from vllm.entrypoints.openai.protocol import ChatCompletionRequest
 from vllm.reasoning.basic_parsers import BaseThinkingReasoningParser
 

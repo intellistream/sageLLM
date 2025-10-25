@@ -8,7 +8,6 @@ from typing import Any, Literal, Optional, Union
 import torch
 from pydantic import ConfigDict, SkipValidation
 from pydantic.dataclasses import dataclass
-
 from vllm.config.utils import config
 
 Device = Literal["auto", "cuda", "cpu", "tpu", "xpu"]

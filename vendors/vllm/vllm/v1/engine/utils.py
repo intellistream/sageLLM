@@ -14,7 +14,6 @@ from unittest.mock import patch
 
 import msgspec
 import zmq
-
 from vllm.config import CacheConfig, ParallelConfig, VllmConfig
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
@@ -226,8 +225,8 @@ class CoreEngineActorManager:
 
         import ray
         from ray.runtime_env import RuntimeEnv
-        from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
-
+        from ray.util.scheduling_strategies import \
+            PlacementGroupSchedulingStrategy
         from vllm.v1.engine.core import DPEngineCoreActor
 
         self.local_engine_actors: list[ray.ActorHandle] = []
@@ -406,10 +405,8 @@ class CoreEngineActorManager:
         Add placement groups for new data parallel size.
         """
         import ray
-        from ray._private.state import (
-            available_resources_per_node,
-            total_resources_per_node,
-        )
+        from ray._private.state import (available_resources_per_node,
+                                        total_resources_per_node)
         from ray.util.state import list_nodes
 
         old_dp_size = old_vllm_config.parallel_config.data_parallel_size
@@ -492,8 +489,8 @@ class CoreEngineActorManager:
 
         import ray
         from ray.runtime_env import RuntimeEnv
-        from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
-
+        from ray.util.scheduling_strategies import \
+            PlacementGroupSchedulingStrategy
         from vllm.v1.engine.core import DPEngineCoreActor
 
         cur_data_parallel_size = len(self.local_engine_actors) + len(

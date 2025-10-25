@@ -13,24 +13,20 @@ import aiohttp
 import torch
 from prometheus_client import start_http_server
 from tqdm import tqdm
-
 from vllm.config import VllmConfig
 from vllm.engine.arg_utils import AsyncEngineArgs, optional_type
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (
-    BatchRequestInput,
-    BatchRequestOutput,
-    BatchResponseData,
-    ChatCompletionResponse,
-    EmbeddingResponse,
-    ErrorResponse,
-    RerankResponse,
-    ScoreResponse,
-)
+from vllm.entrypoints.openai.protocol import (BatchRequestInput,
+                                              BatchRequestOutput,
+                                              BatchResponseData,
+                                              ChatCompletionResponse,
+                                              EmbeddingResponse, ErrorResponse,
+                                              RerankResponse, ScoreResponse)
 from vllm.entrypoints.openai.serving_chat import OpenAIServingChat
 from vllm.entrypoints.openai.serving_embedding import OpenAIServingEmbedding
-from vllm.entrypoints.openai.serving_models import BaseModelPath, OpenAIServingModels
+from vllm.entrypoints.openai.serving_models import (BaseModelPath,
+                                                    OpenAIServingModels)
 from vllm.entrypoints.openai.serving_score import ServingScores
 from vllm.logger import init_logger
 from vllm.utils import FlexibleArgumentParser, random_uuid

@@ -48,18 +48,12 @@ if typing.TYPE_CHECKING:
     from vllm.executor.ray_utils import initialize_ray_cluster
     from vllm.inputs import PromptType, TextPrompt, TokensPrompt
     from vllm.model_executor.models import ModelRegistry
-    from vllm.outputs import (
-        ClassificationOutput,
-        ClassificationRequestOutput,
-        CompletionOutput,
-        EmbeddingOutput,
-        EmbeddingRequestOutput,
-        PoolingOutput,
-        PoolingRequestOutput,
-        RequestOutput,
-        ScoringOutput,
-        ScoringRequestOutput,
-    )
+    from vllm.outputs import (ClassificationOutput,
+                              ClassificationRequestOutput, CompletionOutput,
+                              EmbeddingOutput, EmbeddingRequestOutput,
+                              PoolingOutput, PoolingRequestOutput,
+                              RequestOutput, ScoringOutput,
+                              ScoringRequestOutput)
     from vllm.pooling_params import PoolingParams
     from vllm.sampling_params import SamplingParams
 

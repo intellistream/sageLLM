@@ -6,7 +6,6 @@ Run `pytest tests/samplers/test_ignore_eos.py`.
 """
 
 import pytest
-
 from vllm import SamplingParams
 
 # We also test with llama because it has generation_config to specify EOS

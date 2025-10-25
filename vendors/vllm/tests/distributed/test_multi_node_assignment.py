@@ -15,7 +15,6 @@ import os
 import pytest
 import ray
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
-
 from vllm import initialize_ray_cluster
 from vllm.config import ParallelConfig
 from vllm.executor.ray_utils import _wait_until_pg_removed

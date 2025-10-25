@@ -16,15 +16,9 @@ import pytest
 import regex as re
 import torch
 from PIL.Image import Image
-from transformers import (
-    AutoConfig,
-    AutoTokenizer,
-    BatchFeature,
-    GenerationConfig,
-    GenerationMixin,
-)
+from transformers import (AutoConfig, AutoTokenizer, BatchFeature,
+                          GenerationConfig, GenerationMixin)
 from transformers.video_utils import VideoMetadata
-
 from vllm.logprobs import SampleLogprobs
 from vllm.utils import is_list_of
 
@@ -419,11 +413,7 @@ def h2ovl_patch_hf_runner(hf_model: HfRunner) -> HfRunner:
 
         def __call__(self, text: str, images: Union[Image, list[Image]], **kwargs):
             from vllm.model_executor.models.h2ovl import (
-                IMG_CONTEXT,
-                IMG_END,
-                IMG_START,
-                image_to_pixel_values_h2ovl,
-            )
+                IMG_CONTEXT, IMG_END, IMG_START, image_to_pixel_values_h2ovl)
 
             images = [images] if isinstance(images, Image) else images
             pixel_values = [
@@ -478,11 +468,8 @@ def skyworkr1v_patch_hf_runner(hf_model: HfRunner) -> HfRunner:
 
         def __call__(self, text: str, images: Union[Image, list[Image]], **kwargs):
             from vllm.model_executor.models.skyworkr1v import (
-                IMG_CONTEXT,
-                IMG_END,
-                IMG_START,
-                image_to_pixel_values_skyworkr1v,
-            )
+                IMG_CONTEXT, IMG_END, IMG_START,
+                image_to_pixel_values_skyworkr1v)
 
             images = [images] if isinstance(images, Image) else images
             pixel_values = [
@@ -542,12 +529,8 @@ def internvl_patch_hf_runner(hf_model: HfRunner) -> HfRunner:
             **kwargs,
         ):
             from vllm.model_executor.models.internvl import (
-                IMG_CONTEXT,
-                IMG_END,
-                IMG_START,
-                image_to_pixel_values_internvl,
-                video_to_pixel_values_internvl,
-            )
+                IMG_CONTEXT, IMG_END, IMG_START,
+                image_to_pixel_values_internvl, video_to_pixel_values_internvl)
 
             images = [images] if isinstance(images, Image) else images
             videos = [videos] if isinstance(videos, np.ndarray) else videos

@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm.outputs import RequestOutput
 
 pytestmark = pytest.mark.cpu_test

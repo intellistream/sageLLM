@@ -4,7 +4,6 @@
 from typing import Callable
 
 import pytest
-
 from tests.models.registry import HF_EXAMPLE_MODELS
 from tests.utils import multi_gpu_test
 from vllm.engine.arg_utils import EngineArgs

@@ -6,11 +6,8 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-
 from tests.entrypoints.openai.tool_parsers.utils import (
-    run_tool_extraction,
-    run_tool_extraction_streaming,
-)
+    run_tool_extraction, run_tool_extraction_streaming)
 from vllm.entrypoints.openai.protocol import FunctionCall, ToolCall
 from vllm.entrypoints.openai.tool_parsers import ToolParser, ToolParserManager
 

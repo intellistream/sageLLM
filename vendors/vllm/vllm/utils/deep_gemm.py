@@ -13,7 +13,6 @@ import os
 from typing import Any, Callable, NoReturn
 
 import torch
-
 import vllm.envs as envs
 from vllm.logger import logger
 from vllm.platforms import current_platform

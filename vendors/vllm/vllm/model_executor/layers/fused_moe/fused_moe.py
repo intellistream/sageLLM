@@ -9,39 +9,27 @@ from typing import Any, Callable, Optional, Union
 
 import torch
 import torch.nn.functional as F
-
 import vllm.envs as envs
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import (
-    FUSED_MOE_UNQUANTIZED_CONFIG,
-    FusedMoEQuantConfig,
-    _get_config_dtype_str,
-)
+    FUSED_MOE_UNQUANTIZED_CONFIG, FusedMoEQuantConfig, _get_config_dtype_str)
 from vllm.model_executor.layers.fused_moe.cutlass_moe import (
     _valid_cutlass_block_scaled_grouped_gemm,
-    run_cutlass_block_scaled_fused_experts,
-)
+    run_cutlass_block_scaled_fused_experts)
 from vllm.model_executor.layers.fused_moe.deep_gemm_moe import (
-    _valid_deep_gemm,
-    deep_gemm_moe_fp8,
-)
-from vllm.model_executor.layers.fused_moe.moe_align_block_size import (
-    moe_align_block_size,
-)
-from vllm.model_executor.layers.fused_moe.prepare_finalize import (
-    MoEPrepareAndFinalizeNoEP,
-)
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceNoOP,
-)
+    _valid_deep_gemm, deep_gemm_moe_fp8)
+from vllm.model_executor.layers.fused_moe.moe_align_block_size import \
+    moe_align_block_size
+from vllm.model_executor.layers.fused_moe.prepare_finalize import \
+    MoEPrepareAndFinalizeNoEP
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
+    TopKWeightAndReduceNoOP
 from vllm.model_executor.layers.fused_moe.utils import (
-    _resize_cache,
-    activation_without_mul,
-    moe_kernel_quantize_input,
-)
-from vllm.model_executor.layers.quantization.utils.mxfp4_utils import dequant_mxfp4
+    _resize_cache, activation_without_mul, moe_kernel_quantize_input)
+from vllm.model_executor.layers.quantization.utils.mxfp4_utils import \
+    dequant_mxfp4
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton
 from vllm.utils import direct_register_custom_op, is_torch_equal_or_newer

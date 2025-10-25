@@ -17,33 +17,24 @@ import torchvision.transforms as T
 from PIL import Image
 from transformers import AutoModel, PretrainedConfig
 from transformers.image_processing_utils_fast import BaseImageProcessorFast
-
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.quantization.awq import AWQConfig
 from vllm.model_executor.models.internvl import (
-    BaseInternVLDummyInputsBuilder,
-    BaseInternVLMultiModalProcessor,
-    BaseInternVLProcessingInfo,
-    InternVLImageEmbeddingInputs,
-    InternVLImageInputs,
-    InternVLImagePixelInputs,
-    InternVLProcessor,
-)
+    BaseInternVLDummyInputsBuilder, BaseInternVLMultiModalProcessor,
+    BaseInternVLProcessingInfo, InternVLImageEmbeddingInputs,
+    InternVLImageInputs, InternVLImagePixelInputs, InternVLProcessor)
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.image import convert_image_mode
 from vllm.multimodal.processing import PromptUpdateDetails
 from vllm.sequence import IntermediateTensors
-from vllm.transformers_utils.processor import cached_image_processor_from_config
+from vllm.transformers_utils.processor import \
+    cached_image_processor_from_config
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
-from .interfaces import (
-    MultiModalEmbeddings,
-    SupportsLoRA,
-    SupportsMultiModal,
-    SupportsPP,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
+                         SupportsMultiModal, SupportsPP)
 from .utils import AutoWeightsLoader, init_vllm_registered_model, maybe_prefix
 
 IMG_START = "<img>"

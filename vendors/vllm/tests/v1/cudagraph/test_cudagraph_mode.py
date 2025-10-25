@@ -6,7 +6,6 @@ import weakref
 from contextlib import ExitStack
 
 import pytest
-
 from tests.utils import wait_for_gpu_memory_to_clear
 from tests.v1.attention.utils import full_cg_backend_configs as backend_configs
 from vllm import LLM

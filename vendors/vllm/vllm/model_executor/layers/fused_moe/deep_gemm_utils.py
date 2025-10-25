@@ -9,7 +9,6 @@ import functools
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.model_executor.layers.fused_moe.utils import count_expert_num_tokens
 from vllm.triton_utils import tl, triton

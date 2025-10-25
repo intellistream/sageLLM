@@ -2,10 +2,8 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
-from vllm.v1.structured_output.backend_xgrammar import (
-    has_xgrammar_unsupported_json_features,
-)
+from vllm.v1.structured_output.backend_xgrammar import \
+    has_xgrammar_unsupported_json_features
 
 pytestmark = pytest.mark.cpu_test
 

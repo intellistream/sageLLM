@@ -13,13 +13,11 @@ import torch
 import torch.utils.benchmark as TBenchmark
 from torch.utils.benchmark import Measurement as TMeasurement
 from utils import make_rand_tensors
-from weight_shapes import WEIGHT_SHAPES
-
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    w8a8_triton_block_scaled_mm,
-)
+from vllm.model_executor.layers.quantization.utils.fp8_utils import \
+    w8a8_triton_block_scaled_mm
 from vllm.utils import FlexibleArgumentParser, cdiv
+from weight_shapes import WEIGHT_SHAPES
 
 DEFAULT_MODELS = list(WEIGHT_SHAPES.keys())
 DEFAULT_BATCH_SIZES = [1, 16, 32, 64, 128, 256, 512]

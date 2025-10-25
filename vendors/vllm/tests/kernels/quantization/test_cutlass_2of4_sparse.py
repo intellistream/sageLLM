@@ -7,12 +7,10 @@ Run `pytest tests/kernels/quantization/test_cutlass_2of4_sparse.py`.
 
 import pytest
 import torch
-
 from tests.kernels.utils import baseline_scaled_mm, to_fp8, to_int8
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    sparse_cutlass_supported,
-)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
+    sparse_cutlass_supported
 from vllm.platforms import current_platform
 
 CUDA_DEVICES = [f"cuda:{i}" for i in range(1 if torch.cuda.device_count() == 1 else 2)]

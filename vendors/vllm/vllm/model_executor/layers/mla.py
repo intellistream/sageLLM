@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
-
 from vllm.attention import Attention
 from vllm.config import CacheConfig
 from vllm.model_executor.custom_op import CustomOp

@@ -5,20 +5,17 @@ from typing import Any, Final, Optional, Union
 
 import jinja2
 from fastapi import Request
-
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.chat_utils import ChatTemplateContentFormatOption
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (
-    DetokenizeRequest,
-    DetokenizeResponse,
-    ErrorResponse,
-    TokenizeChatRequest,
-    TokenizeRequest,
-    TokenizeResponse,
-    TokenizerInfoResponse,
-)
+from vllm.entrypoints.openai.protocol import (DetokenizeRequest,
+                                              DetokenizeResponse,
+                                              ErrorResponse,
+                                              TokenizeChatRequest,
+                                              TokenizeRequest,
+                                              TokenizeResponse,
+                                              TokenizerInfoResponse)
 from vllm.entrypoints.openai.serving_engine import OpenAIServing
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.renderer import RenderConfig

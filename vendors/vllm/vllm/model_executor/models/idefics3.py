@@ -22,13 +22,8 @@ from typing import Annotated, Literal, Optional, Union
 
 import torch
 from torch import nn
-from transformers import (
-    BatchFeature,
-    Idefics3Config,
-    Idefics3ImageProcessor,
-    Idefics3Processor,
-)
-
+from transformers import (BatchFeature, Idefics3Config, Idefics3ImageProcessor,
+                          Idefics3Processor)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.linear import ReplicatedLinear
@@ -37,27 +32,19 @@ from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
 from vllm.multimodal.parse import ImageProcessorItems, ImageSize
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    MultiModalDataItems,
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo,
+                                        MultiModalDataItems, PromptReplacement,
+                                        PromptUpdate, PromptUpdateDetails)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .idefics2_vision_model import (
-    Idefics2VisionTransformer as Idefics3VisionTransformer,
-)
+from .idefics2_vision_model import \
+    Idefics2VisionTransformer as Idefics3VisionTransformer
 from .interfaces import MultiModalEmbeddings, SupportsLoRA, SupportsMultiModal
 from .llama import LlamaModel
 from .utils import AutoWeightsLoader, maybe_prefix

@@ -9,13 +9,10 @@ from typing import Any, Optional
 
 import uvicorn
 from fastapi import FastAPI, Request, Response
-
 from vllm import envs
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.constants import (
-    H11_MAX_HEADER_COUNT_DEFAULT,
-    H11_MAX_INCOMPLETE_EVENT_SIZE_DEFAULT,
-)
+from vllm.entrypoints.constants import (H11_MAX_HEADER_COUNT_DEFAULT,
+                                        H11_MAX_INCOMPLETE_EVENT_SIZE_DEFAULT)
 from vllm.entrypoints.ssl import SSLCertRefresher
 from vllm.logger import init_logger
 from vllm.utils import find_process_using_port

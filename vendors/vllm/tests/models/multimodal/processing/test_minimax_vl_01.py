@@ -3,7 +3,6 @@
 
 import pytest
 from PIL import Image
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.parse import ImageSize
 from vllm.multimodal.processing import BaseMultiModalProcessor

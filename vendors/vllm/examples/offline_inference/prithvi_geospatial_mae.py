@@ -12,7 +12,6 @@ import regex as re
 import torch
 from einops import rearrange
 from terratorch.datamodules import Sen1Floods11NonGeoDataModule
-
 from vllm import LLM
 
 torch.set_default_dtype(torch.float16)

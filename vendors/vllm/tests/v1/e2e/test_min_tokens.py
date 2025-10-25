@@ -17,7 +17,6 @@ import os
 from typing import Optional, Union
 
 import pytest
-
 from vllm import LLM, SamplingParams
 from vllm.outputs import RequestOutput
 

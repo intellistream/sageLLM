@@ -25,7 +25,9 @@ import prometheus_client
 import pydantic
 import regex as re
 import uvloop
-from fastapi import APIRouter, Depends, FastAPI, Form, HTTPException, Query, Request
+import vllm.envs as envs
+from fastapi import (APIRouter, Depends, FastAPI, Form, HTTPException, Query,
+                     Request)
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, StreamingResponse
@@ -36,88 +38,69 @@ from starlette.datastructures import URL, Headers, MutableHeaders, State
 from starlette.routing import Mount
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from typing_extensions import assert_never
-
-import vllm.envs as envs
 from vllm.config import VllmConfig
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.chat_utils import (
-    load_chat_template,
-    resolve_hf_chat_template,
-    resolve_mistral_chat_template,
-)
+from vllm.entrypoints.chat_utils import (load_chat_template,
+                                         resolve_hf_chat_template,
+                                         resolve_mistral_chat_template)
 from vllm.entrypoints.launcher import serve_http
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.cli_args import make_arg_parser, validate_parsed_serve_args
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    ChatCompletionResponse,
-    ClassificationRequest,
-    ClassificationResponse,
-    CompletionRequest,
-    CompletionResponse,
-    DetokenizeRequest,
-    DetokenizeResponse,
-    EmbeddingRequest,
-    EmbeddingResponse,
-    ErrorInfo,
-    ErrorResponse,
-    IOProcessorResponse,
-    LoadLoRAAdapterRequest,
-    PoolingRequest,
-    PoolingResponse,
-    RerankRequest,
-    RerankResponse,
-    ResponsesRequest,
-    ResponsesResponse,
-    ScoreRequest,
-    ScoreResponse,
-    StreamingResponsesResponse,
-    TokenizeRequest,
-    TokenizeResponse,
-    TranscriptionRequest,
-    TranscriptionResponse,
-    TranslationRequest,
-    TranslationResponse,
-    UnloadLoRAAdapterRequest,
-)
+from vllm.entrypoints.openai.cli_args import (make_arg_parser,
+                                              validate_parsed_serve_args)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              ChatCompletionResponse,
+                                              ClassificationRequest,
+                                              ClassificationResponse,
+                                              CompletionRequest,
+                                              CompletionResponse,
+                                              DetokenizeRequest,
+                                              DetokenizeResponse,
+                                              EmbeddingRequest,
+                                              EmbeddingResponse, ErrorInfo,
+                                              ErrorResponse,
+                                              IOProcessorResponse,
+                                              LoadLoRAAdapterRequest,
+                                              PoolingRequest, PoolingResponse,
+                                              RerankRequest, RerankResponse,
+                                              ResponsesRequest,
+                                              ResponsesResponse, ScoreRequest,
+                                              ScoreResponse,
+                                              StreamingResponsesResponse,
+                                              TokenizeRequest,
+                                              TokenizeResponse,
+                                              TranscriptionRequest,
+                                              TranscriptionResponse,
+                                              TranslationRequest,
+                                              TranslationResponse,
+                                              UnloadLoRAAdapterRequest)
 from vllm.entrypoints.openai.serving_chat import OpenAIServingChat
-from vllm.entrypoints.openai.serving_classification import ServingClassification
+from vllm.entrypoints.openai.serving_classification import \
+    ServingClassification
 from vllm.entrypoints.openai.serving_completion import OpenAIServingCompletion
 from vllm.entrypoints.openai.serving_embedding import OpenAIServingEmbedding
 from vllm.entrypoints.openai.serving_engine import OpenAIServing
-from vllm.entrypoints.openai.serving_models import (
-    BaseModelPath,
-    LoRAModulePath,
-    OpenAIServingModels,
-)
+from vllm.entrypoints.openai.serving_models import (BaseModelPath,
+                                                    LoRAModulePath,
+                                                    OpenAIServingModels)
 from vllm.entrypoints.openai.serving_pooling import OpenAIServingPooling
 from vllm.entrypoints.openai.serving_responses import OpenAIServingResponses
 from vllm.entrypoints.openai.serving_score import ServingScores
-from vllm.entrypoints.openai.serving_tokenization import OpenAIServingTokenization
+from vllm.entrypoints.openai.serving_tokenization import \
+    OpenAIServingTokenization
 from vllm.entrypoints.openai.serving_transcription import (
-    OpenAIServingTranscription,
-    OpenAIServingTranslation,
-)
+    OpenAIServingTranscription, OpenAIServingTranslation)
 from vllm.entrypoints.openai.tool_parsers import ToolParserManager
-from vllm.entrypoints.tool_server import DemoToolServer, MCPToolServer, ToolServer
-from vllm.entrypoints.utils import (
-    cli_env_setup,
-    load_aware_call,
-    log_non_default_args,
-    with_cancellation,
-)
+from vllm.entrypoints.tool_server import (DemoToolServer, MCPToolServer,
+                                          ToolServer)
+from vllm.entrypoints.utils import (cli_env_setup, load_aware_call,
+                                    log_non_default_args, with_cancellation)
 from vllm.logger import init_logger
 from vllm.reasoning import ReasoningParserManager
 from vllm.transformers_utils.tokenizer import MistralTokenizer
 from vllm.usage.usage_lib import UsageContext
-from vllm.utils import (
-    Device,
-    FlexibleArgumentParser,
-    decorate_logs,
-    is_valid_ipv6_address,
-    set_ulimit,
-)
+from vllm.utils import (Device, FlexibleArgumentParser, decorate_logs,
+                        is_valid_ipv6_address, set_ulimit)
 from vllm.v1.engine.exceptions import EngineDeadError
 from vllm.v1.metrics.prometheus import get_prometheus_registry
 from vllm.version import __version__ as VLLM_VERSION
@@ -1367,9 +1350,7 @@ def _extract_content_from_chunk(chunk_data: dict) -> str:
     """Extract content from a streaming response chunk."""
     try:
         from vllm.entrypoints.openai.protocol import (
-            ChatCompletionStreamResponse,
-            CompletionStreamResponse,
-        )
+            ChatCompletionStreamResponse, CompletionStreamResponse)
 
         # Try using Completion types for type-safe parsing
         if chunk_data.get("object") == "chat.completion.chunk":

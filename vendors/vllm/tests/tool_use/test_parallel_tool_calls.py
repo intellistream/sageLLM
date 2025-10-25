@@ -7,13 +7,9 @@ from typing import Optional
 import openai
 import pytest
 
-from .utils import (
-    MESSAGES_ASKING_FOR_PARALLEL_TOOLS,
-    MESSAGES_WITH_PARALLEL_TOOL_RESPONSE,
-    SEARCH_TOOL,
-    WEATHER_TOOL,
-    ServerConfig,
-)
+from .utils import (MESSAGES_ASKING_FOR_PARALLEL_TOOLS,
+                    MESSAGES_WITH_PARALLEL_TOOL_RESPONSE, SEARCH_TOOL,
+                    WEATHER_TOOL, ServerConfig)
 
 
 # test: getting the model to generate parallel tool calls (streaming/not)

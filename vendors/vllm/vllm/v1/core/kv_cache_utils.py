@@ -13,16 +13,11 @@ from vllm import envs
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.utils import GiB_bytes, cdiv, sha256_cbor
-from vllm.v1.kv_cache_interface import (
-    ChunkedLocalAttentionSpec,
-    FullAttentionSpec,
-    KVCacheConfig,
-    KVCacheGroupSpec,
-    KVCacheSpec,
-    KVCacheTensor,
-    SlidingWindowSpec,
-    UniformTypeKVCacheSpecs,
-)
+from vllm.v1.kv_cache_interface import (ChunkedLocalAttentionSpec,
+                                        FullAttentionSpec, KVCacheConfig,
+                                        KVCacheGroupSpec, KVCacheSpec,
+                                        KVCacheTensor, SlidingWindowSpec,
+                                        UniformTypeKVCacheSpecs)
 from vllm.v1.metrics.stats import PrefixCacheStats
 from vllm.v1.request import Request
 

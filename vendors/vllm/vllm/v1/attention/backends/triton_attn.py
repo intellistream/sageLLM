@@ -6,29 +6,19 @@ from dataclasses import dataclass
 from typing import ClassVar, Optional
 
 import torch
-
-from vllm.attention.backends.abstract import (
-    AttentionBackend,
-    AttentionImpl,
-    AttentionMetadata,
-    AttentionType,
-)
-from vllm.attention.ops.triton_reshape_and_cache_flash import (
-    triton_reshape_and_cache_flash,
-)
+from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
+                                              AttentionMetadata, AttentionType)
+from vllm.attention.ops.triton_reshape_and_cache_flash import \
+    triton_reshape_and_cache_flash
 from vllm.attention.ops.triton_unified_attention import unified_attention
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey,
-    kFp8StaticTensorSym,
-)
+    QuantKey, kFp8StaticTensorSym)
 from vllm.platforms import current_platform
-from vllm.v1.attention.backends.utils import (
-    AttentionCGSupport,
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
-)
+from vllm.v1.attention.backends.utils import (AttentionCGSupport,
+                                              AttentionMetadataBuilder,
+                                              CommonAttentionMetadata)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 if current_platform.is_cuda_alike():

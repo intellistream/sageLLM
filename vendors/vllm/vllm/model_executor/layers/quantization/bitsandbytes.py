@@ -5,22 +5,15 @@ from typing import Any, Callable, Optional, Union
 
 import torch
 from packaging import version
-
-from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEConfig,
-    FusedMoEQuantConfig,
-)
-from vllm.model_executor.layers.fused_moe.layer import FusedMoE, FusedMoEMethodBase
-from vllm.model_executor.layers.linear import (
-    LinearBase,
-    LinearMethodBase,
-    UnquantizedLinearMethod,
-    set_weight_attrs,
-)
-from vllm.model_executor.layers.quantization import (
-    QuantizationConfig,
-    QuantizationMethods,
-)
+from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
+                                                         FusedMoEQuantConfig)
+from vllm.model_executor.layers.fused_moe.layer import (FusedMoE,
+                                                        FusedMoEMethodBase)
+from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
+                                               UnquantizedLinearMethod,
+                                               set_weight_attrs)
+from vllm.model_executor.layers.quantization import (QuantizationConfig,
+                                                     QuantizationMethods)
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op
 

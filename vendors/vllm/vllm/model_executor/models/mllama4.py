@@ -27,39 +27,29 @@ from transformers import BatchFeature, Llama4Config, Llama4VisionConfig
 from transformers.image_utils import SizeDict
 from transformers.models.llama4 import Llama4Processor
 from transformers.models.llama4.image_processing_llama4_fast import (
-    find_supported_resolutions,
-    get_best_fit,
-)
-
+    find_supported_resolutions, get_best_fit)
 from vllm.attention.layer import MultiHeadAttention
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import get_tensor_model_parallel_world_size
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    QKVParallelLinear,
-    ReplicatedLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               QKVParallelLinear,
+                                               ReplicatedLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.model_loader.utils import initialize_model
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
-from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    InputProcessingContext,
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
+from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
+                                   MultiModalDataItems)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo,
+                                        InputProcessingContext,
+                                        PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape

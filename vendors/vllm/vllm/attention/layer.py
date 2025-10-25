@@ -7,7 +7,6 @@ from typing import Callable, Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 import vllm.envs as envs
 from vllm.attention import AttentionType
 from vllm.attention.backends.abstract import AttentionBackend
@@ -15,11 +14,9 @@ from vllm.attention.backends.registry import _Backend
 from vllm.attention.selector import backend_name_to_enum, get_attn_backend
 from vllm.attention.utils.kv_sharing_utils import validate_kv_sharing_target
 from vllm.config import CacheConfig, get_current_vllm_config
-from vllm.distributed.kv_transfer import (
-    get_kv_transfer_group,
-    has_kv_transfer_group,
-    is_v1_kv_transfer_group,
-)
+from vllm.distributed.kv_transfer import (get_kv_transfer_group,
+                                          has_kv_transfer_group,
+                                          is_v1_kv_transfer_group)
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.logger import init_logger
 from vllm.model_executor.layers.attention_layer_base import AttentionLayerBase
@@ -27,7 +24,8 @@ from vllm.model_executor.layers.linear import UnquantizedLinearMethod
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
-from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    GroupShape
 from vllm.model_executor.models.vision import get_vit_attn_backend
 from vllm.platforms import current_platform
 from vllm.utils import GiB_bytes, direct_register_custom_op

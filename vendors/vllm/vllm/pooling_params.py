@@ -5,7 +5,6 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Annotated, Any, Optional
 
 import msgspec
-
 from vllm.sampling_params import RequestOutputKind
 from vllm.tasks import PoolingTask
 

@@ -8,11 +8,12 @@ but use different quantization strategies and backends.
 
 import nvtx
 import torch
-
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.fused_moe.config import fp8_w8a8_moe_quant_config
+from vllm.model_executor.layers.fused_moe.config import \
+    fp8_w8a8_moe_quant_config
 from vllm.model_executor.layers.fused_moe.cutlass_moe import cutlass_moe_fp8
-from vllm.model_executor.layers.fused_moe.fused_moe import fused_experts, fused_topk
+from vllm.model_executor.layers.fused_moe.fused_moe import (fused_experts,
+                                                            fused_topk)
 from vllm.platforms import current_platform
 from vllm.utils import FlexibleArgumentParser
 

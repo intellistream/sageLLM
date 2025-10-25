@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from vllm.model_executor.models.utils import AutoWeightsLoader
 
 pytestmark = pytest.mark.cpu_test

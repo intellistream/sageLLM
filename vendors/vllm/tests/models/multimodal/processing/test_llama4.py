@@ -3,7 +3,6 @@
 """Tests for Llama4's multimodal preprocessing kwargs."""
 
 import pytest
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.transformers_utils.tokenizer import encode_tokens
 

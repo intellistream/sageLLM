@@ -9,7 +9,6 @@ from functools import cache
 from typing import Optional, Union
 
 import torch
-
 import vllm.envs as envs
 from vllm.attention.backends.abstract import AttentionBackend
 from vllm.attention.backends.registry import _Backend

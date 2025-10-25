@@ -5,13 +5,10 @@ import abc
 from typing import ClassVar, TypeVar
 
 import torch
-
 from vllm.config import VllmConfig
-from vllm.v1.attention.backends.utils import (
-    AttentionCGSupport,
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
-)
+from vllm.v1.attention.backends.utils import (AttentionCGSupport,
+                                              AttentionMetadataBuilder,
+                                              CommonAttentionMetadata)
 from vllm.v1.kv_cache_interface import AttentionSpec, MambaSpec
 
 M = TypeVar("M")

@@ -6,12 +6,9 @@ import tempfile
 
 import huggingface_hub.constants
 import torch
-
 from vllm.model_executor.model_loader.weight_utils import (
-    download_weights_from_hf,
-    fastsafetensors_weights_iterator,
-    safetensors_weights_iterator,
-)
+    download_weights_from_hf, fastsafetensors_weights_iterator,
+    safetensors_weights_iterator)
 
 
 def test_fastsafetensors_model_loader():

@@ -9,58 +9,42 @@ from typing import Annotated, Literal, Optional, Union, cast
 import numpy as np
 import torch
 from torch import nn
-from transformers import (
-    BatchFeature,
-    WhisperConfig,
-    WhisperFeatureExtractor,
-    WhisperProcessor,
-)
+from transformers import (BatchFeature, WhisperConfig, WhisperFeatureExtractor,
+                          WhisperProcessor)
 from transformers.models.whisper.modeling_whisper import sinusoids
-
 from vllm.attention import Attention, AttentionType
 from vllm.attention.layer import MultiHeadAttention
 from vllm.attention.layers.cross_attention import CrossAttention
-from vllm.config import CacheConfig, ModelConfig, SpeechToTextConfig, VllmConfig
+from vllm.config import (CacheConfig, ModelConfig, SpeechToTextConfig,
+                         VllmConfig)
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.inputs.data import PromptType
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    QKVParallelLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               QKVParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.model_loader.utils import set_default_torch_dtype
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.multimodal import MULTIMODAL_REGISTRY, NestedTensors
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
 from vllm.multimodal.parse import MultiModalDataItems, MultiModalDataParser
-from vllm.multimodal.processing import (
-    BaseProcessingInfo,
-    EncDecMultiModalProcessor,
-    PromptReplacement,
-    PromptUpdate,
-)
+from vllm.multimodal.processing import (BaseProcessingInfo,
+                                        EncDecMultiModalProcessor,
+                                        PromptReplacement, PromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.transformers_utils.processor import cached_get_processor
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsTranscription
-from .utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    cast_overflow_tensors,
-    make_layers,
-    maybe_prefix,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsMultiModal,
+                         SupportsTranscription)
+from .utils import (AutoWeightsLoader, WeightsMapper, cast_overflow_tensors,
+                    make_layers, maybe_prefix)
 
 logger = init_logger(__name__)
 

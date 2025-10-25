@@ -12,39 +12,24 @@ from einops import rearrange
 from transformers import PretrainedConfig
 from transformers.activations import GELUActivation
 from transformers.feature_extraction_utils import BatchFeature
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    ImageItem,
-    ModalityData,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-    VideoItem,
-)
-from vllm.multimodal.parse import (
-    DictEmbeddingItems,
-    ModalityDataItems,
-    MultiModalDataItems,
-    MultiModalDataParser,
-)
-from vllm.multimodal.processing import (
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.inputs import (ImageItem, ModalityData,
+                                    MultiModalFieldConfig,
+                                    MultiModalKwargsItems, VideoItem)
+from vllm.multimodal.parse import (DictEmbeddingItems, ModalityDataItems,
+                                   MultiModalDataItems, MultiModalDataParser)
+from vllm.multimodal.processing import (PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .interfaces import SupportsLoRA, SupportsMultiModal, SupportsPP
-from .keye import (
-    BaseKeyeModule,
-    BaseMultiModalProcessor,
-    KeyeBaseDummyInputsBuilder,
-    KeyeProcessingInfo,
-)
+from .keye import (BaseKeyeModule, BaseMultiModalProcessor,
+                   KeyeBaseDummyInputsBuilder, KeyeProcessingInfo)
 
 logger = init_logger(__name__)
 

@@ -6,22 +6,16 @@ from typing import Optional
 
 import numpy as np
 import torch
-
 from vllm import envs
-from vllm.attention.backends.abstract import (
-    AttentionBackend,
-    AttentionMetadata,
-    AttentionType,
-)
+from vllm.attention.backends.abstract import (AttentionBackend,
+                                              AttentionMetadata, AttentionType)
 from vllm.attention.layer import Attention
 from vllm.attention.selector import get_attn_backend
 from vllm.config import CacheConfig, VllmConfig
 from vllm.logger import init_logger
 from vllm.utils import cdiv
-from vllm.v1.attention.backends.utils import (
-    CommonAttentionMetadata,
-    subclass_attention_backend,
-)
+from vllm.v1.attention.backends.utils import (CommonAttentionMetadata,
+                                              subclass_attention_backend)
 from vllm.v1.kv_cache_interface import CrossAttentionSpec
 
 logger = init_logger(__name__)

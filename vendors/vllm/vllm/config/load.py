@@ -6,7 +6,6 @@ from dataclasses import field
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 from pydantic.dataclasses import dataclass
-
 from vllm.config.utils import config
 from vllm.logger import init_logger
 

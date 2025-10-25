@@ -3,15 +3,11 @@
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
-from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEConfig,
-    FusedMoEQuantConfig,
-)
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceNoOP,
-)
+from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
+                                                         FusedMoEQuantConfig)
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
+    TopKWeightAndReduceNoOP
 from vllm.utils import next_power_of_2
 
 

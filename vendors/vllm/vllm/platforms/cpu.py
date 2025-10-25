@@ -11,7 +11,6 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING, Optional
 
 import torch
-
 from vllm.logger import init_logger
 from vllm.utils import DEFAULT_MAX_NUM_BATCHED_TOKENS
 

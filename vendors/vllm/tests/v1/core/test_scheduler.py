@@ -6,28 +6,15 @@ from unittest.mock import Mock
 
 import pytest
 import torch
-
-from vllm.config import (
-    CacheConfig,
-    KVTransferConfig,
-    ModelConfig,
-    SchedulerConfig,
-    SpeculativeConfig,
-    VllmConfig,
-)
-from vllm.multimodal.inputs import (
-    MultiModalFeatureSpec,
-    MultiModalKwargsItem,
-    PlaceholderRange,
-)
+from vllm.config import (CacheConfig, KVTransferConfig, ModelConfig,
+                         SchedulerConfig, SpeculativeConfig, VllmConfig)
+from vllm.multimodal.inputs import (MultiModalFeatureSpec,
+                                    MultiModalKwargsItem, PlaceholderRange)
 from vllm.sampling_params import SamplingParams, StructuredOutputsParams
 from vllm.v1.core.sched.output import CachedRequestData, SchedulerOutput
 from vllm.v1.core.sched.scheduler import Scheduler
-from vllm.v1.kv_cache_interface import (
-    FullAttentionSpec,
-    KVCacheConfig,
-    KVCacheGroupSpec,
-)
+from vllm.v1.kv_cache_interface import (FullAttentionSpec, KVCacheConfig,
+                                        KVCacheGroupSpec)
 from vllm.v1.outputs import DraftTokenIds, ModelRunnerOutput
 from vllm.v1.request import Request, RequestStatus
 from vllm.v1.structured_output import StructuredOutputManager

@@ -4,11 +4,8 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from tests.entrypoints.openai.tool_parsers.utils import (
-    run_tool_extraction,
-    run_tool_extraction_streaming,
-)
+    run_tool_extraction, run_tool_extraction_streaming)
 from vllm.entrypoints.openai.protocol import FunctionCall
 from vllm.entrypoints.openai.tool_parsers import ToolParser, ToolParserManager
 

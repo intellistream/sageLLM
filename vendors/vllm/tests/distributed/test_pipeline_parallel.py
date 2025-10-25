@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from typing import Literal, NamedTuple, Optional
 
 import pytest
-
 from vllm.config.model import _FLOAT16_NOT_SUPPORTED_MODELS, RunnerOption
 from vllm.logger import init_logger
 from vllm.transformers_utils.config import get_config

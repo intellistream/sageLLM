@@ -7,15 +7,12 @@ import pytest
 import ray
 import torch
 import torch.distributed as dist
-
-from vllm.distributed.communication_op import tensor_model_parallel_all_reduce  # noqa
+from vllm.distributed.communication_op import \
+    tensor_model_parallel_all_reduce  # noqa
 from vllm.distributed.parallel_state import get_tp_group, graph_capture
 
-from ..utils import (
-    ensure_model_parallel_initialized,
-    init_test_distributed_environment,
-    multi_process_parallel,
-)
+from ..utils import (ensure_model_parallel_initialized,
+                     init_test_distributed_environment, multi_process_parallel)
 
 random.seed(42)
 test_sizes = [random.randint(1024, 2048 * 1024) for _ in range(8)]

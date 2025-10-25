@@ -10,32 +10,25 @@ from pathlib import Path
 from typing import Any, Callable, Literal, Optional, TypeVar, Union
 
 import huggingface_hub
-from huggingface_hub import (
-    get_safetensors_metadata,
-    hf_hub_download,
-    try_to_load_from_cache,
-)
+from huggingface_hub import get_safetensors_metadata, hf_hub_download
 from huggingface_hub import list_repo_files as hf_list_repo_files
-from huggingface_hub.utils import (
-    EntryNotFoundError,
-    HfHubHTTPError,
-    LocalEntryNotFoundError,
-    RepositoryNotFoundError,
-    RevisionNotFoundError,
-)
+from huggingface_hub import try_to_load_from_cache
+from huggingface_hub.utils import (EntryNotFoundError, HfHubHTTPError,
+                                   LocalEntryNotFoundError,
+                                   RepositoryNotFoundError,
+                                   RevisionNotFoundError)
 from transformers import GenerationConfig, PretrainedConfig
-from transformers.models.auto.image_processing_auto import get_image_processor_config
-from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING_NAMES
+from transformers.models.auto.image_processing_auto import \
+    get_image_processor_config
+from transformers.models.auto.modeling_auto import \
+    MODEL_FOR_CAUSAL_LM_MAPPING_NAMES
 from transformers.models.auto.tokenization_auto import get_tokenizer_config
 from transformers.utils import CONFIG_NAME as HF_CONFIG_NAME
-
 from vllm import envs
 from vllm.logger import init_logger
 from vllm.transformers_utils.config_parser_base import ConfigParserBase
-from vllm.transformers_utils.utils import (
-    check_gguf_file,
-    parse_safetensors_file_metadata,
-)
+from vllm.transformers_utils.utils import (check_gguf_file,
+                                           parse_safetensors_file_metadata)
 
 if envs.VLLM_USE_MODELSCOPE:
     from modelscope import AutoConfig
@@ -323,7 +316,8 @@ def list_repo_files(
         # if model is remote, use hf_hub api to list files
         try:
             if envs.VLLM_USE_MODELSCOPE:
-                from vllm.transformers_utils.utils import modelscope_list_repo_files
+                from vllm.transformers_utils.utils import \
+                    modelscope_list_repo_files
 
                 return modelscope_list_repo_files(
                     repo_id,
@@ -532,7 +526,8 @@ def maybe_override_with_speculators(
         return model, tokenizer, vllm_speculative_config
 
     # Speculators format detected - process overrides
-    from vllm.transformers_utils.configs.speculators.base import SpeculatorsConfig
+    from vllm.transformers_utils.configs.speculators.base import \
+        SpeculatorsConfig
 
     speculative_config = SpeculatorsConfig.extract_vllm_speculative_config(
         config_dict=config_dict
@@ -924,7 +919,6 @@ def maybe_register_config_serialize_by_value() -> None:
         import pickle
 
         import cloudpickle
-
         from vllm.config import VllmConfig
 
         # Register multiprocessing reducers to handle cross-process

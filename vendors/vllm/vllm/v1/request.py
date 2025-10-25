@@ -8,17 +8,12 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import torch
-
 from vllm.multimodal.inputs import MultiModalFeatureSpec
 from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import SamplingParams
 from vllm.utils import length_from_prompt_token_ids_or_embeds
-from vllm.v1.engine import (
-    EngineCoreEvent,
-    EngineCoreEventType,
-    EngineCoreRequest,
-    FinishReason,
-)
+from vllm.v1.engine import (EngineCoreEvent, EngineCoreEventType,
+                            EngineCoreRequest, FinishReason)
 from vllm.v1.structured_output.request import StructuredOutputRequest
 from vllm.v1.utils import ConstantList
 

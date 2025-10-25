@@ -7,7 +7,6 @@ import time
 
 import numpy as np
 import torch.distributed as dist
-
 from vllm.distributed.device_communicators.shm_broadcast import MessageQueue
 from vllm.distributed.utils import StatelessProcessGroup
 from vllm.utils import get_open_port, update_environment_variables

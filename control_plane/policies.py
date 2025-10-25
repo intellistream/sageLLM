@@ -6,13 +6,8 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from .types import (
-    ExecutionInstance,
-    ParallelismType,
-    RequestMetadata,
-    RequestPriority,
-    SchedulingDecision,
-)
+from .types import (ExecutionInstance, ParallelismType, RequestMetadata,
+                    RequestPriority, SchedulingDecision)
 
 
 class SchedulingPolicy(ABC):

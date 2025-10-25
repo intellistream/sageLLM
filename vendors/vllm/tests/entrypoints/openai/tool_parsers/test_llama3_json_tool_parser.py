@@ -3,9 +3,9 @@
 
 import pytest
 from transformers import AutoTokenizer
-
 from vllm.entrypoints.openai.protocol import ExtractedToolCallInformation
-from vllm.entrypoints.openai.tool_parsers.llama_tool_parser import Llama3JsonToolParser
+from vllm.entrypoints.openai.tool_parsers.llama_tool_parser import \
+    Llama3JsonToolParser
 
 
 @pytest.fixture

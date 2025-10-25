@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import pytest
 import torch
-
 import vllm._custom_ops as ops
 from tests.kernels.utils import opcheck
 from vllm.model_executor.layers.layernorm import RMSNorm

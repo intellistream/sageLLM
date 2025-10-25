@@ -4,9 +4,9 @@
 import json
 
 import pytest
-
 from vllm.entrypoints.openai.protocol import ChatCompletionRequest
-from vllm.entrypoints.openai.tool_parsers.hermes_tool_parser import Hermes2ProToolParser
+from vllm.entrypoints.openai.tool_parsers.hermes_tool_parser import \
+    Hermes2ProToolParser
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
 from ....utils import RemoteOpenAIServer

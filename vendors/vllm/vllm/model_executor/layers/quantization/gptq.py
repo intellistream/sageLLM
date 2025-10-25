@@ -9,24 +9,18 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 import torch
 from safetensors.torch import _TYPES as _SAFETENSORS_TO_TORCH_DTYPE
 from torch.nn.parameter import Parameter
-
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.fused_moe.layer import FusedMoE
 from vllm.model_executor.layers.linear import LinearMethodBase
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
-from vllm.model_executor.layers.quantization.utils.gptq_utils import (
-    get_linear_quant_method,
-)
-from vllm.model_executor.parameter import (
-    ChannelQuantScaleParameter,
-    GroupQuantScaleParameter,
-    PackedColumnParameter,
-    PackedvLLMParameter,
-    RowvLLMParameter,
-)
+    QuantizationConfig, QuantizeMethodBase)
+from vllm.model_executor.layers.quantization.utils.gptq_utils import \
+    get_linear_quant_method
+from vllm.model_executor.parameter import (ChannelQuantScaleParameter,
+                                           GroupQuantScaleParameter,
+                                           PackedColumnParameter,
+                                           PackedvLLMParameter,
+                                           RowvLLMParameter)
 from vllm.transformers_utils.config import get_safetensors_params_metadata
 from vllm.utils import is_list_of
 

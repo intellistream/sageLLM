@@ -4,8 +4,10 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Union
 
 from vllm.config.kv_transfer import KVTransferConfig
-from vllm.distributed.kv_transfer.kv_connector.factory import KVConnectorFactory
-from vllm.distributed.kv_transfer.kv_transfer_state import has_kv_transfer_group
+from vllm.distributed.kv_transfer.kv_connector.factory import \
+    KVConnectorFactory
+from vllm.distributed.kv_transfer.kv_transfer_state import \
+    has_kv_transfer_group
 from vllm.logger import init_logger
 
 logger = init_logger(__name__)

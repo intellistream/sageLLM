@@ -5,43 +5,25 @@ from typing import Callable, Optional
 
 import pytest
 import torch
-
 import vllm.v1.core.kv_cache_utils as kv_cache_utils
 from vllm.config import ModelConfig, SchedulerConfig, VllmConfig
-from vllm.multimodal.inputs import (
-    MultiModalFeatureSpec,
-    MultiModalKwargsItem,
-    PlaceholderRange,
-)
+from vllm.multimodal.inputs import (MultiModalFeatureSpec,
+                                    MultiModalKwargsItem, PlaceholderRange)
 from vllm.sampling_params import SamplingParams
 from vllm.utils import GiB_bytes, sha256, sha256_cbor
 from vllm.v1.core.kv_cache_manager import KVCacheManager
 from vllm.v1.core.kv_cache_utils import (
-    BlockHash,
-    FreeKVCacheBlockQueue,
-    KVCacheBlock,
-    PrefixCachingMetrics,
-    estimate_max_model_len,
-    generate_block_hash_extra_keys,
-    generate_scheduler_kv_cache_config,
-    get_kv_cache_configs,
-    get_max_concurrency_for_kv_cache_config,
-    get_request_block_hasher,
-    hash_block_tokens,
-    init_none_hash,
-    is_kv_cache_spec_uniform,
-    make_block_hash_with_group_id,
-)
-from vllm.v1.kv_cache_interface import (
-    FullAttentionSpec,
-    KVCacheConfig,
-    KVCacheGroupSpec,
-    KVCacheSpec,
-    KVCacheTensor,
-    MLAAttentionSpec,
-    SlidingWindowSpec,
-    UniformTypeKVCacheSpecs,
-)
+    BlockHash, FreeKVCacheBlockQueue, KVCacheBlock, PrefixCachingMetrics,
+    estimate_max_model_len, generate_block_hash_extra_keys,
+    generate_scheduler_kv_cache_config, get_kv_cache_configs,
+    get_max_concurrency_for_kv_cache_config, get_request_block_hasher,
+    hash_block_tokens, init_none_hash, is_kv_cache_spec_uniform,
+    make_block_hash_with_group_id)
+from vllm.v1.kv_cache_interface import (FullAttentionSpec, KVCacheConfig,
+                                        KVCacheGroupSpec, KVCacheSpec,
+                                        KVCacheTensor, MLAAttentionSpec,
+                                        SlidingWindowSpec,
+                                        UniformTypeKVCacheSpecs)
 from vllm.v1.metrics.stats import PrefixCacheStats
 from vllm.v1.request import Request
 

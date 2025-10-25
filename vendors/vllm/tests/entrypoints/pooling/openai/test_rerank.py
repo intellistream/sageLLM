@@ -5,7 +5,6 @@ import pytest
 import requests
 import torch
 import torch.nn.functional as F
-
 from tests.utils import RemoteOpenAIServer
 from vllm.entrypoints.openai.protocol import RerankResponse
 

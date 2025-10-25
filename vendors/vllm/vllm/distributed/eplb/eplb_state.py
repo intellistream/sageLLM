@@ -33,13 +33,9 @@ from typing import Optional, Union
 
 import torch
 from torch.distributed import ProcessGroup, all_reduce
-
 from vllm.config import ParallelConfig
-from vllm.distributed.parallel_state import (
-    get_ep_group,
-    get_node_count,
-    in_the_same_node_as,
-)
+from vllm.distributed.parallel_state import (get_ep_group, get_node_count,
+                                             in_the_same_node_as)
 from vllm.distributed.utils import StatelessProcessGroup
 from vllm.logger import init_logger
 from vllm.model_executor.models.interfaces import MixtureOfExperts

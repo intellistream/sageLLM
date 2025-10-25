@@ -18,7 +18,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 from transformers import PretrainedConfig
-
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.intern_vit import InternVisionEncoder

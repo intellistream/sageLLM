@@ -3,12 +3,9 @@
 import pytest
 import torch
 from torch import Generator
-
 from vllm.platforms import current_platform
-from vllm.v1.sample.ops.topk_topp_sampler import (
-    apply_top_k_top_p,
-    is_flashinfer_available,
-)
+from vllm.v1.sample.ops.topk_topp_sampler import (apply_top_k_top_p,
+                                                  is_flashinfer_available)
 
 DEVICE = current_platform.device_type
 

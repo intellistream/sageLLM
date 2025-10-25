@@ -6,7 +6,6 @@
 # at the same time on a single node will OOM.
 
 import pytest
-
 from vllm.transformers_utils.tokenizer import get_tokenizer
 
 from ...utils import RemoteOpenAIServer

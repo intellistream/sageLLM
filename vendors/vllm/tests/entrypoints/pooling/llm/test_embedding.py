@@ -6,7 +6,6 @@ import weakref
 import pytest
 import torch
 import torch.nn.functional as F
-
 from vllm import LLM, PoolingParams
 from vllm.distributed import cleanup_dist_env_and_memory
 

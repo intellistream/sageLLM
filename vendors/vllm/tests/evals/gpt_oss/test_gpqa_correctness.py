@@ -14,7 +14,6 @@ import subprocess
 import sys
 
 import regex as re
-
 from tests.utils import RemoteOpenAIServer
 
 TOL = 0.05  # Absolute tolerance for accuracy comparison

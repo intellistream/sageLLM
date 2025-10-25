@@ -6,9 +6,8 @@ Run `pytest tests/quantization/test_bitsandbytes.py`.
 """
 
 import pytest
-from transformers import BitsAndBytesConfig
-
 from tests.quantization.utils import is_quant_method_supported
+from transformers import BitsAndBytesConfig
 
 from ...utils import compare_two_settings, multi_gpu_test
 from ..utils import check_embeddings_close, check_logprobs_close

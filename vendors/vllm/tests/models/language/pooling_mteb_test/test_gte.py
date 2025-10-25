@@ -2,15 +2,11 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
-from tests.models.language.pooling.embed_utils import correctness_test_embed_models
-from tests.models.utils import (
-    CLSPoolingEmbedModelInfo,
-    CLSPoolingRerankModelInfo,
-    EmbedModelInfo,
-    LASTPoolingEmbedModelInfo,
-    RerankModelInfo,
-)
+from tests.models.language.pooling.embed_utils import \
+    correctness_test_embed_models
+from tests.models.utils import (CLSPoolingEmbedModelInfo,
+                                CLSPoolingRerankModelInfo, EmbedModelInfo,
+                                LASTPoolingEmbedModelInfo, RerankModelInfo)
 
 from .mteb_utils import mteb_test_embed_models, mteb_test_rerank_models
 

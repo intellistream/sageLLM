@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import torch
 import torch.nn as nn
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader import get_model

@@ -12,7 +12,6 @@ from typing import Optional
 
 import torch
 from huggingface_hub import snapshot_download
-
 from vllm import EngineArgs, LLMEngine, RequestOutput, SamplingParams
 from vllm.lora.request import LoRARequest
 

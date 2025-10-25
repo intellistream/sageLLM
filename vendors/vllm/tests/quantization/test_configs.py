@@ -8,7 +8,6 @@ Run `pytest tests/quantization/test_configs.py --forked`.
 from dataclasses import dataclass
 
 import pytest
-
 from vllm.config import ModelConfig
 
 

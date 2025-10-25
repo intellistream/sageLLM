@@ -8,7 +8,6 @@ from typing import Any, Optional, Union
 
 import msgspec
 import torch
-
 from vllm.lora.request import LoRARequest
 from vllm.multimodal.inputs import MultiModalFeatureSpec
 from vllm.pooling_params import PoolingParams

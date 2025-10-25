@@ -3,7 +3,6 @@
 import pytest
 import torch
 from transformers import AutoModelForSequenceClassification
-
 from vllm.platforms import current_platform
 
 

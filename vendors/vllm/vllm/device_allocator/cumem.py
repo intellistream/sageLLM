@@ -15,7 +15,6 @@ from contextlib import contextmanager
 from typing import Any, Callable, Optional, Union
 
 import torch
-
 from vllm.logger import init_logger
 from vllm.utils import is_pin_memory_available
 
@@ -51,12 +50,10 @@ def find_loaded_library(lib_name) -> Optional[str]:
 
 cumem_available = False
 try:
-    from vllm.cumem_allocator import (
-        init_module,
-        python_create_and_map,
-        python_unmap_and_release,
-    )
-    from vllm.distributed.device_communicators.cuda_wrapper import CudaRTLibrary
+    from vllm.cumem_allocator import (init_module, python_create_and_map,
+                                      python_unmap_and_release)
+    from vllm.distributed.device_communicators.cuda_wrapper import \
+        CudaRTLibrary
 
     lib_name = find_loaded_library("cumem_allocator")
     libcudart = CudaRTLibrary()

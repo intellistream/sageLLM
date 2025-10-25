@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
-
 from vllm.entrypoints.cli.types import CLISubcommand
 
 if TYPE_CHECKING:

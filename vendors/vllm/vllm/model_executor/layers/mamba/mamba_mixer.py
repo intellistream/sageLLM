@@ -9,33 +9,22 @@ if TYPE_CHECKING:
 import torch
 from torch import nn
 from torch.nn.parameter import Parameter
-
 from vllm.config import CacheConfig, ModelConfig, get_current_vllm_config
 from vllm.distributed.parallel_state import (
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-)
+    get_tensor_model_parallel_rank, get_tensor_model_parallel_world_size)
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.model_executor.custom_op import CustomOp
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    MergedColumnParallelLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               MergedColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator,
-    MambaStateShapeCalculator,
-)
+    MambaStateDtypeCalculator, MambaStateShapeCalculator)
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn,
-    causal_conv1d_update,
-)
+    causal_conv1d_fn, causal_conv1d_update)
 from vllm.model_executor.layers.mamba.ops.mamba_ssm import (
-    selective_scan_fn,
-    selective_state_update,
-)
+    selective_scan_fn, selective_state_update)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.utils import direct_register_custom_op
 from vllm.v1.attention.backends.mamba1_attn import Mamba1AttentionMetadata
@@ -406,7 +395,8 @@ class MambaMixer(MambaBase, CustomOp):
         return "mamba1"
 
     def get_attn_backend(self) -> type["AttentionBackend"]:
-        from vllm.v1.attention.backends.mamba1_attn import Mamba1AttentionBackend
+        from vllm.v1.attention.backends.mamba1_attn import \
+            Mamba1AttentionBackend
 
         return Mamba1AttentionBackend
 

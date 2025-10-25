@@ -7,15 +7,16 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers import LlamaConfig
-
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
 from vllm.distributed.parallel_state import get_pp_group
 from vllm.logger import init_logger
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
-from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import \
+    VocabParallelEmbedding
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
-from vllm.model_executor.models.llama import LlamaDecoderLayer, LlamaForCausalLM
+from vllm.model_executor.models.llama import (LlamaDecoderLayer,
+                                              LlamaForCausalLM)
 
 from .utils import AutoWeightsLoader, maybe_prefix
 

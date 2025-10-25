@@ -12,22 +12,17 @@ from typing import Optional
 import torch
 from torch import nn
 from typing_extensions import assert_never
-
 from vllm.attention import Attention
 from vllm.config import ModelConfig, VllmConfig, set_current_vllm_config
 from vllm.logger import init_logger
 from vllm.model_executor.layers.linear import QKVCrossParallelLinear
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
+    QuantizationConfig, QuantizeMethodBase)
 from vllm.model_executor.models.adapters import (
-    as_embedding_model,
-    as_reward_model,
-    as_seq_cls_model,
-    try_create_mm_pooling_model_cls,
-)
-from vllm.model_executor.models.interfaces import SupportsQuant, supports_multimodal
+    as_embedding_model, as_reward_model, as_seq_cls_model,
+    try_create_mm_pooling_model_cls)
+from vllm.model_executor.models.interfaces import (SupportsQuant,
+                                                   supports_multimodal)
 from vllm.utils import is_pin_memory_available
 
 logger = init_logger(__name__)
@@ -100,9 +95,8 @@ def process_weights_after_loading(
     model: nn.Module, model_config: ModelConfig, target_device: torch.device
 ) -> None:
     # to avoid circular dependency
-    from vllm.model_executor.model_loader.online_quantization import (
-        maybe_save_metadata_and_attributes_for_weight_reloading,
-    )
+    from vllm.model_executor.model_loader.online_quantization import \
+        maybe_save_metadata_and_attributes_for_weight_reloading
 
     maybe_save_metadata_and_attributes_for_weight_reloading(model, model_config)
 

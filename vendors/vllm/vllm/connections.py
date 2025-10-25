@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 
 import aiohttp
 import requests
-
 from vllm.version import __version__ as VLLM_VERSION
 
 

@@ -34,19 +34,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import BatchFeature
 from transformers.models.qwen2_vl import Qwen2VLImageProcessorFast
-from transformers.models.qwen2_vl.image_processing_qwen2_vl import (
-    smart_resize as image_smart_resize,
-)
-from transformers.models.qwen3_vl import Qwen3VLProcessor, Qwen3VLVideoProcessor
+from transformers.models.qwen2_vl.image_processing_qwen2_vl import \
+    smart_resize as image_smart_resize
+from transformers.models.qwen3_vl import (Qwen3VLProcessor,
+                                          Qwen3VLVideoProcessor)
 from transformers.models.qwen3_vl.configuration_qwen3_vl import (
-    Qwen3VLConfig,
-    Qwen3VLVisionConfig,
-)
-from transformers.models.qwen3_vl.video_processing_qwen3_vl import (
-    smart_resize as video_smart_resize,
-)
+    Qwen3VLConfig, Qwen3VLVisionConfig)
+from transformers.models.qwen3_vl.video_processing_qwen3_vl import \
+    smart_resize as video_smart_resize
 from transformers.video_utils import VideoMetadata
-
 from vllm.attention.backends.registry import _Backend
 from vllm.attention.layer import check_upstream_fa_availability
 from vllm.compilation.decorators import support_torch_compile
@@ -55,56 +51,38 @@ from vllm.config.multimodal import BaseDummyOptions, VideoDummyOptions
 from vllm.distributed import get_pp_group
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import _ACTIVATION_REGISTRY
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItem,
-    MultiModalKwargsItems,
-    VideoItem,
-)
-from vllm.multimodal.parse import ImageSize, MultiModalDataItems, MultiModalDataParser
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItem,
+                                    MultiModalKwargsItems, VideoItem)
+from vllm.multimodal.parse import (ImageSize, MultiModalDataItems,
+                                   MultiModalDataParser)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils import is_list_of
 
-from .interfaces import (
-    MultiModalEmbeddings,
-    SupportsLoRA,
-    SupportsMultiModal,
-    SupportsPP,
-)
-from .qwen2_5_vl import (
-    Qwen2_5_VisionAttention,
-    Qwen2_5_VisionRotaryEmbedding,
-    Qwen2_5_VLImageEmbeddingInputs,
-    Qwen2_5_VLImageInputs,
-    Qwen2_5_VLImagePixelInputs,
-    Qwen2_5_VLVideoEmbeddingInputs,
-    Qwen2_5_VLVideoInputs,
-    Qwen2_5_VLVideoPixelInputs,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
+                         SupportsMultiModal, SupportsPP)
+from .qwen2_5_vl import (Qwen2_5_VisionAttention,
+                         Qwen2_5_VisionRotaryEmbedding,
+                         Qwen2_5_VLImageEmbeddingInputs, Qwen2_5_VLImageInputs,
+                         Qwen2_5_VLImagePixelInputs,
+                         Qwen2_5_VLVideoEmbeddingInputs, Qwen2_5_VLVideoInputs,
+                         Qwen2_5_VLVideoPixelInputs)
 from .qwen2_vl import Qwen2VLProcessingInfo
 from .qwen3 import Qwen3ForCausalLM, Qwen3Model
-from .utils import (
-    AutoWeightsLoader,
-    PPMissingLayer,
-    WeightsMapper,
-    _merge_multimodal_embeddings,
-    maybe_prefix,
-)
+from .utils import (AutoWeightsLoader, PPMissingLayer, WeightsMapper,
+                    _merge_multimodal_embeddings, maybe_prefix)
 from .vision import get_vit_attn_backend, run_dp_sharded_mrope_vision_model
 
 logger = init_logger(__name__)

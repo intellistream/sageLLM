@@ -5,7 +5,6 @@
 import pytest
 from torch import prod
 from transformers import Llama4Config
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.profiling import MultiModalProfiler
 

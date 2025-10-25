@@ -1,9 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
-from torch_xla._internal import tpu
-
 import vllm
+from torch_xla._internal import tpu
 from vllm.lora.request import LoRARequest
 
 # This file contains tests to ensure that LoRA works correctly on the TPU

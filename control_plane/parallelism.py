@@ -7,11 +7,7 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from .types import (
-    ExecutionInstance,
-    ParallelismType,
-    RequestMetadata,
-)
+from .types import ExecutionInstance, ParallelismType, RequestMetadata
 
 
 @dataclass

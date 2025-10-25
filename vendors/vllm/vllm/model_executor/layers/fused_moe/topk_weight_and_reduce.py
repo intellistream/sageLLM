@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch
-
 import vllm._custom_ops as ops
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 

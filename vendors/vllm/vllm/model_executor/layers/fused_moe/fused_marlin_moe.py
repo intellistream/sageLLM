@@ -5,21 +5,17 @@
 from typing import Optional
 
 import torch
-from typing_extensions import override
-
 import vllm._custom_ops as ops
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
+from typing_extensions import override
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
 from vllm.model_executor.layers.fused_moe.fused_moe import moe_align_block_size
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceNoOP,
-)
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
+    TopKWeightAndReduceNoOP
 from vllm.model_executor.layers.fused_moe.utils import _resize_cache
 from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    marlin_make_workspace_new,
-    marlin_moe_intermediate_size,
-    maybe_warn_marlin_atomic_add,
-)
+    marlin_make_workspace_new, marlin_moe_intermediate_size,
+    maybe_warn_marlin_atomic_add)
 from vllm.scalar_type import ScalarType, scalar_types
 from vllm.utils import direct_register_custom_op
 

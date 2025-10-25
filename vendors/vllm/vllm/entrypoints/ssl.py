@@ -5,9 +5,8 @@ import asyncio
 from ssl import SSLContext
 from typing import Callable, Optional
 
-from watchfiles import Change, awatch
-
 from vllm.logger import init_logger
+from watchfiles import Change, awatch
 
 logger = init_logger(__name__)
 

@@ -26,12 +26,8 @@ else:
 if TYPE_CHECKING:
     from vllm.engine.async_llm_engine import AsyncLLMEngine
 
-from .types import (
-    ExecutionInstance,
-    PerformanceMetrics,
-    RequestMetadata,
-    SchedulingDecision,
-)
+from .types import (ExecutionInstance, PerformanceMetrics, RequestMetadata,
+                    SchedulingDecision)
 
 logger = logging.getLogger(__name__)
 

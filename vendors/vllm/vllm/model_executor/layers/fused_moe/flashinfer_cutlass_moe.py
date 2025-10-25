@@ -3,20 +3,15 @@
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (  # noqa: E501
-    create_flashinfer_prepare_finalize,
-)
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceNoOP,
-)
-from vllm.utils.flashinfer import (
-    flashinfer_cutlass_fused_moe,
-    has_flashinfer_cutlass_fused_moe,
-)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import \
+    create_flashinfer_prepare_finalize  # noqa: E501
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
+    TopKWeightAndReduceNoOP
+from vllm.utils.flashinfer import (flashinfer_cutlass_fused_moe,
+                                   has_flashinfer_cutlass_fused_moe)
 
 logger = init_logger(__name__)
 

@@ -7,7 +7,6 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING, Optional
 
 import torch
-
 from vllm import SamplingParams
 
 if TYPE_CHECKING:

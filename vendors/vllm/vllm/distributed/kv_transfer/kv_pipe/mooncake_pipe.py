@@ -12,7 +12,6 @@ import torch
 import zmq
 from safetensors.torch import load as safetensors_load
 from safetensors.torch import save as safetensors_save
-
 from vllm.config.kv_transfer import KVTransferConfig
 from vllm.distributed.kv_transfer.kv_pipe.base import KVPipeBase
 from vllm.logger import init_logger

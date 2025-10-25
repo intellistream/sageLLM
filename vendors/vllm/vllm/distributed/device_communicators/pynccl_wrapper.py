@@ -29,7 +29,6 @@ from typing import Any, Optional
 
 import torch
 from torch.distributed import ReduceOp
-
 from vllm import envs
 from vllm.logger import init_logger
 from vllm.platforms import current_platform

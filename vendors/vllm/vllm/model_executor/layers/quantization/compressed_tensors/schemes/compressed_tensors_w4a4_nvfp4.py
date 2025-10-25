@@ -3,23 +3,19 @@
 from typing import Callable, Optional
 
 import torch
-from torch.nn.parameter import Parameter
-
 import vllm.envs as envs
+from torch.nn.parameter import Parameter
 from vllm._custom_ops import cutlass_scaled_fp4_mm, scaled_fp4_quant
 from vllm.logger import init_logger
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
-    CompressedTensorsScheme,
-)
-from vllm.model_executor.layers.quantization.utils.nvfp4_emulation_utils import (  # noqa: E501
-    run_nvfp4_emulations,
-)
-from vllm.model_executor.layers.quantization.utils.quant_utils import swizzle_blockscale
-from vllm.model_executor.parameter import (
-    GroupQuantScaleParameter,
-    ModelWeightParameter,
-    PerTensorScaleParameter,
-)
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
+    CompressedTensorsScheme
+from vllm.model_executor.layers.quantization.utils.nvfp4_emulation_utils import \
+    run_nvfp4_emulations  # noqa: E501
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    swizzle_blockscale
+from vllm.model_executor.parameter import (GroupQuantScaleParameter,
+                                           ModelWeightParameter,
+                                           PerTensorScaleParameter)
 from vllm.utils.flashinfer import flashinfer_scaled_fp4_mm, has_flashinfer
 
 logger = init_logger(__name__)

@@ -6,16 +6,11 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import regex as re
 import torch
-
 from vllm.config import VllmConfig
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
-    KVConnectorBase_V1,
-    KVConnectorMetadata,
-    KVConnectorRole,
-)
-from vllm.distributed.kv_transfer.kv_connector.v1.p2p.p2p_nccl_engine import (
-    P2pNcclEngine,
-)
+    KVConnectorBase_V1, KVConnectorMetadata, KVConnectorRole)
+from vllm.distributed.kv_transfer.kv_connector.v1.p2p.p2p_nccl_engine import \
+    P2pNcclEngine
 from vllm.distributed.parallel_state import get_world_group
 from vllm.logger import init_logger
 from vllm.v1.attention.backends.mla.common import MLACommonMetadata

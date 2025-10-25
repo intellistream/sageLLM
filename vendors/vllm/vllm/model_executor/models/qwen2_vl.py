@@ -34,72 +34,48 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange, repeat
 from transformers import AutoConfig, BatchFeature, PretrainedConfig
-from transformers.models.qwen2_vl import Qwen2VLImageProcessor, Qwen2VLProcessor
+from transformers.models.qwen2_vl import (Qwen2VLImageProcessor,
+                                          Qwen2VLProcessor)
 from transformers.models.qwen2_vl.configuration_qwen2_vl import (
-    Qwen2VLConfig,
-    Qwen2VLVisionConfig,
-)
+    Qwen2VLConfig, Qwen2VLVisionConfig)
 from transformers.models.qwen2_vl.image_processing_qwen2_vl import smart_resize
-from transformers.models.qwen2_vl.video_processing_qwen2_vl import Qwen2VLVideoProcessor
-
+from transformers.models.qwen2_vl.video_processing_qwen2_vl import \
+    Qwen2VLVideoProcessor
 from vllm.attention.backends.registry import _Backend
-from vllm.attention.layer import (
-    check_upstream_fa_availability,
-    maybe_get_vit_flash_attn_backend,
-)
+from vllm.attention.layer import (check_upstream_fa_availability,
+                                  maybe_get_vit_flash_attn_backend)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import parallel_state, tensor_model_parallel_all_gather
 from vllm.distributed import utils as dist_utils
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import QuickGELU
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.rotary_embedding.common import (
-    dispatch_rotary_emb_function,
-)
+from vllm.model_executor.layers.rotary_embedding.common import \
+    dispatch_rotary_emb_function
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    ImageItem,
-    ModalityData,
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-    VideoItem,
-)
-from vllm.multimodal.parse import (
-    DictEmbeddingItems,
-    ImageSize,
-    ModalityDataItems,
-    MultiModalDataItems,
-    MultiModalDataParser,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    PromptReplacement,
-    PromptUpdate,
-)
+from vllm.multimodal.inputs import (ImageItem, ModalityData,
+                                    MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems, VideoItem)
+from vllm.multimodal.parse import (DictEmbeddingItems, ImageSize,
+                                   ModalityDataItems, MultiModalDataItems,
+                                   MultiModalDataParser)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo, PromptReplacement,
+                                        PromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (
-    MultiModalEmbeddings,
-    SupportsLoRA,
-    SupportsMRoPE,
-    SupportsMultiModal,
-    SupportsPP,
-)
-from .utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsLoRA, SupportsMRoPE,
+                         SupportsMultiModal, SupportsPP)
+from .utils import (AutoWeightsLoader, WeightsMapper,
+                    init_vllm_registered_model, maybe_prefix)
 from .vision import get_vit_attn_backend, run_dp_sharded_mrope_vision_model
 
 logger = init_logger(__name__)

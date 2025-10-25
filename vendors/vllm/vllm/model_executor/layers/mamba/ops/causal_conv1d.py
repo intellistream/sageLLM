@@ -8,7 +8,6 @@ from typing import Optional, Union
 
 import numpy as np
 import torch
-
 from vllm.attention.backends.utils import PAD_SLOT_ID
 from vllm.triton_utils import tl, triton
 

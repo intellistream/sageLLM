@@ -14,26 +14,20 @@ import torch.distributed
 import torch.nn.functional as F
 from einops import rearrange
 from torch import nn
-
 from vllm.attention import AttentionMetadata
 from vllm.config import CacheConfig, ModelConfig, get_current_vllm_config
 from vllm.distributed.communication_op import tensor_model_parallel_all_reduce
 from vllm.distributed.parallel_state import (
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-)
+    get_tensor_model_parallel_rank, get_tensor_model_parallel_world_size)
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.model_executor.custom_op import CustomOp
 from vllm.model_executor.layers.lightning_attn import (
-    lightning_attention,
-    linear_decode_forward_triton,
-)
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+    lightning_attention, linear_decode_forward_triton)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator,
-    MambaStateShapeCalculator,
-)
+    MambaStateDtypeCalculator, MambaStateShapeCalculator)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.utils import direct_register_custom_op
 from vllm.v1.attention.backends.linear_attn import LinearAttentionMetadata
@@ -128,7 +122,8 @@ class MiniMaxText01LinearAttention(nn.Module, MambaBase):
         return "linear_attention"
 
     def get_attn_backend(self) -> type["AttentionBackend"]:
-        from vllm.v1.attention.backends.linear_attn import LinearAttentionBackend
+        from vllm.v1.attention.backends.linear_attn import \
+            LinearAttentionBackend
 
         return LinearAttentionBackend
 

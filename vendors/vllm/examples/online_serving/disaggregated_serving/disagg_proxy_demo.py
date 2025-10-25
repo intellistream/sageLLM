@@ -28,7 +28,8 @@ from typing import Callable, Optional
 import aiohttp
 import requests
 import uvicorn
-from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request, status
+from fastapi import (APIRouter, Depends, FastAPI, Header, HTTPException,
+                     Request, status)
 from fastapi.responses import JSONResponse, StreamingResponse
 
 AIOHTTP_TIMEOUT = aiohttp.ClientTimeout(total=6 * 60 * 60)

@@ -5,18 +5,13 @@ import random
 
 import pytest
 import torch
-
 from vllm.v1.core.block_pool import BlockPool
-from vllm.v1.core.kv_cache_utils import (
-    BlockHash,
-    KVCacheBlock,
-    make_block_hash_with_group_id,
-)
+from vllm.v1.core.kv_cache_utils import (BlockHash, KVCacheBlock,
+                                         make_block_hash_with_group_id)
 from vllm.v1.core.single_type_kv_cache_manager import (
-    ChunkedLocalAttentionManager,
-    SlidingWindowManager,
-)
-from vllm.v1.kv_cache_interface import ChunkedLocalAttentionSpec, SlidingWindowSpec
+    ChunkedLocalAttentionManager, SlidingWindowManager)
+from vllm.v1.kv_cache_interface import (ChunkedLocalAttentionSpec,
+                                        SlidingWindowSpec)
 
 pytestmark = pytest.mark.cpu_test
 

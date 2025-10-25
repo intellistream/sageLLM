@@ -6,21 +6,19 @@ import time
 from typing import Optional
 
 import pytest
-
-from tests.v1.engine.utils import (
-    NUM_PROMPT_LOGPROBS_UNDER_TEST,
-    NUM_SAMPLE_LOGPROBS_UNDER_TEST,
-    STOP_STRINGS,
-    DummyOutputProcessorTestVectors,
-    MockEngineCore,
-)
+from tests.v1.engine.utils import (NUM_PROMPT_LOGPROBS_UNDER_TEST,
+                                   NUM_SAMPLE_LOGPROBS_UNDER_TEST,
+                                   STOP_STRINGS,
+                                   DummyOutputProcessorTestVectors,
+                                   MockEngineCore)
 from vllm import PoolingParams
 from vllm.logprobs import PromptLogprobs, SampleLogprobs
 from vllm.outputs import CompletionOutput, RequestOutput
 from vllm.sampling_params import RequestOutputKind, SamplingParams
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 from vllm.v1.engine import EngineCoreRequest
-from vllm.v1.engine.output_processor import OutputProcessor, RequestOutputCollector
+from vllm.v1.engine.output_processor import (OutputProcessor,
+                                             RequestOutputCollector)
 from vllm.v1.metrics.stats import IterationStats
 
 

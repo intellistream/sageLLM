@@ -5,19 +5,13 @@ import math
 import pytest
 import torch
 import torch.multiprocessing as mp
-
 from tests.utils import multi_gpu_test
 from vllm.distributed import get_tensor_model_parallel_world_size
-from vllm.distributed.parallel_state import (
-    init_distributed_environment,
-    initialize_model_parallel,
-)
+from vllm.distributed.parallel_state import (init_distributed_environment,
+                                             initialize_model_parallel)
 from vllm.model_executor.models.vision import (
-    get_load_balance_assignment,
-    resolve_visual_encoder_outputs,
-    run_dp_sharded_mrope_vision_model,
-    run_dp_sharded_vision_model,
-)
+    get_load_balance_assignment, resolve_visual_encoder_outputs,
+    run_dp_sharded_mrope_vision_model, run_dp_sharded_vision_model)
 from vllm.platforms import current_platform
 from vllm.utils import get_open_port, update_environment_variables
 

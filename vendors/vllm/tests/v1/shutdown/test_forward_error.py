@@ -5,12 +5,9 @@
 import asyncio
 
 import pytest
-
 from tests.utils import wait_for_gpu_memory_to_clear
-from tests.v1.shutdown.utils import (
-    SHUTDOWN_TEST_THRESHOLD_BYTES,
-    SHUTDOWN_TEST_TIMEOUT_SEC,
-)
+from tests.v1.shutdown.utils import (SHUTDOWN_TEST_THRESHOLD_BYTES,
+                                     SHUTDOWN_TEST_TIMEOUT_SEC)
 from vllm import LLM, AsyncEngineArgs, SamplingParams
 from vllm.distributed import get_tensor_model_parallel_rank
 from vllm.model_executor.models.llama import LlamaForCausalLM

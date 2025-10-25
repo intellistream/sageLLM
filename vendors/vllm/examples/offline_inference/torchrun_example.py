@@ -10,7 +10,6 @@ see `tests/distributed/test_torchrun_example.py` for the unit test.
 """
 
 import torch.distributed as dist
-
 from vllm import LLM, SamplingParams
 
 # Create prompts, the same across all ranks

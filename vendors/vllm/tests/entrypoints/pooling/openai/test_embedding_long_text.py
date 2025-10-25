@@ -13,7 +13,6 @@ import random
 import openai
 import pytest
 import pytest_asyncio
-
 from tests.utils import RemoteOpenAIServer
 from vllm.entrypoints.openai.protocol import EmbeddingResponse
 

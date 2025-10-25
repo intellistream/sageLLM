@@ -6,22 +6,15 @@ from typing import Optional
 import numpy as np
 import torch
 from torch.nn.functional import scaled_dot_product_attention
-
-from vllm.attention.backends.abstract import (
-    AttentionBackend,
-    AttentionImpl,
-    AttentionLayer,
-    AttentionMetadata,
-    AttentionType,
-    is_quantized_kv_cache,
-)
+from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
+                                              AttentionLayer,
+                                              AttentionMetadata, AttentionType,
+                                              is_quantized_kv_cache)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
-from vllm.v1.attention.backends.utils import (
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
-    split_decodes_and_prefills,
-)
+from vllm.v1.attention.backends.utils import (AttentionMetadataBuilder,
+                                              CommonAttentionMetadata,
+                                              split_decodes_and_prefills)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 try:

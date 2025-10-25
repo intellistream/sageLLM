@@ -5,24 +5,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Optional, Protocol, TypeVar
 
 import torch.nn as nn
-
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.logger import init_logger
-from vllm.transformers_utils.tokenizer import AnyTokenizer, cached_tokenizer_from_config
+from vllm.transformers_utils.tokenizer import (AnyTokenizer,
+                                               cached_tokenizer_from_config)
 from vllm.utils import ClassRegistry
 
 from .cache import BaseMultiModalProcessorCache
-from .processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    InputProcessingContext,
-)
-from .profiling import (
-    BaseDummyInputsBuilder,
-    DummyDecoderData,
-    DummyEncoderData,
-    MultiModalProfiler,
-)
+from .processing import (BaseMultiModalProcessor, BaseProcessingInfo,
+                         InputProcessingContext)
+from .profiling import (BaseDummyInputsBuilder, DummyDecoderData,
+                        DummyEncoderData, MultiModalProfiler)
 
 if TYPE_CHECKING:
     from vllm.config import ModelConfig

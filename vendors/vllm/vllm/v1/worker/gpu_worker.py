@@ -11,14 +11,11 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 import torch
 import torch.distributed
 import torch.nn as nn
-
 import vllm.envs as envs
 from vllm.config import VllmConfig
-from vllm.distributed import (
-    ensure_model_parallel_initialized,
-    init_distributed_environment,
-    set_custom_all_reduce,
-)
+from vllm.distributed import (ensure_model_parallel_initialized,
+                              init_distributed_environment,
+                              set_custom_all_reduce)
 from vllm.distributed.kv_transfer import ensure_kv_transfer_initialized
 from vllm.distributed.parallel_state import get_pp_group, get_tp_group
 from vllm.logger import init_logger
@@ -31,12 +28,8 @@ from vllm.tasks import SupportedTask
 from vllm.utils import GiB_bytes, MemorySnapshot, memory_profiling
 from vllm.v1.engine import ReconfigureDistributedRequest, ReconfigureRankType
 from vllm.v1.kv_cache_interface import KVCacheConfig, KVCacheSpec
-from vllm.v1.outputs import (
-    EMPTY_MODEL_RUNNER_OUTPUT,
-    AsyncModelRunnerOutput,
-    DraftTokenIds,
-    ModelRunnerOutput,
-)
+from vllm.v1.outputs import (EMPTY_MODEL_RUNNER_OUTPUT, AsyncModelRunnerOutput,
+                             DraftTokenIds, ModelRunnerOutput)
 from vllm.v1.utils import report_usage_stats
 from vllm.v1.worker.gpu_model_runner import GPUModelRunner
 from vllm.v1.worker.utils import is_residual_scattered_for_sp
@@ -615,11 +608,9 @@ class Worker(WorkerBase):
         otherwise None
         """
         from vllm.distributed.parallel_state import (
-            get_dp_group,
-            get_ep_group,
-            prepare_communication_buffer_for_model,
-        )
-        from vllm.model_executor.layers.fused_moe.layer import FusedMoEParallelConfig
+            get_dp_group, get_ep_group, prepare_communication_buffer_for_model)
+        from vllm.model_executor.layers.fused_moe.layer import \
+            FusedMoEParallelConfig
 
         parallel_config = self.vllm_config.parallel_config
         moe_modules = [
@@ -683,9 +674,7 @@ class Worker(WorkerBase):
     ) -> None:
         from vllm.config import set_current_vllm_config
         from vllm.distributed.parallel_state import (
-            cleanup_dist_env_and_memory,
-            get_ep_group,
-        )
+            cleanup_dist_env_and_memory, get_ep_group)
 
         old_ep_size = get_ep_group().world_size
         old_ep_rank = get_ep_group().rank

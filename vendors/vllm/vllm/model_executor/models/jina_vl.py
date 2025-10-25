@@ -6,22 +6,20 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers import BatchFeature
-
 from vllm.config import ModelConfig, VllmConfig
 from vllm.inputs import TokensPrompt
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.pooler import DispatchPooler, Pooler
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.sequence import IntermediateTensors
 
-from .interfaces import SupportsCrossEncoding, SupportsMultiModal, SupportsScoreTemplate
-from .qwen2_vl import (
-    Qwen2VLDummyInputsBuilder,
-    Qwen2VLForConditionalGeneration,
-    Qwen2VLMultiModalProcessor,
-    Qwen2VLProcessingInfo,
-)
+from .interfaces import (SupportsCrossEncoding, SupportsMultiModal,
+                         SupportsScoreTemplate)
+from .qwen2_vl import (Qwen2VLDummyInputsBuilder,
+                       Qwen2VLForConditionalGeneration,
+                       Qwen2VLMultiModalProcessor, Qwen2VLProcessingInfo)
 from .utils import AutoWeightsLoader, WeightsMapper, maybe_prefix
 
 logger = init_logger(__name__)

@@ -10,7 +10,6 @@ Marlin/GPTQ models are in the top 3 selections of each other.
 from dataclasses import dataclass
 
 import pytest
-
 from tests.quantization.utils import is_quant_method_supported
 from vllm.platforms import current_platform
 

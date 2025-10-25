@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 from torch import fx
-
 from vllm.compilation.vllm_inductor_pass import VllmInductorPass
 
 

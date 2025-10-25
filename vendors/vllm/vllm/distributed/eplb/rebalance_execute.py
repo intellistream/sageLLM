@@ -11,13 +11,8 @@ from functools import partial
 from typing import Optional
 
 import torch
-from torch.distributed import (
-    P2POp,
-    ProcessGroup,
-    all_gather,
-    batch_isend_irecv,
-    get_global_rank,
-)
+from torch.distributed import (P2POp, ProcessGroup, all_gather,
+                               batch_isend_irecv, get_global_rank)
 
 
 def idx_local_to_global(

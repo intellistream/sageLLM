@@ -29,37 +29,22 @@ from typing import Annotated, Any, Literal, Optional, Union
 import torch
 import torch.nn as nn
 from transformers import BatchFeature
-from transformers.models.qwen2_audio import (
-    Qwen2AudioConfig,
-    Qwen2AudioEncoder,
-    Qwen2AudioProcessor,
-)
+from transformers.models.qwen2_audio import (Qwen2AudioConfig,
+                                             Qwen2AudioEncoder,
+                                             Qwen2AudioProcessor)
 from transformers.models.whisper import WhisperFeatureExtractor
-
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    AudioItem,
-    ModalityData,
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
-from vllm.multimodal.parse import (
-    AudioProcessorItems,
-    DictEmbeddingItems,
-    ModalityDataItems,
-    MultiModalDataItems,
-    MultiModalDataParser,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.inputs import (AudioItem, ModalityData,
+                                    MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
+from vllm.multimodal.parse import (AudioProcessorItems, DictEmbeddingItems,
+                                   ModalityDataItems, MultiModalDataItems,
+                                   MultiModalDataParser)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo, PromptReplacement,
+                                        PromptUpdate, PromptUpdateDetails)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape

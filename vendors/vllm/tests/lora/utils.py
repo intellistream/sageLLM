@@ -8,7 +8,6 @@ from typing import Optional, Union
 
 import torch
 from safetensors.torch import save_file
-
 from vllm.lora.lora_weights import LoRALayerWeights, PackedLoRALayerWeights
 
 

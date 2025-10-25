@@ -8,14 +8,11 @@ from typing import Any, Literal, Union
 from pydantic import SkipValidation, model_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Self
-
 from vllm.config.utils import config
 from vllm.logger import init_logger
-from vllm.utils import (
-    DEFAULT_MAX_NUM_BATCHED_TOKENS,
-    MULTIMODAL_MODEL_MAX_NUM_BATCHED_TOKENS,
-    POOLING_MODEL_MAX_NUM_BATCHED_TOKENS,
-)
+from vllm.utils import (DEFAULT_MAX_NUM_BATCHED_TOKENS,
+                        MULTIMODAL_MODEL_MAX_NUM_BATCHED_TOKENS,
+                        POOLING_MODEL_MAX_NUM_BATCHED_TOKENS)
 
 logger = init_logger(__name__)
 

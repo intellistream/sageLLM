@@ -11,9 +11,8 @@ from typing import NamedTuple
 import pytest
 from huggingface_hub import hf_hub_download
 from pytest import MarkDecorator
-from transformers import AutoTokenizer
-
 from tests.quantization.utils import is_quant_method_supported
+from transformers import AutoTokenizer
 
 from ...conftest import VllmRunner
 from ...utils import multi_gpu_test

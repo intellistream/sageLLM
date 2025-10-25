@@ -4,7 +4,6 @@ from typing import Optional
 
 import pytest
 import torch
-
 from vllm.platforms import current_platform
 
 from ....utils import large_gpu_mark

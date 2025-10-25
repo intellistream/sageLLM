@@ -4,7 +4,6 @@
 import os
 
 import pytest
-
 from vllm.distributed.utils import get_pp_indices
 
 

@@ -2,25 +2,20 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
-
 from tests.kernels.moe.utils import make_test_quant_config
-from tests.kernels.quantization.nvfp4_utils import (
-    FLOAT4_E2M1_MAX,
-    FLOAT8_E4M3_MAX,
-    dequantize_nvfp4_to_dtype,
-)
+from tests.kernels.quantization.nvfp4_utils import (FLOAT4_E2M1_MAX,
+                                                    FLOAT8_E4M3_MAX,
+                                                    dequantize_nvfp4_to_dtype)
 from tests.kernels.utils import torch_moe
 from vllm import _custom_ops as ops
 from vllm.config import ParallelConfig, VllmConfig, set_current_vllm_config
 from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
-    FlashInferExperts,
-    is_valid_flashinfer_cutlass_fused_moe,
-)
+    FlashInferExperts, is_valid_flashinfer_cutlass_fused_moe)
 from vllm.model_executor.layers.fused_moe.fused_moe import fused_topk
-from vllm.model_executor.layers.fused_moe.modular_kernel import FusedMoEModularKernel
-from vllm.model_executor.layers.fused_moe.prepare_finalize import (
-    MoEPrepareAndFinalizeNoEP,
-)
+from vllm.model_executor.layers.fused_moe.modular_kernel import \
+    FusedMoEModularKernel
+from vllm.model_executor.layers.fused_moe.prepare_finalize import \
+    MoEPrepareAndFinalizeNoEP
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import has_flashinfer_cutlass_fused_moe
 

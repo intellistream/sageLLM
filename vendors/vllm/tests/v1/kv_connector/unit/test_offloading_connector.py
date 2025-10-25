@@ -8,45 +8,28 @@ from unittest.mock import MagicMock
 
 import pytest
 import torch
-
 from vllm import SamplingParams
 from vllm.config import KVTransferConfig, VllmConfig
 from vllm.distributed.kv_events import BlockRemoved, BlockStored
 from vllm.distributed.kv_transfer.kv_connector.v1 import KVConnectorRole
 from vllm.distributed.kv_transfer.kv_connector.v1.offloading_connector import (
-    OffloadingConnector,
-    OffloadingConnectorMetadata,
-)
+    OffloadingConnector, OffloadingConnectorMetadata)
 from vllm.forward_context import ForwardContext
 from vllm.utils import sha256
-from vllm.v1.core.kv_cache_utils import (
-    BlockHash,
-    get_request_block_hasher,
-    init_none_hash,
-)
+from vllm.v1.core.kv_cache_utils import (BlockHash, get_request_block_hasher,
+                                         init_none_hash)
 from vllm.v1.core.sched.scheduler import Scheduler
-from vllm.v1.kv_offload.abstract import (
-    LoadStoreSpec,
-    OffloadingEvent,
-    OffloadingManager,
-    PrepareStoreOutput,
-)
+from vllm.v1.kv_offload.abstract import (LoadStoreSpec, OffloadingEvent,
+                                         OffloadingManager, PrepareStoreOutput)
 from vllm.v1.kv_offload.mediums import GPULoadStoreSpec
 from vllm.v1.kv_offload.spec import OffloadingSpec
-from vllm.v1.kv_offload.worker.worker import (
-    OffloadingHandler,
-    TransferResult,
-    TransferSpec,
-)
+from vllm.v1.kv_offload.worker.worker import (OffloadingHandler,
+                                              TransferResult, TransferSpec)
 from vllm.v1.outputs import EMPTY_MODEL_RUNNER_OUTPUT, KVConnectorOutput
 from vllm.v1.request import Request
 
-from .utils import (
-    EOS_TOKEN_ID,
-    create_model_runner_output,
-    create_scheduler,
-    create_vllm_config,
-)
+from .utils import (EOS_TOKEN_ID, create_model_runner_output, create_scheduler,
+                    create_vllm_config)
 
 
 class MockLoadStoreSpec(LoadStoreSpec):

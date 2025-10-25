@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import torch.distributed as dist
 from flashinfer.comm.mnnvl import CommBackend as CommBackend
-
 from vllm.utils.flashinfer import has_flashinfer_all2all
 
 assert has_flashinfer_all2all(), "Flashinfer alltoallv module cannot be found"

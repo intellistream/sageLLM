@@ -4,10 +4,8 @@
 # Licensed under the MIT License.
 
 from packaging import version
-
-from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
-    MINIMUM_BITBLAS_VERSION,
-)
+from vllm.model_executor.layers.quantization.utils.bitblas_utils import \
+    MINIMUM_BITBLAS_VERSION
 
 try:
     import bitblas
@@ -27,7 +25,6 @@ except ImportError as e:
     ) from bitblas_import_exception
 
 from bitblas import Matmul, MatmulConfig, auto_detect_nvidia_target
-
 from vllm.utils import FlexibleArgumentParser
 
 parser = FlexibleArgumentParser(

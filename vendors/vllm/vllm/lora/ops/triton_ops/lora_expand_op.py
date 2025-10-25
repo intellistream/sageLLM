@@ -8,7 +8,6 @@ https://arxiv.org/abs/2310.18547
 """
 
 import torch
-
 from vllm.lora.ops.triton_ops.kernel_utils import do_expand_kernel
 from vllm.lora.ops.triton_ops.utils import _get_lora_b_ptr
 from vllm.triton_utils import tl, triton

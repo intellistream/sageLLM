@@ -9,7 +9,6 @@ import torch
 from packaging import version
 from torch.cuda.memory import CUDAPluggableAllocator
 from torch.utils.cpp_extension import load_inline
-
 from vllm import envs
 from vllm.distributed.device_communicators.pynccl import PyNcclCommunicator
 from vllm.logger import init_logger

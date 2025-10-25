@@ -10,7 +10,6 @@ import numpy as np
 import torch
 from blake3 import blake3
 from PIL import Image
-
 from vllm.logger import init_logger
 
 logger = init_logger(__name__)

@@ -7,17 +7,9 @@ from unittest import mock
 import numpy as np
 from benchmark_utils import TimeCollector
 from tabulate import tabulate
-
-from vllm.config import (
-    CacheConfig,
-    DeviceConfig,
-    LoadConfig,
-    ModelConfig,
-    ParallelConfig,
-    SchedulerConfig,
-    SpeculativeConfig,
-    VllmConfig,
-)
+from vllm.config import (CacheConfig, DeviceConfig, LoadConfig, ModelConfig,
+                         ParallelConfig, SchedulerConfig, SpeculativeConfig,
+                         VllmConfig)
 from vllm.platforms import current_platform
 from vllm.utils import FlexibleArgumentParser
 from vllm.v1.spec_decode.ngram_proposer import NgramProposer

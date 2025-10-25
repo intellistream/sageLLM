@@ -6,7 +6,6 @@ from typing import Any, Callable, Optional
 
 import torch
 from transformers.models.auto.auto_factory import _BaseAutoModelClass
-
 from vllm.config import RunnerOption
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 

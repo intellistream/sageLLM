@@ -4,7 +4,6 @@ import base64
 import os
 
 import torch
-
 from vllm import LLM
 from vllm.pooling_params import PoolingParams
 

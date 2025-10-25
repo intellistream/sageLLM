@@ -3,7 +3,6 @@
 from typing import Union
 
 import torch
-
 from vllm.config import MambaDType, ModelDType
 from vllm.distributed import divide
 from vllm.utils import STR_DTYPE_TO_TORCH_DTYPE, get_kv_cache_torch_dtype

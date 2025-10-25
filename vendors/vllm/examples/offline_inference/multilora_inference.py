@@ -10,7 +10,6 @@ Requires HuggingFace credentials for access to Llama2.
 from typing import Optional
 
 from huggingface_hub import snapshot_download
-
 from vllm import EngineArgs, LLMEngine, RequestOutput, SamplingParams
 from vllm.lora.request import LoRARequest
 

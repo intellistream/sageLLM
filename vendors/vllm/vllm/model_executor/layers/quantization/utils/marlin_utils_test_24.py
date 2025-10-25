@@ -6,7 +6,6 @@ import random
 
 import numpy
 import torch
-
 from vllm.scalar_type import ScalarType
 
 from .marlin_utils_test import marlin_weights

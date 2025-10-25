@@ -5,14 +5,11 @@
 from typing import Optional
 
 import torch
-
 from vllm.model_executor.custom_op import CustomOp
 
 from .common import apply_rotary_emb_torch
-from .rocm_aiter_rope_ops import (
-    is_rocm_triton_rotary_embedding_enabled,
-    rocm_aiter_rotary_emb,
-)
+from .rocm_aiter_rope_ops import (is_rocm_triton_rotary_embedding_enabled,
+                                  rocm_aiter_rotary_emb)
 
 
 @CustomOp.register("rotary_embedding")

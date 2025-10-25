@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
 
 import torch
 import torch.nn as nn
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.model_executor.models.config import VerifyAndUpdateConfig
-from vllm.transformers_utils.config import get_hf_file_bytes, get_hf_file_to_dict
+from vllm.transformers_utils.config import (get_hf_file_bytes,
+                                            get_hf_file_to_dict)
 
 from .interfaces_base import VllmModelForPooling, is_pooling_model
 
@@ -86,7 +86,8 @@ def _load_dense_weights(
     linear: nn.Linear, folder: str, model_config: "ModelConfig"
 ) -> bool:
     """Load weights using vLLM's weight_loader pattern."""
-    from vllm.model_executor.model_loader.weight_utils import default_weight_loader
+    from vllm.model_executor.model_loader.weight_utils import \
+        default_weight_loader
 
     for filename in ["model.safetensors", "pytorch_model.bin"]:
         file_path = f"{folder}/{filename}" if folder else filename
@@ -293,13 +294,9 @@ def as_seq_cls_model(cls: _T) -> _T:
 
     # Lazy import
     from vllm.model_executor.layers.linear import ReplicatedLinear
-    from vllm.model_executor.layers.pooler import (
-        ClassifierPooler,
-        DispatchPooler,
-        Pooler,
-        PoolingMethod,
-        PoolingType,
-    )
+    from vllm.model_executor.layers.pooler import (ClassifierPooler,
+                                                   DispatchPooler, Pooler,
+                                                   PoolingMethod, PoolingType)
     from vllm.model_executor.models.interfaces import SupportsCrossEncoding
     from vllm.sequence import IntermediateTensors
 
@@ -441,8 +438,10 @@ def load_weights_using_from_2_way_softmax(
     model, weights: Iterable[tuple[str, torch.Tensor]]
 ):
     # refer to https://huggingface.co/Qwen/Qwen3-Reranker-0.6B/discussions/3
-    from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
-    from vllm.model_executor.model_loader.weight_utils import default_weight_loader
+    from vllm.model_executor.layers.vocab_parallel_embedding import \
+        ParallelLMHead
+    from vllm.model_executor.model_loader.weight_utils import \
+        default_weight_loader
     from vllm.model_executor.models.utils import AutoWeightsLoader
 
     model_config = model.vllm_config.model_config
@@ -488,8 +487,10 @@ def load_weights_using_from_2_way_softmax(
 
 
 def load_weights_no_post_processing(model, weights: Iterable[tuple[str, torch.Tensor]]):
-    from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
-    from vllm.model_executor.model_loader.weight_utils import default_weight_loader
+    from vllm.model_executor.layers.vocab_parallel_embedding import \
+        ParallelLMHead
+    from vllm.model_executor.model_loader.weight_utils import \
+        default_weight_loader
     from vllm.model_executor.models.utils import AutoWeightsLoader
 
     model_config = model.vllm_config.model_config

@@ -5,7 +5,6 @@ from typing import Any
 import openai
 import pytest
 import pytest_asyncio
-
 from tests.utils import RemoteOpenAIServer
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"

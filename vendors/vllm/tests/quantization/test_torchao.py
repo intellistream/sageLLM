@@ -106,7 +106,8 @@ def test_on_the_fly_quant_config_dict_json(vllm_runner):
     import json
 
     from torchao.core.config import config_to_dict
-    from torchao.quantization import Float8DynamicActivationFloat8WeightConfig, PerRow
+    from torchao.quantization import (
+        Float8DynamicActivationFloat8WeightConfig, PerRow)
 
     torchao_quant_config = Float8DynamicActivationFloat8WeightConfig(
         granularity=PerRow()
@@ -139,7 +140,8 @@ def test_on_the_fly_quant_config_file(vllm_runner):
     from tempfile import NamedTemporaryFile
 
     from torchao.core.config import config_to_dict
-    from torchao.quantization import Float8DynamicActivationFloat8WeightConfig, PerRow
+    from torchao.quantization import (
+        Float8DynamicActivationFloat8WeightConfig, PerRow)
 
     config = Float8DynamicActivationFloat8WeightConfig(granularity=PerRow())
 
@@ -167,8 +169,8 @@ def test_reload_weights():
     import json
 
     from torchao.core.config import config_to_dict
-    from torchao.quantization import Float8DynamicActivationFloat8WeightConfig, PerRow
-
+    from torchao.quantization import (
+        Float8DynamicActivationFloat8WeightConfig, PerRow)
     from vllm import LLM, SamplingParams
 
     torchao_quant_config = Float8DynamicActivationFloat8WeightConfig(

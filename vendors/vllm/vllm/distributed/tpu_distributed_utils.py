@@ -8,13 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch_xla.distributed.spmd as xs
 from torch.nn.parameter import Parameter
-
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    QKVParallelLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               QKVParallelLinear,
+                                               RowParallelLinear)
 
 logger = init_logger(__name__)
 

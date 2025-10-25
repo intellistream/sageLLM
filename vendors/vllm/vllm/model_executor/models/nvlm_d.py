@@ -13,30 +13,20 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers import PretrainedConfig
-
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalDataDict, MultiModalKwargsItems
-from vllm.multimodal.parse import (
-    ImageEmbeddingItems,
-    ImageProcessorItems,
-    MultiModalDataItems,
-)
-from vllm.multimodal.processing import (
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
+                                   MultiModalDataItems)
+from vllm.multimodal.processing import (PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 
 from .intern_vit import InternVisionModel
-from .internvl import (
-    BaseInternVLDummyInputsBuilder,
-    BaseInternVLMultiModalProcessor,
-    BaseInternVLProcessingInfo,
-    BaseInternVLProcessor,
-    InternVLChatModel,
-)
+from .internvl import (BaseInternVLDummyInputsBuilder,
+                       BaseInternVLMultiModalProcessor,
+                       BaseInternVLProcessingInfo, BaseInternVLProcessor,
+                       InternVLChatModel)
 
 IMG_PAD = "<|vision_pad|>"
 

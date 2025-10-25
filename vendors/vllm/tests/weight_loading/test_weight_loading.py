@@ -5,7 +5,6 @@ import os
 
 import pytest
 import torch
-
 from vllm.platforms import current_platform
 
 MAX_MODEL_LEN = 1024

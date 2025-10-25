@@ -5,7 +5,8 @@ from functools import cached_property
 
 from vllm.logger import init_logger
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
-from vllm.reasoning.deepseek_r1_reasoning_parser import DeepSeekR1ReasoningParser
+from vllm.reasoning.deepseek_r1_reasoning_parser import \
+    DeepSeekR1ReasoningParser
 from vllm.transformers_utils.tokenizers.mistral import MistralTokenizer
 
 logger = init_logger(__name__)

@@ -3,7 +3,6 @@
 
 import openai
 import pytest
-
 from vllm.multimodal.utils import encode_image_base64
 from vllm.platforms import current_platform
 

@@ -4,9 +4,8 @@
 from typing import Any, cast
 
 import pytest
-from transformers import AutoTokenizer
-
 from tests.reasoning.utils import run_reasoning_extraction
+from transformers import AutoTokenizer
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
 
 parser_name = "seed_oss"

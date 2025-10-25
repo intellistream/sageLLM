@@ -22,35 +22,22 @@ from typing import Callable, Optional, TypeVar, Union
 
 import torch.nn as nn
 import transformers
-
 from vllm import envs
-from vllm.config import (
-    ModelConfig,
-    iter_architecture_defaults,
-    try_match_architecture_defaults,
-)
+from vllm.config import (ModelConfig, iter_architecture_defaults,
+                         try_match_architecture_defaults)
 from vllm.logger import init_logger
 from vllm.logging_utils import logtime
-from vllm.transformers_utils.dynamic_module import try_get_class_from_dynamic_module
+from vllm.transformers_utils.dynamic_module import \
+    try_get_class_from_dynamic_module
 
-from .interfaces import (
-    has_inner_state,
-    has_noops,
-    is_attention_free,
-    is_hybrid,
-    supports_cross_encoding,
-    supports_multimodal,
-    supports_multimodal_encoder_tp_data,
-    supports_multimodal_raw_input_only,
-    supports_pp,
-    supports_transcription,
-    supports_v0_only,
-)
-from .interfaces_base import (
-    get_default_pooling_type,
-    is_pooling_model,
-    is_text_generation_model,
-)
+from .interfaces import (has_inner_state, has_noops, is_attention_free,
+                         is_hybrid, supports_cross_encoding,
+                         supports_multimodal,
+                         supports_multimodal_encoder_tp_data,
+                         supports_multimodal_raw_input_only, supports_pp,
+                         supports_transcription, supports_v0_only)
+from .interfaces_base import (get_default_pooling_type, is_pooling_model,
+                              is_text_generation_model)
 
 logger = init_logger(__name__)
 

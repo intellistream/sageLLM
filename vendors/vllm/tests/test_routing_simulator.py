@@ -11,11 +11,8 @@ integration tests with FusedMoE layer.
 
 import pytest
 import torch
-
 from vllm.model_executor.layers.fused_moe.routing_simulator import (
-    DistributionBasedRouting,
-    RoutingSimulator,
-)
+    DistributionBasedRouting, RoutingSimulator)
 
 
 @pytest.fixture

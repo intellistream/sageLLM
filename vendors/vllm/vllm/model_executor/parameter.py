@@ -8,11 +8,8 @@ from weakref import WeakValueDictionary
 
 import torch
 from torch.nn import Parameter
-
-from vllm.distributed import (
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-)
+from vllm.distributed import (get_tensor_model_parallel_rank,
+                              get_tensor_model_parallel_world_size)
 from vllm.logger import init_logger
 
 __all__ = [

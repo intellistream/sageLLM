@@ -3,9 +3,8 @@
 import pytest
 import torch
 import torch.nn.functional as F
-from torch import Tensor
-
 import vllm._custom_ops as ops
+from torch import Tensor
 from vllm.platforms import current_platform
 from vllm.utils import cdiv
 

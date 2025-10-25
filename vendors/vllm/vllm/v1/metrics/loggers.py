@@ -7,9 +7,9 @@ from abc import ABC, abstractmethod
 from typing import Callable, Optional, Union
 
 import prometheus_client
-
 from vllm.config import SupportsMetricsInfo, VllmConfig
-from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorLogging
+from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
+    KVConnectorLogging
 from vllm.logger import init_logger
 from vllm.v1.core.kv_cache_utils import PrefixCachingMetrics
 from vllm.v1.engine import FinishReason

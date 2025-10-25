@@ -9,7 +9,6 @@ Run `pytest tests/quantization/test_ipex_quant.py`.
 """
 
 import pytest
-
 from vllm.platforms import current_platform
 
 MODELS = [

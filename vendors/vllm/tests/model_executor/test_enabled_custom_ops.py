@@ -4,27 +4,18 @@ from typing import Optional
 
 import pytest
 import torch
-
 from vllm.config import CompilationConfig, VllmConfig, set_current_vllm_config
 from vllm.model_executor.custom_op import CustomOp
-from vllm.model_executor.layers.activation import (
-    GeluAndMul,
-    ReLUSquaredActivation,
-    SiluAndMul,
-)
-from vllm.model_executor.layers.fused_moe.fused_moe import (
-    dispatch_topk_func,
-    vllm_topk_softmax,
-)
-from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
-    is_rocm_aiter_moe_enabled,
-)
-from vllm.model_executor.layers.layernorm import (
-    RMSNorm,
-    dispatch_rocm_rmsnorm_func,
-    fused_add_rms_norm,
-    rms_norm,
-)
+from vllm.model_executor.layers.activation import (GeluAndMul,
+                                                   ReLUSquaredActivation,
+                                                   SiluAndMul)
+from vllm.model_executor.layers.fused_moe.fused_moe import (dispatch_topk_func,
+                                                            vllm_topk_softmax)
+from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
+    is_rocm_aiter_moe_enabled
+from vllm.model_executor.layers.layernorm import (RMSNorm,
+                                                  dispatch_rocm_rmsnorm_func,
+                                                  fused_add_rms_norm, rms_norm)
 from vllm.platforms import current_platform
 
 RMS_NORM_SUPPORTED_DTYPES = [torch.float16, torch.bfloat16]
@@ -132,9 +123,8 @@ def test_topk_dispatch(use_rocm_aiter: str, monkeypatch):
     topk_func = dispatch_topk_func()
     is_rocm_aiter_moe_enabled.cache_clear()
     if current_platform.is_rocm() and int(use_rocm_aiter):
-        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
-            rocm_aiter_topk_softmax,
-        )
+        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
+            rocm_aiter_topk_softmax
 
         assert topk_func == rocm_aiter_topk_softmax
     else:

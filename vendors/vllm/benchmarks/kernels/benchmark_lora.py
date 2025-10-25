@@ -16,9 +16,8 @@ import torch
 import torch.utils.benchmark as TBenchmark
 from torch.utils.benchmark import Measurement as TMeasurement
 from utils import ArgPool, Bench, CudaGraphBenchParams
-from weight_shapes import WEIGHT_SHAPES
-
 from vllm.triton_utils import HAS_TRITON
+from weight_shapes import WEIGHT_SHAPES
 
 if HAS_TRITON:
     from vllm.lora.ops.triton_ops import LoRAKernelMeta, lora_expand, lora_shrink

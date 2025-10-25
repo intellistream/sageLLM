@@ -10,7 +10,6 @@ from typing import Annotated, Optional, Union
 import pybase64
 import torch
 from pydantic import Field
-
 from vllm.config import ModelConfig
 from vllm.inputs.data import EmbedsPrompt as EngineEmbedsPrompt
 from vllm.inputs.data import TextPrompt as EngineTextPrompt

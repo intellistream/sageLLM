@@ -5,14 +5,16 @@ from typing import Optional
 
 import pytest
 import torch
-
 from tests.kernels.utils import torch_experts
 from vllm import _custom_ops as ops
 from vllm.config import VllmConfig, set_current_vllm_config
-from vllm.model_executor.layers.fused_moe.config import fp8_w8a8_moe_quant_config
-from vllm.model_executor.layers.fused_moe.cutlass_moe import CutlassBatchedExpertsFp8
+from vllm.model_executor.layers.fused_moe.config import \
+    fp8_w8a8_moe_quant_config
+from vllm.model_executor.layers.fused_moe.cutlass_moe import \
+    CutlassBatchedExpertsFp8
 from vllm.model_executor.layers.fused_moe.fused_moe import fused_topk
-from vllm.model_executor.layers.fused_moe.modular_kernel import FusedMoEModularKernel
+from vllm.model_executor.layers.fused_moe.modular_kernel import \
+    FusedMoEModularKernel
 from vllm.platforms import current_platform
 from vllm.utils import cdiv
 
@@ -21,12 +23,9 @@ from .parallel_utils import ProcessGroupInfo, parallel_launch
 
 try:
     from pplx_kernels import AllToAll
-    from pplx_kernels.nvshmem import (
-        nvshmem_alloc_empty_unique_id,
-        nvshmem_finalize,
-        nvshmem_get_unique_id,
-        nvshmem_init,
-    )
+    from pplx_kernels.nvshmem import (nvshmem_alloc_empty_unique_id,
+                                      nvshmem_finalize, nvshmem_get_unique_id,
+                                      nvshmem_init)
 
     has_pplx = True
 except ImportError:
@@ -75,9 +74,8 @@ def pplx_cutlass_moe(
     per_out_ch: bool,
     group_name: Optional[str],
 ):
-    from vllm.model_executor.layers.fused_moe.pplx_prepare_finalize import (
-        PplxPrepareAndFinalize,
-    )
+    from vllm.model_executor.layers.fused_moe.pplx_prepare_finalize import \
+        PplxPrepareAndFinalize
 
     assert torch.cuda.current_device() == pgi.local_rank
 

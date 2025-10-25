@@ -9,9 +9,7 @@ from typing import Optional
 from vllm.logger import init_logger
 from vllm.logprobs import Logprob, PromptLogprobs, SampleLogprobs
 from vllm.transformers_utils.detokenizer_utils import (
-    AnyTokenizer,
-    convert_ids_list_to_tokens,
-)
+    AnyTokenizer, convert_ids_list_to_tokens)
 from vllm.v1.engine import EngineCoreOutput, EngineCoreRequest
 from vllm.v1.outputs import LogprobsLists, LogprobsTensors
 

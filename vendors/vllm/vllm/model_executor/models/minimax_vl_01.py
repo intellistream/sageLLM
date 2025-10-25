@@ -7,13 +7,11 @@ import torch
 import torch.nn as nn
 from transformers import BatchFeature, PretrainedConfig
 from transformers.models.llava_next.modeling_llava_next import (
-    get_anyres_image_grid_shape,
-    unpad_image,
-)
-
+    get_anyres_image_grid_shape, unpad_image)
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalFieldConfig
@@ -22,20 +20,13 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .clip import CLIPVisionModel
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
-from .llava import (
-    BaseLlavaMultiModalProcessor,
-    LlavaDummyInputsBuilder,
-    init_vision_tower_for_llava,
-)
+from .llava import (BaseLlavaMultiModalProcessor, LlavaDummyInputsBuilder,
+                    init_vision_tower_for_llava)
 from .llava_next import LlavaNextProcessingInfo
 from .pixtral import PixtralHFVisionModel
 from .siglip import SiglipVisionModel
-from .utils import (
-    AutoWeightsLoader,
-    flatten_bn,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
+from .utils import (AutoWeightsLoader, flatten_bn, init_vllm_registered_model,
+                    maybe_prefix)
 
 
 class MiniMaxVL01ImagePixelInputs(TensorSchema):

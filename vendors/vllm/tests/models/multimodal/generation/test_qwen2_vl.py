@@ -7,17 +7,11 @@ import numpy.typing as npt
 import pytest
 import torch
 from PIL import Image
-
 from vllm.multimodal.image import rescale_image_size
 from vllm.multimodal.video import rescale_video_size, sample_frames_from_video
 
-from ....conftest import (
-    IMAGE_ASSETS,
-    VIDEO_ASSETS,
-    PromptImageInput,
-    PromptVideoInput,
-    VllmRunner,
-)
+from ....conftest import (IMAGE_ASSETS, VIDEO_ASSETS, PromptImageInput,
+                          PromptVideoInput, VllmRunner)
 from ...utils import check_logprobs_close
 
 

@@ -7,13 +7,9 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import safetensors
 import torch
-
 from vllm.config import VllmConfig
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
-    KVConnectorBase_V1,
-    KVConnectorMetadata,
-    KVConnectorRole,
-)
+    KVConnectorBase_V1, KVConnectorMetadata, KVConnectorRole)
 from vllm.logger import init_logger
 from vllm.v1.attention.backends.mla.common import MLACommonMetadata
 from vllm.v1.core.sched.output import SchedulerOutput

@@ -8,7 +8,6 @@ from typing import Any, Literal, Optional, Union
 
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
-
 from vllm.config.utils import config
 
 

@@ -3,10 +3,10 @@
 
 import pytest
 import torch
-
 import vllm
 from vllm.compilation.noop_elimination import NoOpEliminationPass
-from vllm.config import CompilationConfig, CompilationLevel, PassConfig, VllmConfig
+from vllm.config import (CompilationConfig, CompilationLevel, PassConfig,
+                         VllmConfig)
 
 from .backend import TestBackend
 

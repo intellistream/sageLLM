@@ -4,11 +4,9 @@ from typing import Optional
 
 import pytest
 import torch
-
 from vllm._custom_ops import merge_attn_states as merge_attn_states_cuda
-from vllm.attention.ops.triton_merge_attn_states import (
-    merge_attn_states as merge_attn_states_triton,
-)
+from vllm.attention.ops.triton_merge_attn_states import \
+    merge_attn_states as merge_attn_states_triton
 from vllm.platforms import current_platform
 
 

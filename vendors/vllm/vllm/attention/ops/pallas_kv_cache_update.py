@@ -6,7 +6,6 @@ import functools
 import jax
 from jax.experimental import pallas as pl
 from jax.experimental.pallas import tpu as pltpu
-
 from vllm.utils import cdiv
 
 

@@ -5,49 +5,35 @@ from typing import Callable, Optional, Union
 
 import torch
 from torch.nn.parameter import Parameter
-
 from vllm import envs
 from vllm.config import get_current_vllm_config
 from vllm.logger import init_logger
-from vllm.model_executor.layers.fused_moe import (
-    FusedMoE,
-    FusedMoEConfig,
-    FusedMoEMethodBase,
-)
+from vllm.model_executor.layers.fused_moe import (FusedMoE, FusedMoEConfig,
+                                                  FusedMoEMethodBase)
 from vllm.model_executor.layers.fused_moe import modular_kernel as mk
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig,
-    mxfp4_w4a4_moe_quant_config,
-    mxfp4_w4a16_moe_quant_config,
-)
+    FusedMoEQuantConfig, mxfp4_w4a4_moe_quant_config,
+    mxfp4_w4a16_moe_quant_config)
 from vllm.model_executor.layers.fused_moe.fused_marlin_moe import MarlinExperts
-from vllm.model_executor.layers.fused_moe.gpt_oss_triton_kernels_moe import (
-    OAITritonExperts,
-)
+from vllm.model_executor.layers.fused_moe.gpt_oss_triton_kernels_moe import \
+    OAITritonExperts
 from vllm.model_executor.layers.fused_moe.trtllm_moe import TrtLlmGenExperts
-from vllm.model_executor.layers.linear import LinearBase, UnquantizedLinearMethod
+from vllm.model_executor.layers.linear import (LinearBase,
+                                               UnquantizedLinearMethod)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    prepare_moe_fp4_layer_for_marlin,
-)
+    QuantizationConfig, QuantizeMethodBase)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import \
+    prepare_moe_fp4_layer_for_marlin
 from vllm.model_executor.layers.quantization.utils.mxfp4_utils import (
-    _can_support_mxfp4,
-    _swizzle_mxfp4,
-)
-from vllm.model_executor.layers.quantization.utils.quant_utils import is_layer_skipped
+    _can_support_mxfp4, _swizzle_mxfp4)
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    is_layer_skipped
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
-from vllm.utils import (
-    has_triton_kernels,
-    is_torch_equal_or_newer,
-    next_power_of_2,
-    round_up,
-)
+from vllm.utils import (has_triton_kernels, is_torch_equal_or_newer,
+                        next_power_of_2, round_up)
 from vllm.utils.flashinfer import has_flashinfer
 
 logger = init_logger(__name__)
@@ -351,8 +337,10 @@ class Mxfp4MoEMethod(FusedMoEMethodBase):
             self.mxfp4_backend == Mxfp4Backend.SM100_FI_MXFP4_MXFP8_TRTLLM
             or self.mxfp4_backend == Mxfp4Backend.SM100_FI_MXFP4_BF16
         ):
-            from flashinfer.fp4_quantization import nvfp4_block_scale_interleave
-            from flashinfer.fused_moe.core import _maybe_get_cached_w2_permute_indices
+            from flashinfer.fp4_quantization import \
+                nvfp4_block_scale_interleave
+            from flashinfer.fused_moe.core import \
+                _maybe_get_cached_w2_permute_indices
 
             layer.gemm1_alpha = Parameter(
                 torch.tensor([1.702] * self.num_experts, dtype=torch.float32).cuda(),
@@ -1105,9 +1093,8 @@ class Mxfp4MoEMethod(FusedMoEMethodBase):
 
             return output
         elif self.mxfp4_backend == Mxfp4Backend.TRITON:
-            from vllm.model_executor.layers.fused_moe.gpt_oss_triton_kernels_moe import (  # noqa: E501
-                triton_kernel_moe_forward,
-            )
+            from vllm.model_executor.layers.fused_moe.gpt_oss_triton_kernels_moe import \
+                triton_kernel_moe_forward  # noqa: E501
 
             return triton_kernel_moe_forward(
                 hidden_states=x,

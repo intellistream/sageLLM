@@ -5,20 +5,18 @@ import ast
 import hashlib
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
+import vllm.envs as envs
 from pydantic import SkipValidation, model_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Self
-
-import vllm.envs as envs
 from vllm.config.parallel import ParallelConfig
 from vllm.config.utils import config
 from vllm.logger import init_logger
 from vllm.utils import LazyLoader
 
 if TYPE_CHECKING:
-    from transformers import PretrainedConfig
-
     import vllm.model_executor.layers.quantization as me_quant
+    from transformers import PretrainedConfig
     from vllm.config import ModelConfig
 else:
     PretrainedConfig = Any
@@ -373,8 +371,10 @@ class SpeculativeConfig:
                             "when using V0."
                         )
 
-                    from vllm.transformers_utils.configs import SpeculatorsConfig
-                    from vllm.transformers_utils.configs.eagle import EAGLEConfig
+                    from vllm.transformers_utils.configs import \
+                        SpeculatorsConfig
+                    from vllm.transformers_utils.configs.eagle import \
+                        EAGLEConfig
 
                     if isinstance(
                         self.draft_model_config.hf_config,

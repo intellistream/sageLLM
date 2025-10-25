@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from vllm.plugins import load_general_plugins
 
 

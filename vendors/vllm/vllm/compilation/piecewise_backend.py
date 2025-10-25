@@ -5,7 +5,6 @@ import dataclasses
 from typing import Any, Callable
 
 import torch.fx as fx
-
 import vllm.envs as envs
 from vllm.compilation.backends import VllmBackend
 from vllm.compilation.monitor import end_monitoring_torch_compile

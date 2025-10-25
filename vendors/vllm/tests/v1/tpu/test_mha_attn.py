@@ -11,7 +11,6 @@ import torch
 import torch_xla
 import torch_xla.core
 import torch_xla.core.xla_model
-
 from vllm.attention.layer import MultiHeadAttention
 from vllm.attention.selector import _cached_get_attn_backend
 from vllm.platforms import current_platform

@@ -7,7 +7,6 @@ from typing import Optional, Union
 
 import torch
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast
-
 from vllm.engine.arg_utils import EngineArgs
 from vllm.v1.engine import EngineCoreOutput, FinishReason
 from vllm.v1.outputs import LogprobsLists, LogprobsTensors

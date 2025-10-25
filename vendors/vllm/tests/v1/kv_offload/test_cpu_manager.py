@@ -5,13 +5,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
-
 from vllm.v1.core.kv_cache_utils import BlockHash
-from vllm.v1.kv_offload.abstract import (
-    LoadStoreSpec,
-    OffloadingEvent,
-    PrepareStoreOutput,
-)
+from vllm.v1.kv_offload.abstract import (LoadStoreSpec, OffloadingEvent,
+                                         PrepareStoreOutput)
 from vllm.v1.kv_offload.backends.cpu import CPUBackend
 from vllm.v1.kv_offload.lru_manager import LRUOffloadingManager
 from vllm.v1.kv_offload.mediums import CPULoadStoreSpec

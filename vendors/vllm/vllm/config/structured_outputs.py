@@ -5,7 +5,6 @@ import hashlib
 from typing import Any, Literal
 
 from pydantic.dataclasses import dataclass
-
 from vllm.config.utils import config
 
 StructuredOutputsBackend = Literal[

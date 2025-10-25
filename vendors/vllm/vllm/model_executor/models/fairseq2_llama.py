@@ -21,12 +21,9 @@ from collections.abc import Iterable
 
 import torch
 from torch.nn import Parameter
-
 from vllm.config import VllmConfig
-from vllm.distributed import (
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-)
+from vllm.distributed import (get_tensor_model_parallel_rank,
+                              get_tensor_model_parallel_world_size)
 from vllm.model_executor.layers.linear import set_weight_attrs
 from vllm.model_executor.models.llama import LlamaForCausalLM
 

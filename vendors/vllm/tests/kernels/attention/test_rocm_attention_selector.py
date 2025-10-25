@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from vllm.attention.selector import _cached_get_attn_backend, get_attn_backend
 from vllm.platforms.rocm import RocmPlatform
 from vllm.utils import STR_BACKEND_ENV_VAR

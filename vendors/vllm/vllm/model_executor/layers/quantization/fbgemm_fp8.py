@@ -6,35 +6,20 @@ from typing import Any, Optional
 import torch
 from torch.nn import Module
 from torch.nn.parameter import Parameter
-
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import (
-    LinearBase,
-    LinearMethodBase,
-    UnquantizedLinearMethod,
-)
+from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
+                                               UnquantizedLinearMethod)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
+    QuantizationConfig, QuantizeMethodBase)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
-    apply_fp8_marlin_linear,
-    prepare_fp8_layer_for_marlin,
-)
+    apply_fp8_marlin_linear, prepare_fp8_layer_for_marlin)
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape,
-    is_layer_skipped,
-)
+    GroupShape, is_layer_skipped)
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp,
-    maybe_create_device_identity,
-    normalize_e4m3fn_to_e4m3fnuz,
-)
-from vllm.model_executor.parameter import (
-    ChannelQuantScaleParameter,
-    ModelWeightParameter,
-)
+    Fp8LinearOp, maybe_create_device_identity, normalize_e4m3fn_to_e4m3fnuz)
+from vllm.model_executor.parameter import (ChannelQuantScaleParameter,
+                                           ModelWeightParameter)
 from vllm.platforms import current_platform
 
 logger = init_logger(__name__)

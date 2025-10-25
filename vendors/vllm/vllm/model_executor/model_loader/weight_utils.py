@@ -23,16 +23,13 @@ import torch
 from huggingface_hub import HfFileSystem, hf_hub_download, snapshot_download
 from safetensors.torch import load, load_file, safe_open, save_file
 from tqdm.auto import tqdm
-
 from vllm import envs
 from vllm.config import ModelConfig
 from vllm.config.load import LoadConfig
 from vllm.distributed import get_tensor_model_parallel_rank
 from vllm.logger import init_logger
-from vllm.model_executor.layers.quantization import (
-    QuantizationConfig,
-    get_quantization_config,
-)
+from vllm.model_executor.layers.quantization import (QuantizationConfig,
+                                                     get_quantization_config)
 from vllm.platforms import current_platform
 from vllm.utils import PlaceholderModule
 

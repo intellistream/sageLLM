@@ -5,23 +5,13 @@ from unittest import mock
 
 import pytest
 import torch
-
-from tests.v1.attention.utils import (
-    BatchSpec,
-    create_common_attn_metadata,
-    create_standard_kv_cache_spec,
-    get_attention_backend,
-)
+from tests.v1.attention.utils import (BatchSpec, create_common_attn_metadata,
+                                      create_standard_kv_cache_spec,
+                                      get_attention_backend)
 from vllm.attention.backends.registry import _Backend
-from vllm.config import (
-    CacheConfig,
-    DeviceConfig,
-    ModelConfig,
-    ParallelConfig,
-    SchedulerConfig,
-    SpeculativeConfig,
-    VllmConfig,
-)
+from vllm.config import (CacheConfig, DeviceConfig, ModelConfig,
+                         ParallelConfig, SchedulerConfig, SpeculativeConfig,
+                         VllmConfig)
 from vllm.config.load import LoadConfig
 from vllm.model_executor.models.llama import LlamaForCausalLM
 from vllm.platforms import current_platform

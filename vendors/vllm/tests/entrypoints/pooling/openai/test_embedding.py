@@ -10,8 +10,8 @@ import pytest_asyncio
 import requests
 import torch
 import torch.nn.functional as F
-
-from tests.models.language.pooling.embed_utils import run_embedding_correctness_test
+from tests.models.language.pooling.embed_utils import \
+    run_embedding_correctness_test
 from tests.models.utils import check_embeddings_close
 from tests.utils import RemoteOpenAIServer
 from vllm.entrypoints.openai.protocol import EmbeddingResponse

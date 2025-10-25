@@ -5,23 +5,12 @@ import enum
 import functools
 from abc import abstractmethod
 from dataclasses import dataclass, fields, make_dataclass
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    ClassVar,
-    Generic,
-    Literal,
-    Optional,
-    Protocol,
-    TypeVar,
-    Union,
-    get_args,
-)
+from typing import (TYPE_CHECKING, Any, ClassVar, Generic, Literal, Optional,
+                    Protocol, TypeVar, Union, get_args)
 
 import numpy as np
 import torch
 from typing_extensions import runtime_checkable
-
 from vllm.config import VllmConfig, get_layers_from_vllm_config
 from vllm.utils import cdiv
 
@@ -31,11 +20,11 @@ if TYPE_CHECKING:
     from vllm.v1.worker.gpu_input_batch import InputBatch
 
 import vllm.envs as envs
-from vllm.attention.backends.abstract import AttentionBackend, AttentionMetadata
+from vllm.attention.backends.abstract import (AttentionBackend,
+                                              AttentionMetadata)
 from vllm.attention.layer import Attention
-from vllm.distributed.kv_transfer.kv_connector.utils import (
-    get_kv_connector_cache_layout,
-)
+from vllm.distributed.kv_transfer.kv_connector.utils import \
+    get_kv_connector_cache_layout
 from vllm.logger import init_logger
 from vllm.v1.kv_cache_interface import AttentionSpec
 from vllm.v1.worker.ubatch_utils import UBatchSlice

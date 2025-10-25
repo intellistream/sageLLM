@@ -8,7 +8,6 @@ from typing import Optional
 import numpy as np
 import pytest
 import torch
-
 from vllm.platforms import current_platform
 from vllm.sampling_params import SamplingParams
 from vllm.utils import is_pin_memory_available, make_tensor_with_pad

@@ -4,10 +4,8 @@ import argparse
 import itertools
 
 import torch
-
-from vllm.model_executor.layers.fused_moe.moe_align_block_size import (
-    moe_align_block_size,
-)
+from vllm.model_executor.layers.fused_moe.moe_align_block_size import \
+    moe_align_block_size
 from vllm.triton_utils import triton
 
 

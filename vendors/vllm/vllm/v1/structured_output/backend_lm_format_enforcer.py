@@ -10,14 +10,11 @@ from typing import TYPE_CHECKING
 
 import torch
 from transformers import PreTrainedTokenizerBase
-
 from vllm.sampling_params import SamplingParams
 from vllm.utils import LazyLoader
-from vllm.v1.structured_output.backend_types import (
-    StructuredOutputBackend,
-    StructuredOutputGrammar,
-    StructuredOutputOptions,
-)
+from vllm.v1.structured_output.backend_types import (StructuredOutputBackend,
+                                                     StructuredOutputGrammar,
+                                                     StructuredOutputOptions)
 
 if TYPE_CHECKING:
     import lmformatenforcer

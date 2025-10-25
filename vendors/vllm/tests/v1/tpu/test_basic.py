@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 from torch_xla._internal import tpu
-
 from vllm.platforms import current_platform
 
 if TYPE_CHECKING:

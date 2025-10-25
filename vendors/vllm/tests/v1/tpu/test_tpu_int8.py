@@ -6,9 +6,9 @@ Run `pytest tests/quantization/test_tpu_int8.py`.
 """
 
 import pytest
-
 from vllm.model_executor.layers.linear import LinearBase
-from vllm.model_executor.layers.quantization.tpu_int8 import TPUInt8LinearMethod
+from vllm.model_executor.layers.quantization.tpu_int8 import \
+    TPUInt8LinearMethod
 from vllm.platforms import current_platform
 
 from ...models.registry import HF_EXAMPLE_MODELS

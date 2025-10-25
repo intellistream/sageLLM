@@ -7,7 +7,6 @@ Tests for applying default registered multimodal loras.
 import os
 
 from huggingface_hub import snapshot_download
-
 from vllm.lora.request import LoRARequest
 
 from ..conftest import AudioTestAssets, VllmRunner

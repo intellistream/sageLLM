@@ -4,7 +4,6 @@ import random
 
 import numpy as np
 import torch
-
 from vllm.platforms.interface import Platform
 
 

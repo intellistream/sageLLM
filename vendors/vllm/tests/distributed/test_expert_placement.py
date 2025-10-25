@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm.model_executor.layers.fused_moe.layer import determine_expert_map
 
 

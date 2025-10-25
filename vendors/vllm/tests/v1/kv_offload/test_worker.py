@@ -1,12 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 from vllm.v1.kv_offload.abstract import LoadStoreSpec
-from vllm.v1.kv_offload.worker.worker import (
-    OffloadingHandler,
-    OffloadingWorker,
-    TransferResult,
-    TransferSpec,
-)
+from vllm.v1.kv_offload.worker.worker import (OffloadingHandler,
+                                              OffloadingWorker, TransferResult,
+                                              TransferSpec)
 
 
 class LoadStoreSpec1(LoadStoreSpec):

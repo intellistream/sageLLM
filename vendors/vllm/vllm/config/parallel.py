@@ -7,12 +7,11 @@ from dataclasses import field
 from typing import TYPE_CHECKING, Any, Literal, Optional, Union
 
 import torch
+import vllm.envs as envs
 from pydantic import model_validator
 from pydantic.dataclasses import dataclass
 from torch.distributed import ProcessGroup, ReduceOp
 from typing_extensions import Self
-
-import vllm.envs as envs
 from vllm.config.utils import config
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
@@ -21,7 +20,6 @@ from vllm.utils import cuda_device_count_stateless, get_open_ports_list
 if TYPE_CHECKING:
     from ray.runtime_env import RuntimeEnv
     from ray.util.placement_group import PlacementGroup
-
     from vllm.executor.executor_base import ExecutorBase
 else:
     RuntimeEnv = Any
@@ -251,10 +249,8 @@ class ParallelConfig:
         # To make the initialization more robust we retry a few times
         # with a fresh port whenever this specific error is observed.
         from torch.distributed import DistNetworkError
-
-        from vllm.distributed.utils import (
-            stateless_init_torch_distributed_process_group,
-        )
+        from vllm.distributed.utils import \
+            stateless_init_torch_distributed_process_group
 
         max_retries = 5
         last_exc: Optional[Exception] = None

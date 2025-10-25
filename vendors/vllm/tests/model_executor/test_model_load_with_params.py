@@ -4,13 +4,8 @@
 import os
 
 import pytest
-
-from vllm.model_executor.layers.pooler import (
-    CLSPool,
-    DispatchPooler,
-    MeanPool,
-    PoolingType,
-)
+from vllm.model_executor.layers.pooler import (CLSPool, DispatchPooler,
+                                               MeanPool, PoolingType)
 from vllm.model_executor.models.bert import BertEmbeddingModel
 from vllm.model_executor.models.roberta import RobertaEmbeddingModel
 from vllm.platforms import current_platform

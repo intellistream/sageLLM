@@ -31,47 +31,30 @@ import torch
 from torch import nn
 from transformers import BatchFeature
 from transformers.modeling_outputs import BaseModelOutputWithPast
-from transformers.models.whisper.modeling_whisper import (
-    ACT2FN,
-    WhisperAttention,
-    WhisperConfig,
-    WhisperEncoder,
-)
-
+from transformers.models.whisper.modeling_whisper import (ACT2FN,
+                                                          WhisperAttention,
+                                                          WhisperConfig,
+                                                          WhisperEncoder)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalKwargsItems
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    NestedTensors,
-)
-from vllm.multimodal.parse import (
-    AudioItem,
-    AudioProcessorItems,
-    DictEmbeddingItems,
-    ModalityData,
-    ModalityDataItems,
-    MultiModalDataItems,
-    MultiModalDataParser,
-)
-from vllm.multimodal.processing import (
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    NestedTensors)
+from vllm.multimodal.parse import (AudioItem, AudioProcessorItems,
+                                   DictEmbeddingItems, ModalityData,
+                                   ModalityDataItems, MultiModalDataItems,
+                                   MultiModalDataParser)
+from vllm.multimodal.processing import (PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .minicpmv import (
-    _MAX_FRAMES_PER_VIDEO,
-    MiniCPMV2_6,
-    MiniCPMVDummyInputsBuilder,
-    MiniCPMVMultiModalDataParser,
-    MiniCPMVMultiModalProcessor,
-    MiniCPMVProcessingInfo,
-    _minicpmv_field_config,
-)
-from .utils import AutoWeightsLoader, cast_overflow_tensors, flatten_bn, maybe_prefix
+from .minicpmv import (_MAX_FRAMES_PER_VIDEO, MiniCPMV2_6,
+                       MiniCPMVDummyInputsBuilder,
+                       MiniCPMVMultiModalDataParser,
+                       MiniCPMVMultiModalProcessor, MiniCPMVProcessingInfo,
+                       _minicpmv_field_config)
+from .utils import (AutoWeightsLoader, cast_overflow_tensors, flatten_bn,
+                    maybe_prefix)
 
 CPU_DEVICE = torch.device("cpu")
 

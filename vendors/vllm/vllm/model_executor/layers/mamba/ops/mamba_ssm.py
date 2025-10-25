@@ -6,7 +6,6 @@
 
 import torch
 from packaging import version
-
 from vllm import _custom_ops as ops
 from vllm.attention.backends.utils import PAD_SLOT_ID
 from vllm.triton_utils import HAS_TRITON, tl, triton

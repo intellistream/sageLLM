@@ -8,7 +8,6 @@
 # Copyright (c) 2023-2025, Songlin Yang, Yu Zhang
 # ruff: noqa: E501
 import torch
-
 from vllm.triton_utils import triton
 
 from .utils import tensor_cache

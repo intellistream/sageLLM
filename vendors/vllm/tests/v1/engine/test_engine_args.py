@@ -4,7 +4,6 @@
 from argparse import ArgumentError
 
 import pytest
-
 from vllm import envs
 from vllm.config import VllmConfig
 from vllm.engine.arg_utils import EngineArgs

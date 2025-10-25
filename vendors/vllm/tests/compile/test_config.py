@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
-
 import vllm
 from vllm.compilation.counter import compilation_counter
 from vllm.config import CompilationConfig, CUDAGraphMode, VllmConfig

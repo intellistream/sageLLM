@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm import SamplingParams
 
 MODELS = ["distilbert/distilgpt2"]

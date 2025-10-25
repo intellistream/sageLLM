@@ -5,7 +5,6 @@
 import itertools
 
 import torch
-
 import vllm.model_executor.layers.activation  # noqa F401
 from vllm.model_executor.custom_op import CustomOp
 from vllm.platforms import current_platform

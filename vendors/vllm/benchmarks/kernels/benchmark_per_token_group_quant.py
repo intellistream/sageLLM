@@ -8,7 +8,6 @@ from typing import Callable
 from unittest.mock import patch
 
 import torch
-
 from vllm.model_executor.layers.quantization.utils import fp8_utils, int8_utils
 from vllm.platforms import current_platform
 

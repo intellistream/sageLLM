@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import torch
-
 from vllm.distributed.parallel_state import GroupCoordinator
 from vllm.triton_utils import tl, triton
 

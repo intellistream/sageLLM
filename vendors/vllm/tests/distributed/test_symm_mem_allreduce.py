@@ -9,17 +9,15 @@ import pytest
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
-
 import vllm.envs as envs
 from vllm.config import ParallelConfig, VllmConfig, set_current_vllm_config
 from vllm.distributed import cleanup_dist_env_and_memory
 from vllm.distributed.communication_op import tensor_model_parallel_all_reduce
-from vllm.distributed.device_communicators.cuda_communicator import CudaCommunicator
-from vllm.distributed.parallel_state import (
-    get_tp_group,
-    init_distributed_environment,
-    initialize_model_parallel,
-)
+from vllm.distributed.device_communicators.cuda_communicator import \
+    CudaCommunicator
+from vllm.distributed.parallel_state import (get_tp_group,
+                                             init_distributed_environment,
+                                             initialize_model_parallel)
 from vllm.engine.arg_utils import EngineArgs
 from vllm.engine.llm_engine import LLMEngine
 from vllm.platforms import current_platform

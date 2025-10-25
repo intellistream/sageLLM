@@ -7,30 +7,20 @@ from typing import Annotated, Literal, Optional, Union
 
 import torch
 import torch.nn as nn
-from transformers import BatchFeature, LlavaNextVideoConfig, LlavaNextVideoProcessor
-
+from transformers import (BatchFeature, LlavaNextVideoConfig,
+                          LlavaNextVideoProcessor)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.model_executor.models.clip import CLIPVisionModel
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
-from vllm.multimodal.parse import (
-    ImageSize,
-    MultiModalDataItems,
-    VideoEmbeddingItems,
-    VideoProcessorItems,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    PromptReplacement,
-    PromptUpdate,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
+from vllm.multimodal.parse import (ImageSize, MultiModalDataItems,
+                                   VideoEmbeddingItems, VideoProcessorItems)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo, PromptReplacement,
+                                        PromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils import is_list_of
@@ -39,12 +29,8 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .llava import init_vision_tower_for_llava
 from .siglip import SiglipVisionModel
-from .utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
+from .utils import (AutoWeightsLoader, WeightsMapper,
+                    init_vllm_registered_model, maybe_prefix)
 from .vision import get_vision_encoder_info
 
 

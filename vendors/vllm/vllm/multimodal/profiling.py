@@ -7,29 +7,17 @@ from typing import Generic, NamedTuple, Optional, TypeVar, Union, cast
 
 import numpy as np
 import numpy.typing as npt
-from PIL import Image
-
 import vllm.envs as envs
-from vllm.config.multimodal import (
-    AudioDummyOptions,
-    BaseDummyOptions,
-    ImageDummyOptions,
-    VideoDummyOptions,
-)
+from PIL import Image
+from vllm.config.multimodal import (AudioDummyOptions, BaseDummyOptions,
+                                    ImageDummyOptions, VideoDummyOptions)
 from vllm.logger import init_logger
 
-from .inputs import (
-    MultiModalDataDict,
-    MultiModalEncDecInputs,
-    MultiModalInputs,
-    MultiModalKwargsItems,
-    MultiModalPlaceholderDict,
-)
-from .processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    EncDecMultiModalProcessor,
-)
+from .inputs import (MultiModalDataDict, MultiModalEncDecInputs,
+                     MultiModalInputs, MultiModalKwargsItems,
+                     MultiModalPlaceholderDict)
+from .processing import (BaseMultiModalProcessor, BaseProcessingInfo,
+                         EncDecMultiModalProcessor)
 
 logger = init_logger(__name__)
 

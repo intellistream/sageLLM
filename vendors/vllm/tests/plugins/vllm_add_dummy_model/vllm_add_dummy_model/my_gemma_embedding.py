@@ -6,7 +6,6 @@ from typing import Optional, Union
 
 import torch
 import torch.nn as nn
-
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.pooler import DispatchPooler, Pooler
 from vllm.model_executor.models.gemma2 import Gemma2Model

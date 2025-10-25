@@ -5,11 +5,8 @@ from abc import abstractmethod
 from collections.abc import Sequence
 from typing import Optional, Union
 
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    DeltaMessage,
-    ResponsesRequest,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaMessage, ResponsesRequest)
 from vllm.reasoning.abs_reasoning_parsers import ReasoningParser
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 

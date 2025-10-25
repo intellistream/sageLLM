@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch
-
 from vllm.model_executor.models.opt import OPTForCausalLM
 
 

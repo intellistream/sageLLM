@@ -5,33 +5,20 @@ import fnmatch
 from typing import Any, Optional, cast
 
 import torch
-
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe import FusedMoE
-from vllm.model_executor.layers.linear import (
-    LinearBase,
-    LinearMethodBase,
-    UnquantizedLinearMethod,
-)
+from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
+                                               UnquantizedLinearMethod)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (  # noqa: E501
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
+    QuantizationConfig, QuantizeMethodBase)
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
-from vllm.model_executor.layers.quantization.quark.quark_moe import (  # noqa: E501
-    QuarkMoEMethod,
-)
+from vllm.model_executor.layers.quantization.quark.quark_moe import \
+    QuarkMoEMethod  # noqa: E501
 from vllm.model_executor.layers.quantization.quark.schemes import (
-    QuarkScheme,
-    QuarkW4A4MXFP4,
-    QuarkW8A8Fp8,
-    QuarkW8A8Int8,
-)
+    QuarkScheme, QuarkW4A4MXFP4, QuarkW8A8Fp8, QuarkW8A8Int8)
 from vllm.model_executor.layers.quantization.quark.utils import (
-    deep_compare,
-    should_ignore_layer,
-)
+    deep_compare, should_ignore_layer)
 from vllm.platforms import current_platform
 
 __all__ = ["QuarkLinearMethod"]

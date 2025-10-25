@@ -15,21 +15,15 @@ import numpy as np
 import torch
 import zmq
 from msgspec import msgpack
-
 from vllm import envs
 from vllm.logger import init_logger
-from vllm.multimodal.inputs import (
-    BaseMultiModalField,
-    MultiModalBatchedField,
-    MultiModalFieldConfig,
-    MultiModalFieldElem,
-    MultiModalFlatField,
-    MultiModalKwargs,
-    MultiModalKwargsItem,
-    MultiModalKwargsItems,
-    MultiModalSharedField,
-    NestedTensors,
-)
+from vllm.multimodal.inputs import (BaseMultiModalField,
+                                    MultiModalBatchedField,
+                                    MultiModalFieldConfig, MultiModalFieldElem,
+                                    MultiModalFlatField, MultiModalKwargs,
+                                    MultiModalKwargsItem,
+                                    MultiModalKwargsItems,
+                                    MultiModalSharedField, NestedTensors)
 from vllm.v1.engine import UtilityResult
 
 logger = init_logger(__name__)

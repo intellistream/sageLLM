@@ -4,7 +4,6 @@
 import weakref
 
 import pytest
-
 from vllm import LLM, SamplingParams
 from vllm.distributed import cleanup_dist_env_and_memory
 

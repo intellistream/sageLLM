@@ -5,11 +5,10 @@ import hashlib
 from dataclasses import field
 from typing import TYPE_CHECKING, Any, Literal, Optional, get_args
 
+import vllm.envs as envs
 from pydantic import SkipValidation, model_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Self
-
-import vllm.envs as envs
 from vllm.config.utils import config
 from vllm.logger import init_logger
 from vllm.utils import GiB_bytes, get_cpu_memory

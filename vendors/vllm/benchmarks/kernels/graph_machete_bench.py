@@ -10,7 +10,6 @@ import pandas as pd
 import regex as re
 import seaborn as sns
 from torch.utils.benchmark import Measurement as TMeasurement
-
 from vllm.utils import FlexibleArgumentParser
 
 if __name__ == "__main__":

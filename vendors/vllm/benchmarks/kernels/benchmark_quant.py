@@ -4,7 +4,6 @@
 import time
 
 import torch
-
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform
 from vllm.utils import STR_DTYPE_TO_TORCH_DTYPE, FlexibleArgumentParser

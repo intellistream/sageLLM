@@ -30,45 +30,32 @@ from typing import Any, Optional, Union
 import torch
 from torch import nn
 from transformers import PretrainedConfig
-
 from vllm.attention import Attention
-
 # from vllm.compilation.decorators import support_torch_compile
 from vllm.config import CacheConfig, VllmConfig
 from vllm.distributed import get_pp_group, get_tensor_model_parallel_world_size
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe import FusedMoE
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (
-    QKVParallelLinear,
-    ReplicatedLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (QKVParallelLinear,
+                                               ReplicatedLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.rotary_embedding.ernie45_vl_rope import (
-    Ernie4_5_VLRotaryEmbedding,
-)
+from vllm.model_executor.layers.rotary_embedding.ernie45_vl_rope import \
+    Ernie4_5_VLRotaryEmbedding
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead,
-    VocabParallelEmbedding,
-)
+    ParallelLMHead, VocabParallelEmbedding)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader,
-    maybe_remap_kv_scale_name,
-)
+    default_weight_loader, maybe_remap_kv_scale_name)
 from vllm.sequence import IntermediateTensors
 
 from .ernie45_moe import Ernie4_5_MoeMLP
 from .interfaces import SupportsPP
-from .utils import (
-    PPMissingLayer,
-    extract_layer_index,
-    is_pp_missing_parameter,
-    make_empty_intermediate_tensors_factory,
-    make_layers,
-    maybe_prefix,
-)
+from .utils import (PPMissingLayer, extract_layer_index,
+                    is_pp_missing_parameter,
+                    make_empty_intermediate_tensors_factory, make_layers,
+                    maybe_prefix)
 
 logger = init_logger(__name__)
 

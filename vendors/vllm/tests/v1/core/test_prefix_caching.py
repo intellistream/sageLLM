@@ -7,35 +7,22 @@ from typing import Callable, Optional
 
 import pytest
 import torch
-
 import vllm.v1.core.kv_cache_utils as kv_cache_utils
 from vllm.distributed.kv_events import AllBlocksCleared, BlockRemoved
-from vllm.multimodal.inputs import (
-    MultiModalFeatureSpec,
-    MultiModalKwargsItem,
-    PlaceholderRange,
-)
+from vllm.multimodal.inputs import (MultiModalFeatureSpec,
+                                    MultiModalKwargsItem, PlaceholderRange)
 from vllm.sampling_params import SamplingParams
 from vllm.utils import sha256, sha256_cbor
 from vllm.v1.core.block_pool import BlockHashToBlockMap, BlockPool
 from vllm.v1.core.kv_cache_manager import KVCacheManager, Request
-from vllm.v1.core.kv_cache_utils import (
-    BlockHash,
-    BlockHashWithGroupId,
-    KVCacheBlock,
-    get_block_hash,
-    get_group_id,
-    get_request_block_hasher,
-    hash_block_tokens,
-    init_none_hash,
-    make_block_hash_with_group_id,
-)
-from vllm.v1.kv_cache_interface import (
-    FullAttentionSpec,
-    KVCacheConfig,
-    KVCacheGroupSpec,
-    SlidingWindowSpec,
-)
+from vllm.v1.core.kv_cache_utils import (BlockHash, BlockHashWithGroupId,
+                                         KVCacheBlock, get_block_hash,
+                                         get_group_id,
+                                         get_request_block_hasher,
+                                         hash_block_tokens, init_none_hash,
+                                         make_block_hash_with_group_id)
+from vllm.v1.kv_cache_interface import (FullAttentionSpec, KVCacheConfig,
+                                        KVCacheGroupSpec, SlidingWindowSpec)
 
 pytestmark = pytest.mark.cpu_test
 

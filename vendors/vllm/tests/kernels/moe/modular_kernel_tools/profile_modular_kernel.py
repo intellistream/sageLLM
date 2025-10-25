@@ -6,7 +6,6 @@ from itertools import product
 from typing import Any, Callable
 
 import torch
-
 from vllm.config import VllmConfig
 from vllm.platforms import current_platform
 

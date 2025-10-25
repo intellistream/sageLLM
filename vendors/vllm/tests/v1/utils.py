@@ -3,7 +3,6 @@
 import pytest
 import regex as re
 import requests
-
 from tests.utils import RemoteOpenAIServer
 
 # Prometheus metrics utilities for testing

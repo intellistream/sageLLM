@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from vllm.attention.ops.triton_decode_attention import decode_attention_fwd
 from vllm.utils import cdiv
 

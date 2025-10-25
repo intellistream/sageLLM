@@ -4,7 +4,6 @@ import base64
 
 import pytest
 import requests
-
 from tests.utils import RemoteOpenAIServer
 from vllm.config import VllmConfig
 from vllm.entrypoints.openai.protocol import IOProcessorResponse

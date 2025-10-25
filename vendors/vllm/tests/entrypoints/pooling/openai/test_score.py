@@ -6,9 +6,8 @@ import pytest
 import requests
 import torch
 import torch.nn.functional as F
-from torch import tensor
-
 from tests.utils import RemoteOpenAIServer
+from torch import tensor
 from vllm.entrypoints.openai.protocol import ScoreResponse
 
 MODELS = [

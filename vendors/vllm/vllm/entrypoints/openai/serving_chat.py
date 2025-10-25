@@ -14,51 +14,31 @@ import regex as re
 from fastapi import Request
 from openai_harmony import Message as OpenAIMessage
 from pydantic import TypeAdapter
-
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.chat_utils import (
-    ChatTemplateContentFormatOption,
-    ConversationMessage,
-    get_history_tool_calls_cnt,
-    make_tool_call_id,
-)
+from vllm.entrypoints.chat_utils import (ChatTemplateContentFormatOption,
+                                         ConversationMessage,
+                                         get_history_tool_calls_cnt,
+                                         make_tool_call_id)
 from vllm.entrypoints.harmony_utils import (
-    get_developer_message,
-    get_stop_tokens_for_assistant_actions,
-    get_streamable_parser_for_assistant,
-    get_system_message,
-    parse_chat_input,
-    parse_chat_output,
-    render_for_completion,
-)
+    get_developer_message, get_stop_tokens_for_assistant_actions,
+    get_streamable_parser_for_assistant, get_system_message, parse_chat_input,
+    parse_chat_output, render_for_completion)
 from vllm.entrypoints.logger import RequestLogger
 from vllm.entrypoints.openai.protocol import (
-    ChatCompletionLogProb,
-    ChatCompletionLogProbs,
-    ChatCompletionLogProbsContent,
-    ChatCompletionNamedToolChoiceParam,
-    ChatCompletionRequest,
-    ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
-    ChatMessage,
-    DeltaFunctionCall,
-    DeltaMessage,
-    DeltaToolCall,
-    ErrorResponse,
-    FunctionCall,
-    FunctionDefinition,
-    PromptTokenUsageInfo,
-    RequestResponseMetadata,
-    ToolCall,
-    UsageInfo,
-)
-from vllm.entrypoints.openai.serving_engine import OpenAIServing, clamp_prompt_logprobs
+    ChatCompletionLogProb, ChatCompletionLogProbs,
+    ChatCompletionLogProbsContent, ChatCompletionNamedToolChoiceParam,
+    ChatCompletionRequest, ChatCompletionResponse,
+    ChatCompletionResponseChoice, ChatCompletionResponseStreamChoice,
+    ChatCompletionStreamResponse, ChatMessage, DeltaFunctionCall, DeltaMessage,
+    DeltaToolCall, ErrorResponse, FunctionCall, FunctionDefinition,
+    PromptTokenUsageInfo, RequestResponseMetadata, ToolCall, UsageInfo)
+from vllm.entrypoints.openai.serving_engine import (OpenAIServing,
+                                                    clamp_prompt_logprobs)
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.openai.tool_parsers import ToolParser, ToolParserManager
-from vllm.entrypoints.openai.tool_parsers.mistral_tool_parser import MistralToolCall
+from vllm.entrypoints.openai.tool_parsers.mistral_tool_parser import \
+    MistralToolCall
 from vllm.entrypoints.utils import get_max_tokens
 from vllm.inputs.data import TokensPrompt as EngineTokensPrompt
 from vllm.logger import init_logger
@@ -67,11 +47,9 @@ from vllm.outputs import CompletionOutput, RequestOutput
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
 from vllm.sampling_params import BeamSearchParams, SamplingParams
 from vllm.transformers_utils.tokenizer import AnyTokenizer, MistralTokenizer
-from vllm.transformers_utils.tokenizers import (
-    maybe_serialize_tool_calls,
-    truncate_tool_call_ids,
-    validate_request_params,
-)
+from vllm.transformers_utils.tokenizers import (maybe_serialize_tool_calls,
+                                                truncate_tool_call_ids,
+                                                validate_request_params)
 from vllm.utils import as_list
 
 logger = init_logger(__name__)

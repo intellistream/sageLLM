@@ -10,40 +10,30 @@ from unittest.mock import patch
 import pytest
 import torch
 import torch.nn.functional as F
-
 from vllm.config.lora import LoRAConfig
-from vllm.lora.layers import (
-    BaseLayerWithLoRA,
-    ColumnParallelLinearWithLoRA,
-    ColumnParallelLinearWithShardedLoRA,
-    LogitsProcessorWithLoRA,
-    LoRAMapping,
-    MergedColumnParallelLinearWithLoRA,
-    MergedColumnParallelLinearWithShardedLoRA,
-    MergedQKVParallelLinearWithLoRA,
-    MergedQKVParallelLinearWithShardedLoRA,
-    QKVParallelLinearWithLoRA,
-    QKVParallelLinearWithShardedLoRA,
-    ReplicatedLinearWithLoRA,
-    RowParallelLinearWithLoRA,
-    RowParallelLinearWithShardedLoRA,
-    VocabParallelEmbeddingWithLoRA,
-)
+from vllm.lora.layers import (BaseLayerWithLoRA, ColumnParallelLinearWithLoRA,
+                              ColumnParallelLinearWithShardedLoRA,
+                              LogitsProcessorWithLoRA, LoRAMapping,
+                              MergedColumnParallelLinearWithLoRA,
+                              MergedColumnParallelLinearWithShardedLoRA,
+                              MergedQKVParallelLinearWithLoRA,
+                              MergedQKVParallelLinearWithShardedLoRA,
+                              QKVParallelLinearWithLoRA,
+                              QKVParallelLinearWithShardedLoRA,
+                              ReplicatedLinearWithLoRA,
+                              RowParallelLinearWithLoRA,
+                              RowParallelLinearWithShardedLoRA,
+                              VocabParallelEmbeddingWithLoRA)
 from vllm.lora.models import LoRALayerWeights, PackedLoRALayerWeights
 from vllm.lora.punica_wrapper import get_punica_wrapper
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    MergedColumnParallelLinear,
-    QKVParallelLinear,
-    ReplicatedLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               MergedColumnParallelLinear,
+                                               QKVParallelLinear,
+                                               ReplicatedLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead,
-    VocabParallelEmbedding,
-    get_masked_input_and_mask,
-)
+    ParallelLMHead, VocabParallelEmbedding, get_masked_input_and_mask)
 from vllm.model_executor.utils import set_random_seed
 from vllm.platforms import current_platform
 
@@ -77,7 +67,8 @@ VOCAB_PARALLEL_EMBEDDING_TEST_NUM_RANDOM_SEEDS = 2
 @pytest.fixture(autouse=True)
 def clean_cache_reset_device(reset_default_device):
     # Release any memory we might be holding on to. CI runs OOMs otherwise.
-    from vllm.lora.ops.triton_ops.utils import _LORA_A_PTR_DICT, _LORA_B_PTR_DICT
+    from vllm.lora.ops.triton_ops.utils import (_LORA_A_PTR_DICT,
+                                                _LORA_B_PTR_DICT)
 
     _LORA_B_PTR_DICT.clear()
     _LORA_A_PTR_DICT.clear()

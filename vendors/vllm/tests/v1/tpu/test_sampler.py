@@ -3,7 +3,6 @@
 import random
 
 import pytest
-
 from vllm import LLM
 from vllm.platforms import current_platform
 from vllm.sampling_params import SamplingParams

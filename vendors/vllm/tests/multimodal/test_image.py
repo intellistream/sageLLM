@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 from PIL import Image, ImageChops
-
 from vllm.multimodal.image import ImageMediaIO, convert_image_mode
 
 pytestmark = pytest.mark.cpu_test

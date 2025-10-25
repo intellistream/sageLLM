@@ -4,13 +4,10 @@
 from collections.abc import Iterable
 from typing import Union
 
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    DeltaMessage,
-    ExtractedToolCallInformation,
-    FunctionCall,
-    ToolCall,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaMessage,
+                                              ExtractedToolCallInformation,
+                                              FunctionCall, ToolCall)
 from vllm.entrypoints.openai.tool_parsers import ToolParser
 
 

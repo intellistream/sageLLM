@@ -26,63 +26,41 @@ import torch
 import transformers
 from packaging.version import Version
 from torch import nn
-from transformers import AutoModel, BatchFeature, PretrainedConfig, PreTrainedModel
+from transformers import (AutoModel, BatchFeature, PretrainedConfig,
+                          PreTrainedModel)
 from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS
-
 from vllm.attention import Attention, AttentionType
 from vllm.compilation.decorators import support_torch_compile
-from vllm.config import (
-    CacheConfig,
-    DeviceConfig,
-    ModelConfig,
-    ParallelConfig,
-    VllmConfig,
-)
+from vllm.config import (CacheConfig, DeviceConfig, ModelConfig,
+                         ParallelConfig, VllmConfig)
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.config.utils import getattr_iter
 from vllm.distributed import get_pp_group, get_tensor_model_parallel_world_size
 from vllm.distributed.utils import get_pp_indices
 from vllm.logger import init_logger
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    ReplicatedLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               ReplicatedLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead,
-    VocabParallelEmbedding,
-)
+    ParallelLMHead, VocabParallelEmbedding)
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalKwargsItems
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalInputs,
-    MultiModalUUIDDict,
-    PlaceholderRange,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalInputs, MultiModalUUIDDict,
+                                    PlaceholderRange)
 from vllm.multimodal.parse import ImageProcessorItems, MultiModalDataItems
-from vllm.multimodal.processing import BaseMultiModalProcessor, BaseProcessingInfo
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 
-from .interfaces import (
-    MultiModalEmbeddings,
-    SupportsLoRA,
-    SupportsMultiModal,
-    SupportsPP,
-    SupportsQuant,
-)
-from .utils import (
-    AutoWeightsLoader,
-    PPMissingLayer,
-    WeightsMapper,
-    flatten_bn,
-    make_empty_intermediate_tensors_factory,
-    maybe_prefix,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
+                         SupportsMultiModal, SupportsPP, SupportsQuant)
+from .utils import (AutoWeightsLoader, PPMissingLayer, WeightsMapper,
+                    flatten_bn, make_empty_intermediate_tensors_factory,
+                    maybe_prefix)
 
 logger = init_logger(__name__)
 

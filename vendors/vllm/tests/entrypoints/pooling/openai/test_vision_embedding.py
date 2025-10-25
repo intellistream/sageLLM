@@ -5,9 +5,8 @@ import json
 
 import pytest
 import requests
-from transformers import AutoProcessor
-
 from tests.utils import VLLM_PATH, RemoteOpenAIServer
+from transformers import AutoProcessor
 from vllm.entrypoints.openai.protocol import EmbeddingResponse
 from vllm.multimodal.utils import encode_image_base64, fetch_image
 

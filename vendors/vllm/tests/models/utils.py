@@ -9,7 +9,6 @@ from typing import Any, Optional, Union
 import torch
 import torch.nn.functional as F
 from transformers import PretrainedConfig
-
 from vllm.config import ModelConfig, ModelDType, RunnerOption
 from vllm.logprobs import Logprob, PromptLogprobs, SampleLogprobs
 from vllm.multimodal.processing import InputProcessingContext

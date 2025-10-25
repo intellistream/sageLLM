@@ -21,59 +21,36 @@ from typing import Annotated, Any, Literal, Optional, Union
 import regex as re
 import torch
 import torch.nn as nn
-from transformers import (
-    BatchFeature,
-    CLIPVisionConfig,
-    PretrainedConfig,
-    ProcessorMixin,
-)
-
+from transformers import (BatchFeature, CLIPVisionConfig, PretrainedConfig,
+                          ProcessorMixin)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import \
+    VocabParallelEmbedding
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
-from vllm.multimodal.parse import (
-    ImageEmbeddingItems,
-    ImageProcessorItems,
-    ImageSize,
-    MultiModalDataItems,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    MultiModalPromptUpdates,
-    PlaceholderFeaturesInfo,
-    PromptReplacement,
-    PromptUpdate,
-    ResolvedPromptUpdate,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
+from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
+                                   ImageSize, MultiModalDataItems)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo,
+                                        MultiModalPromptUpdates,
+                                        PlaceholderFeaturesInfo,
+                                        PromptReplacement, PromptUpdate,
+                                        ResolvedPromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils import is_list_of
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .clip import CLIPVisionModel
-from .interfaces import (
-    MultiModalEmbeddings,
-    SupportsMultiModal,
-    SupportsPP,
-    SupportsQuant,
-)
-from .utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    _merge_multimodal_embeddings,
-    flatten_bn,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
+from .interfaces import (MultiModalEmbeddings, SupportsMultiModal, SupportsPP,
+                         SupportsQuant)
+from .utils import (AutoWeightsLoader, WeightsMapper,
+                    _merge_multimodal_embeddings, flatten_bn,
+                    init_vllm_registered_model, maybe_prefix)
 
 logger = init_logger(__name__)
 

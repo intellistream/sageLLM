@@ -5,10 +5,9 @@ from pathlib import Path
 
 import pytest
 import torch
+import vllm._custom_ops as ops
 from gguf import GGMLQuantizationType, GGUFReader, ReaderTensor, dequantize
 from huggingface_hub import snapshot_download
-
-import vllm._custom_ops as ops
 from vllm.model_executor.layers.fused_moe import fused_experts
 from vllm.model_executor.layers.quantization.gguf import _fused_moe_gguf
 from vllm.platforms import current_platform

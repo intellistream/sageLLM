@@ -9,63 +9,26 @@ import json
 import sys
 from dataclasses import MISSING, dataclass, fields, is_dataclass
 from itertools import permutations
-from typing import (
-    TYPE_CHECKING,
-    Annotated,
-    Any,
-    Callable,
-    Literal,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-    get_args,
-    get_origin,
-)
+from typing import (TYPE_CHECKING, Annotated, Any, Callable, Literal, Optional,
+                    TypeVar, Union, cast, get_args, get_origin)
 
 import huggingface_hub
 import regex as re
 import torch
+import vllm.envs as envs
 from pydantic import TypeAdapter, ValidationError
 from typing_extensions import TypeIs, deprecated
-
-import vllm.envs as envs
-from vllm.config import (
-    BlockSize,
-    CacheConfig,
-    CacheDType,
-    CompilationConfig,
-    ConfigType,
-    ConvertOption,
-    DetailedTraceModules,
-    Device,
-    DeviceConfig,
-    DistributedExecutorBackend,
-    EPLBConfig,
-    HfOverrides,
-    KVEventsConfig,
-    KVTransferConfig,
-    LoadConfig,
-    LogprobsMode,
-    LoRAConfig,
-    MambaDType,
-    MMEncoderTPMode,
-    ModelConfig,
-    ModelDType,
-    ObservabilityConfig,
-    ParallelConfig,
-    PoolerConfig,
-    PrefixCachingHashAlgo,
-    RunnerOption,
-    SchedulerConfig,
-    SchedulerPolicy,
-    SpeculativeConfig,
-    StructuredOutputsConfig,
-    TaskOption,
-    TokenizerMode,
-    VllmConfig,
-    get_attr_docs,
-)
+from vllm.config import (BlockSize, CacheConfig, CacheDType, CompilationConfig,
+                         ConfigType, ConvertOption, DetailedTraceModules,
+                         Device, DeviceConfig, DistributedExecutorBackend,
+                         EPLBConfig, HfOverrides, KVEventsConfig,
+                         KVTransferConfig, LoadConfig, LogprobsMode,
+                         LoRAConfig, MambaDType, MMEncoderTPMode, ModelConfig,
+                         ModelDType, ObservabilityConfig, ParallelConfig,
+                         PoolerConfig, PrefixCachingHashAlgo, RunnerOption,
+                         SchedulerConfig, SchedulerPolicy, SpeculativeConfig,
+                         StructuredOutputsConfig, TaskOption, TokenizerMode,
+                         VllmConfig, get_attr_docs)
 from vllm.config.multimodal import MMCacheType, MultiModalConfig
 from vllm.config.parallel import ExpertPlacementStrategy
 from vllm.config.utils import get_field
@@ -75,13 +38,11 @@ from vllm.plugins import load_general_plugins
 from vllm.ray.lazy_utils import is_ray_initialized
 from vllm.reasoning import ReasoningParserManager
 from vllm.test_utils import MODEL_WEIGHTS_S3_BUCKET, MODELS_ON_S3
-from vllm.transformers_utils.config import (
-    get_model_path,
-    is_interleaved,
-    maybe_override_with_speculators,
-)
+from vllm.transformers_utils.config import (get_model_path, is_interleaved,
+                                            maybe_override_with_speculators)
 from vllm.transformers_utils.utils import check_gguf_file
-from vllm.utils import FlexibleArgumentParser, GiB_bytes, get_ip, is_in_ray_actor
+from vllm.utils import (FlexibleArgumentParser, GiB_bytes, get_ip,
+                        is_in_ray_actor)
 from vllm.v1.sample.logits_processor import LogitsProcessor
 
 if TYPE_CHECKING:
@@ -1136,7 +1097,8 @@ class EngineArgs:
         )
 
     def validate_tensorizer_args(self):
-        from vllm.model_executor.model_loader.tensorizer import TensorizerConfig
+        from vllm.model_executor.model_loader.tensorizer import \
+            TensorizerConfig
 
         for key in self.model_loader_extra_config:
             if key in TensorizerConfig._fields:

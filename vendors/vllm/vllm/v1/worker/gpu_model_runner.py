@@ -14,112 +14,73 @@ import numpy as np
 import torch
 import torch.distributed
 import torch.nn as nn
+import vllm.envs as envs
 from tqdm import tqdm
 from typing_extensions import TypeAlias
-
-import vllm.envs as envs
 from vllm.attention import Attention, AttentionType
 from vllm.attention.backends.abstract import AttentionBackend
 from vllm.attention.layers.chunked_local_attention import ChunkedLocalAttention
 from vllm.compilation.counter import compilation_counter
 from vllm.compilation.cuda_graph import CUDAGraphWrapper
 from vllm.compilation.monitor import set_cudagraph_capturing_enabled
-from vllm.config import (
-    CompilationLevel,
-    CUDAGraphMode,
-    VllmConfig,
-    get_layers_from_vllm_config,
-    update_config,
-)
+from vllm.config import (CompilationLevel, CUDAGraphMode, VllmConfig,
+                         get_layers_from_vllm_config, update_config)
 from vllm.distributed.eplb.eplb_state import EplbState
-from vllm.distributed.kv_transfer import get_kv_transfer_group, has_kv_transfer_group
+from vllm.distributed.kv_transfer import (get_kv_transfer_group,
+                                          has_kv_transfer_group)
 from vllm.distributed.kv_transfer.kv_connector.utils import copy_kv_blocks
 from vllm.distributed.parallel_state import (
-    get_pp_group,
-    get_tp_group,
-    graph_capture,
-    is_global_first_rank,
-    prepare_communication_buffer_for_model,
-)
-from vllm.forward_context import BatchDescriptor, DPMetadata, set_forward_context
+    get_pp_group, get_tp_group, graph_capture, is_global_first_rank,
+    prepare_communication_buffer_for_model)
+from vllm.forward_context import (BatchDescriptor, DPMetadata,
+                                  set_forward_context)
 from vllm.logger import init_logger
 from vllm.model_executor.layers.attention_layer_base import AttentionLayerBase
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.rotary_embedding import MRotaryEmbedding
 from vllm.model_executor.model_loader import TensorizerLoader, get_model_loader
 from vllm.model_executor.models.deepseek_v2 import DeepseekV32IndexerCache
-from vllm.model_executor.models.interfaces import (
-    SupportsMultiModal,
-    is_mixture_of_experts,
-    supports_eagle3,
-    supports_mrope,
-    supports_multimodal_pruning,
-    supports_transcription,
-)
+from vllm.model_executor.models.interfaces import (SupportsMultiModal,
+                                                   is_mixture_of_experts,
+                                                   supports_eagle3,
+                                                   supports_mrope,
+                                                   supports_multimodal_pruning,
+                                                   supports_transcription)
 from vllm.model_executor.models.interfaces_base import (
-    VllmModelForPooling,
-    is_pooling_model,
-    is_text_generation_model,
-)
+    VllmModelForPooling, is_pooling_model, is_text_generation_model)
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    BatchedTensorInputs,
-    MultiModalKwargsItem,
-    PlaceholderRange,
-)
+from vllm.multimodal.inputs import (BatchedTensorInputs, MultiModalKwargsItem,
+                                    PlaceholderRange)
 from vllm.multimodal.utils import group_mm_kwargs_by_modality
 from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import SamplingType
 from vllm.sequence import IntermediateTensors
 from vllm.tasks import GenerationTask, PoolingTask, SupportedTask
-from vllm.utils import (
-    STR_DTYPE_TO_TORCH_DTYPE,
-    DeviceMemoryProfiler,
-    GiB_bytes,
-    cdiv,
-    check_use_alibi,
-    get_dtype_size,
-    is_pin_memory_available,
-    length_from_prompt_token_ids_or_embeds,
-    round_up,
-    supports_dynamo,
-)
+from vllm.utils import (STR_DTYPE_TO_TORCH_DTYPE, DeviceMemoryProfiler,
+                        GiB_bytes, cdiv, check_use_alibi, get_dtype_size,
+                        is_pin_memory_available,
+                        length_from_prompt_token_ids_or_embeds, round_up,
+                        supports_dynamo)
 from vllm.utils.jsontree import json_map_leaves
 from vllm.v1.attention.backends.flash_attn import AttentionMetadata
 from vllm.v1.attention.backends.gdn_attn import GDNAttentionMetadataBuilder
 from vllm.v1.attention.backends.utils import (
-    AttentionCGSupport,
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
+    AttentionCGSupport, AttentionMetadataBuilder, CommonAttentionMetadata,
     create_fast_prefill_custom_backend,
-    reorder_batch_to_split_decodes_and_prefills,
-    split_attn_metadata,
-)
+    reorder_batch_to_split_decodes_and_prefills, split_attn_metadata)
 from vllm.v1.cudagraph_dispatcher import CudagraphDispatcher
-from vllm.v1.kv_cache_interface import (
-    AttentionSpec,
-    ChunkedLocalAttentionSpec,
-    CrossAttentionSpec,
-    EncoderOnlyAttentionSpec,
-    FullAttentionSpec,
-    KVCacheConfig,
-    KVCacheGroupSpec,
-    KVCacheSpec,
-    MambaSpec,
-    MLAAttentionSpec,
-    SlidingWindowSpec,
-    UniformTypeKVCacheSpecs,
-)
-from vllm.v1.outputs import (
-    EMPTY_MODEL_RUNNER_OUTPUT,
-    AsyncModelRunnerOutput,
-    DraftTokenIds,
-    LogprobsLists,
-    LogprobsTensors,
-    ModelRunnerOutput,
-    PoolerOutput,
-    SamplerOutput,
-)
+from vllm.v1.kv_cache_interface import (AttentionSpec,
+                                        ChunkedLocalAttentionSpec,
+                                        CrossAttentionSpec,
+                                        EncoderOnlyAttentionSpec,
+                                        FullAttentionSpec, KVCacheConfig,
+                                        KVCacheGroupSpec, KVCacheSpec,
+                                        MambaSpec, MLAAttentionSpec,
+                                        SlidingWindowSpec,
+                                        UniformTypeKVCacheSpecs)
+from vllm.v1.outputs import (EMPTY_MODEL_RUNNER_OUTPUT, AsyncModelRunnerOutput,
+                             DraftTokenIds, LogprobsLists, LogprobsTensors,
+                             ModelRunnerOutput, PoolerOutput, SamplerOutput)
 from vllm.v1.pool.metadata import PoolingMetadata
 from vllm.v1.sample.logits_processor import LogitsProcessors, build_logitsprocs
 from vllm.v1.sample.metadata import SamplingMetadata
@@ -133,21 +94,18 @@ from vllm.v1.structured_output.utils import apply_grammar_bitmask
 from vllm.v1.utils import CpuGpuBuffer, record_function_or_nullcontext
 from vllm.v1.worker.gpu_input_batch import CachedRequestState, InputBatch
 from vllm.v1.worker.gpu_ubatch_wrapper import UBatchWrapper
-from vllm.v1.worker.kv_connector_model_runner_mixin import KVConnectorModelRunnerMixin
+from vllm.v1.worker.kv_connector_model_runner_mixin import \
+    KVConnectorModelRunnerMixin
 from vllm.v1.worker.lora_model_runner_mixin import LoRAModelRunnerMixin
-from vllm.v1.worker.ubatch_splitting import check_ubatch_thresholds, ubatch_split
+from vllm.v1.worker.ubatch_splitting import (check_ubatch_thresholds,
+                                             ubatch_split)
 from vllm.v1.worker.ubatch_utils import UBatchSlice, UBatchSlices
 from vllm.v1.worker.utils import is_residual_scattered_for_sp
 
-from .utils import (
-    AttentionGroup,
-    MultiModalBudget,
-    add_kv_sharing_layers_to_kv_cache_groups,
-    bind_kv_cache,
-    gather_mm_placeholders,
-    sanity_check_mm_encoder_outputs,
-    scatter_mm_placeholders,
-)
+from .utils import (AttentionGroup, MultiModalBudget,
+                    add_kv_sharing_layers_to_kv_cache_groups, bind_kv_cache,
+                    gather_mm_placeholders, sanity_check_mm_encoder_outputs,
+                    scatter_mm_placeholders)
 
 if TYPE_CHECKING:
     from vllm.model_executor.model_loader.tensorizer import TensorizerConfig
@@ -227,7 +185,8 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
         from vllm.model_executor.models.utils import set_cpu_offload_max_bytes
 
         set_cpu_offload_max_bytes(int(self.cache_config.cpu_offload_gb * 1024**3))
-        from vllm.model_executor.layers.batch_invariant import init_batch_invariance
+        from vllm.model_executor.layers.batch_invariant import \
+            init_batch_invariance
 
         init_batch_invariance()
 

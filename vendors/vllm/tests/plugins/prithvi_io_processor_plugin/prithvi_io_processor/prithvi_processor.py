@@ -18,17 +18,15 @@ import regex as re
 import torch
 from einops import rearrange
 from terratorch.datamodules import Sen1Floods11NonGeoDataModule
-
 from vllm.config import VllmConfig
-from vllm.entrypoints.openai.protocol import IOProcessorRequest, IOProcessorResponse
+from vllm.entrypoints.openai.protocol import (IOProcessorRequest,
+                                              IOProcessorResponse)
 from vllm.inputs.data import PromptType
 from vllm.logger import init_logger
 from vllm.outputs import PoolingRequestOutput
-from vllm.plugins.io_processors.interface import (
-    IOProcessor,
-    IOProcessorInput,
-    IOProcessorOutput,
-)
+from vllm.plugins.io_processors.interface import (IOProcessor,
+                                                  IOProcessorInput,
+                                                  IOProcessorOutput)
 
 from .types import DataModuleConfig, ImagePrompt, ImageRequestOutput
 

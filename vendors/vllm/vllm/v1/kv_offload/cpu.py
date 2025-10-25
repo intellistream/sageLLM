@@ -4,7 +4,6 @@ from collections.abc import Iterator
 from typing import Optional
 
 import torch
-
 from vllm.config import VllmConfig, get_layers_from_vllm_config
 from vllm.model_executor.layers.attention_layer_base import AttentionLayerBase
 from vllm.platforms import current_platform

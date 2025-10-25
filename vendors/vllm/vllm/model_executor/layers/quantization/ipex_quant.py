@@ -7,27 +7,18 @@ import torch
 from packaging import version
 from torch.nn import Module
 from torch.nn.parameter import Parameter
-
 from vllm._ipex_ops import ipex_ops as ops
-from vllm.model_executor.layers.fused_moe import (
-    FusedMoEMethodBase,
-    FusedMoeWeightScaleSupported,
-)
+from vllm.model_executor.layers.fused_moe import (FusedMoEMethodBase,
+                                                  FusedMoeWeightScaleSupported)
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.linear import (
-    LinearBase,
-    LinearMethodBase,
-    UnquantizedLinearMethod,
-)
-from vllm.model_executor.layers.quantization import (
-    QuantizationConfig,
-    QuantizationMethods,
-)
-from vllm.model_executor.layers.quantization.awq import (
-    AWQLinearMethod,
-    is_layer_skipped_awq,
-)
-from vllm.model_executor.layers.quantization.fp8 import Fp8Config, Fp8LinearMethod
+from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
+                                               UnquantizedLinearMethod)
+from vllm.model_executor.layers.quantization import (QuantizationConfig,
+                                                     QuantizationMethods)
+from vllm.model_executor.layers.quantization.awq import (AWQLinearMethod,
+                                                         is_layer_skipped_awq)
+from vllm.model_executor.layers.quantization.fp8 import (Fp8Config,
+                                                         Fp8LinearMethod)
 from vllm.model_executor.layers.quantization.gptq import GPTQLinearMethod
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform

@@ -8,12 +8,8 @@ from unittest.mock import patch
 import pytest
 from huggingface_hub.utils import HfHubHTTPError
 from torch import nn
-
-from vllm.lora.utils import (
-    get_adapter_absolute_path,
-    parse_fine_tuned_lora_name,
-    replace_submodule,
-)
+from vllm.lora.utils import (get_adapter_absolute_path,
+                             parse_fine_tuned_lora_name, replace_submodule)
 from vllm.model_executor.models.utils import WeightsMapper
 
 

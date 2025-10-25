@@ -6,7 +6,6 @@ import random
 from typing import TYPE_CHECKING
 
 import pytest
-
 from vllm import LLM
 from vllm.sampling_params import SamplingParams, StructuredOutputsParams
 from vllm.v1.metrics.reader import Counter, Gauge, Histogram, Metric, Vector

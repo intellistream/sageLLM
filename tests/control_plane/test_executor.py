@@ -12,10 +12,7 @@ import pytest
 root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root))
 
-from control_plane import (  # noqa: E402
-    ExecutionCoordinator,
-    ExecutionInstance,
-)
+from control_plane import ExecutionCoordinator, ExecutionInstance  # noqa: E402
 
 
 @pytest.mark.asyncio

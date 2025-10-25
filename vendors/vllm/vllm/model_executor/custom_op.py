@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch.nn as nn
-
 from vllm.config import get_cached_compilation_config
 from vllm.logger import init_logger
 from vllm.platforms import current_platform

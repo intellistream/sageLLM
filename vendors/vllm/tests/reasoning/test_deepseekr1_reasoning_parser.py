@@ -2,9 +2,8 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-from transformers import AutoTokenizer
-
 from tests.reasoning.utils import run_reasoning_extraction
+from transformers import AutoTokenizer
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
 
 parser_name = "deepseek_r1"

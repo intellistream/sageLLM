@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 import vllm
 from vllm.lora.request import LoRARequest
 from vllm.platforms import current_platform

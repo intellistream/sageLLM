@@ -6,13 +6,9 @@ from collections.abc import Generator
 from typing import Optional
 
 import pytest
-
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    DeltaMessage,
-    FunctionCall,
-    ToolCall,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaMessage, FunctionCall,
+                                              ToolCall)
 from vllm.entrypoints.openai.tool_parsers import xLAMToolParser
 from vllm.transformers_utils.detokenizer_utils import detokenize_incrementally
 from vllm.transformers_utils.tokenizer import AnyTokenizer, get_tokenizer

@@ -6,7 +6,6 @@ Qwen2.5-VL visual component loading behavior.
 """
 
 import pytest
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 
 from ..models.utils import build_model_context

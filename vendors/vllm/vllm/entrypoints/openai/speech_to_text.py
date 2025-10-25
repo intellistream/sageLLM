@@ -9,25 +9,18 @@ from functools import cached_property
 from typing import Callable, Literal, Optional, TypeVar, Union, cast
 
 import numpy as np
-from fastapi import Request
-
 import vllm.envs as envs
+from fastapi import Request
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.logger import RequestLogger
 from vllm.entrypoints.openai.protocol import (
-    DeltaMessage,
-    ErrorResponse,
-    RequestResponseMetadata,
-    TranscriptionResponse,
-    TranscriptionResponseStreamChoice,
-    TranscriptionStreamResponse,
-    TranslationResponse,
-    TranslationResponseStreamChoice,
-    TranslationStreamResponse,
-    UsageInfo,
-)
-from vllm.entrypoints.openai.serving_engine import OpenAIServing, SpeechToTextRequest
+    DeltaMessage, ErrorResponse, RequestResponseMetadata,
+    TranscriptionResponse, TranscriptionResponseStreamChoice,
+    TranscriptionStreamResponse, TranslationResponse,
+    TranslationResponseStreamChoice, TranslationStreamResponse, UsageInfo)
+from vllm.entrypoints.openai.serving_engine import (OpenAIServing,
+                                                    SpeechToTextRequest)
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.inputs.data import PromptType
 from vllm.logger import init_logger

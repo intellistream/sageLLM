@@ -11,7 +11,6 @@ AsyncLLMEngine are working correctly.
 
 import lm_eval
 import pytest
-
 from vllm.platforms import current_platform
 
 MODEL_NAMES = [

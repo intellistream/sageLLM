@@ -9,17 +9,15 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers import PretrainedConfig
-
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.linear import ReplicatedLinear
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.quantization.utils.int8_utils import block_dequant
+from vllm.model_executor.layers.quantization.utils.int8_utils import \
+    block_dequant
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead,
-    VocabParallelEmbedding,
-)
+    ParallelLMHead, VocabParallelEmbedding)
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.longcat_flash import FlashConfig
 from vllm.sequence import IntermediateTensors

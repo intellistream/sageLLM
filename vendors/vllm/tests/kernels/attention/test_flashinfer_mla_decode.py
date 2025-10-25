@@ -5,7 +5,6 @@ import torch
 import torch.nn.functional as F
 from flashinfer.decode import trtllm_batch_decode_with_kv_cache_mla
 from torch import Tensor
-
 from vllm.platforms import current_platform
 
 FLASHINFER_WORKSPACE_BUFFER_SIZE = 128 * 1024 * 1024

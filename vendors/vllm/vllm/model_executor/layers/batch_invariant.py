@@ -7,7 +7,6 @@ from collections.abc import Callable
 from typing import Any, Union
 
 import torch
-
 from vllm.triton_utils import tl, triton
 
 

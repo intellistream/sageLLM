@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Literal, NamedTuple, Optional, TypedDict, Union, get_args
 
 from PIL.Image import Image
-
 from vllm import LLM, EngineArgs
 from vllm.entrypoints.score_utils import ScoreMultiModalParam
 from vllm.multimodal.utils import fetch_image
@@ -154,7 +153,6 @@ def run_vlm2vec_qwen2vl(query: Query) -> ModelRequestData:
     from huggingface_hub.constants import HF_HUB_CACHE
     from peft import PeftConfig, PeftModel
     from transformers import AutoModelForImageTextToText, AutoProcessor
-
     from vllm.entrypoints.chat_utils import load_chat_template
 
     model_id = "TIGER-Lab/VLM2Vec-Qwen2VL-2B"

@@ -5,7 +5,6 @@
 from typing import Any, Optional, Union
 
 import pytest
-
 from vllm.platforms import current_platform
 
 from ..conftest import HfRunner, VllmRunner

@@ -8,7 +8,6 @@ import openai
 import pytest
 import pytest_asyncio
 import requests
-
 from vllm.version import __version__ as VLLM_VERSION
 
 from ...utils import RemoteOpenAIServer

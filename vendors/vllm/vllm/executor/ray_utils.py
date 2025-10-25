@@ -7,7 +7,6 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Optional, Union
 
 import msgspec
-
 import vllm.platforms
 from vllm.config import ParallelConfig
 from vllm.distributed import get_pp_group

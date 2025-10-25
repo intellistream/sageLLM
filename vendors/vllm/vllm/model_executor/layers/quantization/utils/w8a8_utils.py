@@ -5,12 +5,12 @@ from typing import Callable, Optional, Union
 
 import torch
 from packaging import version
-
 from vllm import _custom_ops as ops
 from vllm import envs
 from vllm.config import CompilationLevel, get_current_vllm_config
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
-from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    GroupShape
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op
 from vllm.utils.flashinfer import flashinfer_scaled_fp8_mm, has_flashinfer

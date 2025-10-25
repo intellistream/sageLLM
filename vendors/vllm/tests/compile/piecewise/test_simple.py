@@ -8,16 +8,10 @@ can exactly calculate the expected output and side effects.
 import pytest
 import torch
 from torch import nn
-
 from vllm.compilation.counter import compilation_counter
 from vllm.compilation.decorators import support_torch_compile
-from vllm.config import (
-    CompilationConfig,
-    CompilationLevel,
-    CUDAGraphMode,
-    VllmConfig,
-    set_current_vllm_config,
-)
+from vllm.config import (CompilationConfig, CompilationLevel, CUDAGraphMode,
+                         VllmConfig, set_current_vllm_config)
 from vllm.envs import VLLM_USE_V1
 from vllm.forward_context import BatchDescriptor, set_forward_context
 from vllm.utils import is_torch_equal_or_newer

@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import torch
-
 from vllm._custom_ops import scaled_fp4_quant
 from vllm.scalar_type import scalar_types
 

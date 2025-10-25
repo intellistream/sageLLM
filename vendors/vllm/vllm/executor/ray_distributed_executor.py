@@ -9,22 +9,17 @@ from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import cloudpickle
 import msgspec
-
 import vllm.envs as envs
 from vllm.executor.executor_base import DistributedExecutorBase
 from vllm.executor.msgspec_utils import encode_hook
-from vllm.executor.ray_utils import RayWorkerWrapper, initialize_ray_cluster, ray
+from vllm.executor.ray_utils import (RayWorkerWrapper, initialize_ray_cluster,
+                                     ray)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.ray.ray_env import get_env_vars_to_copy
 from vllm.sequence import ExecuteModelRequest
-from vllm.utils import (
-    _run_task_with_lock,
-    get_distributed_init_method,
-    get_ip,
-    get_open_port,
-    make_async,
-)
+from vllm.utils import (_run_task_with_lock, get_distributed_init_method,
+                        get_ip, get_open_port, make_async)
 from vllm.v1.outputs import SamplerOutput
 
 if ray is not None:
@@ -644,13 +639,10 @@ class RayDistributedExecutor(DistributedExecutorBase):
             forward_dag = MultiOutputNode(outputs)
 
         if envs.VLLM_USE_RAY_WRAPPED_PP_COMM:
-            from ray.experimental.channel.accelerator_context import (
-                register_accelerator_context,
-            )
-
-            from vllm.distributed.device_communicators.ray_communicator import (
-                RayPPCommunicator,
-            )
+            from ray.experimental.channel.accelerator_context import \
+                register_accelerator_context
+            from vllm.distributed.device_communicators.ray_communicator import \
+                RayPPCommunicator
 
             register_accelerator_context(
                 torch_module_name="cuda", communicator_cls=RayPPCommunicator

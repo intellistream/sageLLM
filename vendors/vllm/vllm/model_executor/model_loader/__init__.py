@@ -4,25 +4,22 @@
 from typing import Literal, Optional
 
 from torch import nn
-
 from vllm.config import ModelConfig, VllmConfig
 from vllm.config.load import LoadConfig
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader.base_loader import BaseModelLoader
-from vllm.model_executor.model_loader.bitsandbytes_loader import BitsAndBytesModelLoader
+from vllm.model_executor.model_loader.bitsandbytes_loader import \
+    BitsAndBytesModelLoader
 from vllm.model_executor.model_loader.default_loader import DefaultModelLoader
 from vllm.model_executor.model_loader.dummy_loader import DummyModelLoader
 from vllm.model_executor.model_loader.gguf_loader import GGUFModelLoader
-from vllm.model_executor.model_loader.runai_streamer_loader import (
-    RunaiModelStreamerLoader,
-)
-from vllm.model_executor.model_loader.sharded_state_loader import ShardedStateLoader
+from vllm.model_executor.model_loader.runai_streamer_loader import \
+    RunaiModelStreamerLoader
+from vllm.model_executor.model_loader.sharded_state_loader import \
+    ShardedStateLoader
 from vllm.model_executor.model_loader.tensorizer_loader import TensorizerLoader
 from vllm.model_executor.model_loader.utils import (
-    get_architecture_class_name,
-    get_model_architecture,
-    get_model_cls,
-)
+    get_architecture_class_name, get_model_architecture, get_model_cls)
 
 logger = init_logger(__name__)
 

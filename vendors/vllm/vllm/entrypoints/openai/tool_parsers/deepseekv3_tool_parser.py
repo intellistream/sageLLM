@@ -5,21 +5,14 @@ from collections.abc import Sequence
 from typing import Union
 
 import regex as re
-
 from vllm.entrypoints.chat_utils import make_tool_call_id
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    DeltaFunctionCall,
-    DeltaMessage,
-    DeltaToolCall,
-    ExtractedToolCallInformation,
-    FunctionCall,
-    ToolCall,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaFunctionCall, DeltaMessage,
+                                              DeltaToolCall,
+                                              ExtractedToolCallInformation,
+                                              FunctionCall, ToolCall)
 from vllm.entrypoints.openai.tool_parsers.abstract_tool_parser import (
-    ToolParser,
-    ToolParserManager,
-)
+    ToolParser, ToolParserManager)
 from vllm.logger import init_logger
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 

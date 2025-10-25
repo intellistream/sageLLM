@@ -6,7 +6,6 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from packaging import version
-
 from vllm import envs
 from vllm.config import LogprobsMode
 from vllm.logger import init_logger

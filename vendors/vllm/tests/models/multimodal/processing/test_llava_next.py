@@ -7,7 +7,6 @@ from functools import partial
 import pytest
 from PIL import Image
 from pqdm.threads import pqdm
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.parse import ImageSize
 from vllm.multimodal.processing import BaseMultiModalProcessor

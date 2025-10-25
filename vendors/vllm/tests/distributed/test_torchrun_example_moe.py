@@ -6,7 +6,6 @@ import os
 import random
 
 import torch.distributed as dist
-
 from vllm import LLM, SamplingParams
 from vllm.distributed.parallel_state import get_tp_group, get_world_group
 

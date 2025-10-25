@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch
-
 from vllm.scalar_type import ScalarType, scalar_types
 
 MACHETE_PREPACKED_BLOCK_SHAPE = [64, 128]

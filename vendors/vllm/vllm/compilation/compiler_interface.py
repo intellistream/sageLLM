@@ -11,7 +11,6 @@ from unittest.mock import patch
 import torch
 import torch._inductor.compile_fx
 import torch.fx as fx
-
 import vllm.envs as envs
 from vllm.compilation.counter import compilation_counter
 from vllm.config import VllmConfig
@@ -321,7 +320,8 @@ class InductorAdaptor(CompilerInterface):
         # it to get the hash of the compiled graph directly.
 
         hash_str, file_path = None, None
-        from torch._inductor.codecache import FxGraphCache, compiled_fx_graph_hash
+        from torch._inductor.codecache import (FxGraphCache,
+                                               compiled_fx_graph_hash)
 
         if torch.__version__.startswith("2.5"):
             original_load = FxGraphCache.load
@@ -413,7 +413,8 @@ class InductorAdaptor(CompilerInterface):
                 )
             )
 
-            from torch._functorch._aot_autograd.autograd_cache import AOTAutogradCache
+            from torch._functorch._aot_autograd.autograd_cache import \
+                AOTAutogradCache
 
             # torch 2.8+ on main uses _get_shape_env in AOTAutogradCache
             if hasattr(AOTAutogradCache, "_get_shape_env"):
@@ -495,7 +496,8 @@ class InductorAdaptor(CompilerInterface):
         assert isinstance(handle[1], str)
         hash_str = handle[0]
 
-        from torch._functorch._aot_autograd.autograd_cache import AOTAutogradCache
+        from torch._functorch._aot_autograd.autograd_cache import \
+            AOTAutogradCache
         from torch._inductor.codecache import FxGraphCache
 
         with ExitStack() as exit_stack:
@@ -526,7 +528,8 @@ class InductorAdaptor(CompilerInterface):
                     f"the cache directory and try again."  # noqa
                 )
             elif torch.__version__ >= "2.6":
-                from torch._inductor.output_code import CompiledFxGraphConstantsWithGm
+                from torch._inductor.output_code import \
+                    CompiledFxGraphConstantsWithGm
 
                 constants = CompiledFxGraphConstantsWithGm(graph)
                 inductor_compiled_graph, _ = FxGraphCache._lookup_graph(

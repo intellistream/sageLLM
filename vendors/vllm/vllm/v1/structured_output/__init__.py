@@ -12,17 +12,14 @@ from vllm.reasoning import ReasoningParserManager
 from vllm.transformers_utils.tokenizer import init_tokenizer_from_configs
 from vllm.utils import LazyLoader
 from vllm.v1.structured_output.backend_guidance import GuidanceBackend
-from vllm.v1.structured_output.backend_types import (
-    StructuredOutputBackend,
-    StructuredOutputGrammar,
-)
+from vllm.v1.structured_output.backend_types import (StructuredOutputBackend,
+                                                     StructuredOutputGrammar)
 from vllm.v1.structured_output.backend_xgrammar import XgrammarBackend
 
 if TYPE_CHECKING:
     import numpy as np
     import numpy.typing as npt
     import torch
-
     from vllm.reasoning import ReasoningParser
     from vllm.v1.request import Request
 else:
@@ -104,7 +101,8 @@ class StructuredOutputManager:
                     vocab_size=vocab_size,
                 )
             elif backend == "outlines":
-                from vllm.v1.structured_output.backend_outlines import OutlinesBackend
+                from vllm.v1.structured_output.backend_outlines import \
+                    OutlinesBackend
 
                 self.backend = OutlinesBackend(
                     self.vllm_config,
@@ -112,9 +110,8 @@ class StructuredOutputManager:
                     vocab_size=vocab_size,
                 )
             elif backend == "lm-format-enforcer":
-                from vllm.v1.structured_output.backend_lm_format_enforcer import (  # noqa: E501
-                    LMFormatEnforcerBackend,
-                )
+                from vllm.v1.structured_output.backend_lm_format_enforcer import \
+                    LMFormatEnforcerBackend  # noqa: E501
 
                 self.backend = LMFormatEnforcerBackend(
                     self.vllm_config,

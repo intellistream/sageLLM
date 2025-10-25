@@ -3,28 +3,18 @@
 
 import pytest
 import torch
-
 import vllm.plugins
-from vllm.compilation.fusion import (
-    FUSED_OPS,
-    QUANT_OPS,
-    FusedRMSQuantKey,
-    RMSNormQuantFusionPass,
-)
+from vllm.compilation.fusion import (FUSED_OPS, QUANT_OPS, FusedRMSQuantKey,
+                                     RMSNormQuantFusionPass)
 from vllm.compilation.noop_elimination import NoOpEliminationPass
 from vllm.compilation.post_cleanup import PostCleanupPass
-from vllm.config import CompilationConfig, CompilationLevel, PassConfig, VllmConfig
+from vllm.config import (CompilationConfig, CompilationLevel, PassConfig,
+                         VllmConfig)
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape,
-    QuantKey,
-    ScaleDesc,
-)
+    GroupShape, QuantKey, ScaleDesc)
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp,
-    cutlass_fp8_supported,
-    maybe_create_device_identity,
-)
+    Fp8LinearOp, cutlass_fp8_supported, maybe_create_device_identity)
 from vllm.platforms import current_platform
 
 from ..utils import override_cutlass_fp8_supported

@@ -7,10 +7,10 @@ Run `pytest tests/quantization/test_ptpc_fp8.py --forked`.
 
 import pytest
 import torch
-
 from tests.quantization.utils import is_quant_method_supported
 from vllm.model_executor.layers.quantization.fp8 import Fp8KVCacheMethod
-from vllm.model_executor.layers.quantization.ptpc_fp8 import PTPCFp8LinearMethod
+from vllm.model_executor.layers.quantization.ptpc_fp8 import \
+    PTPCFp8LinearMethod
 from vllm.platforms import current_platform
 
 UNSUPPORTED_STR = (

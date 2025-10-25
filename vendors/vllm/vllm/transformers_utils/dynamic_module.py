@@ -3,9 +3,8 @@
 import os
 from typing import Optional, Union
 
-from transformers.dynamic_module_utils import get_class_from_dynamic_module
-
 import vllm.envs as envs
+from transformers.dynamic_module_utils import get_class_from_dynamic_module
 from vllm.logger import init_logger
 
 logger = init_logger(__name__)

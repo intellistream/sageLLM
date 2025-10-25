@@ -4,7 +4,6 @@ from threading import Lock
 
 import pytest
 import torch
-
 import vllm.lora.ops.torch_ops as torch_ops
 import vllm.lora.ops.triton_ops as triton_ops
 from vllm.lora.ops.triton_ops import LoRAKernelMeta

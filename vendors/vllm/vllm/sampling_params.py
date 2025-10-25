@@ -11,7 +11,6 @@ from typing import Annotated, Any, Optional, Union
 
 import msgspec
 from pydantic.dataclasses import dataclass
-
 from vllm.logger import init_logger
 from vllm.logits_process import LogitsProcessor
 from vllm.transformers_utils.tokenizer import AnyTokenizer

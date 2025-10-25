@@ -10,7 +10,6 @@ results based on specific prompts.
 from enum import Enum
 
 from pydantic import BaseModel
-
 from vllm import LLM, SamplingParams
 from vllm.sampling_params import StructuredOutputsParams
 

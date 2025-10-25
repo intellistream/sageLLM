@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import pytest
 import torch
-
 from vllm.attention.selector import _cached_get_attn_backend, get_attn_backend
 from vllm.platforms.cpu import CpuPlatform
 from vllm.platforms.cuda import CudaPlatform
@@ -165,9 +164,8 @@ def test_env(
                             # FlashMLA only supports block_size == 64
                             pytest.skip("FlashMLA only supports block_size 64")
                         else:
-                            from vllm.v1.attention.backends.mla.flashmla import (  # noqa: E501
-                                is_flashmla_supported,
-                            )
+                            from vllm.v1.attention.backends.mla.flashmla import \
+                                is_flashmla_supported  # noqa: E501
 
                             is_supported, _ = is_flashmla_supported()
                             if not is_supported:

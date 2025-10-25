@@ -2,9 +2,9 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
+from tests.models.language.pooling.embed_utils import \
+    run_embedding_correctness_test
 from transformers import AutoModelForSequenceClassification
-
-from tests.models.language.pooling.embed_utils import run_embedding_correctness_test
 
 
 @pytest.mark.parametrize(

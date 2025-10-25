@@ -8,7 +8,6 @@ from typing import Any, Generic, Optional, Union
 
 import torch
 from typing_extensions import TypeVar
-
 from vllm.logger import init_logger
 from vllm.logprobs import PromptLogprobs, SampleLogprobs
 from vllm.lora.request import LoRARequest

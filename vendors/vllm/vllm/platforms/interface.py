@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union
 import numpy as np
 import torch
 from torch.distributed import PrefixStore, ProcessGroup
-
 from vllm.inputs import ProcessorInputs, PromptType
 from vllm.logger import init_logger
 

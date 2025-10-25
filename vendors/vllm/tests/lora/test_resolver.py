@@ -4,7 +4,6 @@
 from typing import Optional
 
 import pytest
-
 from vllm.lora.request import LoRARequest
 from vllm.lora.resolver import LoRAResolver, LoRAResolverRegistry
 

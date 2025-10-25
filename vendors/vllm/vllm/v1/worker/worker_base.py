@@ -8,18 +8,14 @@ from typing import Any, Callable, TypeVar, Union
 
 import torch
 import torch.nn as nn
-
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.logger import init_logger
 from vllm.lora.request import LoRARequest
 from vllm.sequence import ExecuteModelRequest
-from vllm.utils import (
-    enable_trace_function_call_for_thread,
-    resolve_obj_by_qualname,
-    run_method,
-    update_environment_variables,
-    warn_for_unimplemented_methods,
-)
+from vllm.utils import (enable_trace_function_call_for_thread,
+                        resolve_obj_by_qualname, run_method,
+                        update_environment_variables,
+                        warn_for_unimplemented_methods)
 from vllm.v1.kv_cache_interface import KVCacheSpec
 from vllm.v1.outputs import SamplerOutput
 

@@ -5,21 +5,17 @@
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.fused_moe import try_get_optimal_moe_config
+from vllm.model_executor.layers.fused_moe.fused_moe import \
+    try_get_optimal_moe_config
 from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceDelegate,
-    TopKWeightAndReduceNaiveBatched,
-)
+    TopKWeightAndReduceDelegate, TopKWeightAndReduceNaiveBatched)
 from vllm.model_executor.layers.fused_moe.utils import (
-    _resize_cache,
-    moe_kernel_quantize_input,
-    normalize_batched_scales_shape,
-    normalize_scales_shape,
-)
-from vllm.model_executor.layers.quantization.utils.quant_utils import group_broadcast
+    _resize_cache, moe_kernel_quantize_input, normalize_batched_scales_shape,
+    normalize_scales_shape)
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    group_broadcast
 from vllm.triton_utils import tl, triton
 
 

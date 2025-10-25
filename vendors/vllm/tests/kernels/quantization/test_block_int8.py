@@ -6,12 +6,10 @@ import itertools
 
 import pytest
 import torch
-
 from tests.kernels.quant_utils import native_w8a8_block_matmul
 from vllm.config import VllmConfig
-from vllm.model_executor.layers.quantization.utils.int8_utils import (
-    w8a8_block_int8_matmul,
-)
+from vllm.model_executor.layers.quantization.utils.int8_utils import \
+    w8a8_block_int8_matmul
 from vllm.platforms import current_platform
 
 if current_platform.get_device_capability() < (7, 0):

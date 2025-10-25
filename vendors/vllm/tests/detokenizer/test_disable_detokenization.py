@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm.entrypoints.llm import LLM
 from vllm.sampling_params import SamplingParams
 

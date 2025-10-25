@@ -6,17 +6,13 @@ from enum import Enum, auto
 from typing import Any, Optional
 
 import torch
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.sampling_params import SamplingParams
-from vllm.v1.sample.logits_processor import (
-    LOGITSPROCS_GROUP,
-    AdapterLogitsProcessor,
-    BatchUpdate,
-    LogitsProcessor,
-    RequestLogitsProcessor,
-)
+from vllm.v1.sample.logits_processor import (LOGITSPROCS_GROUP,
+                                             AdapterLogitsProcessor,
+                                             BatchUpdate, LogitsProcessor,
+                                             RequestLogitsProcessor)
 from vllm.v1.sample.logits_processor.builtin import process_dict_updates
 
 logger = init_logger(__name__)

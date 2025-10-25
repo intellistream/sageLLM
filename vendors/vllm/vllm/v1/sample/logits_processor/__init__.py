@@ -9,22 +9,18 @@ from functools import partial
 from typing import TYPE_CHECKING, Optional, Union
 
 import torch
-
 from vllm.logger import init_logger
 from vllm.logits_process import LogitsProcessor as RequestLogitsProcessor
 from vllm.sampling_params import SamplingParams
-from vllm.v1.sample.logits_processor.builtin import (
-    LogitBiasLogitsProcessor,
-    MinPLogitsProcessor,
-    MinTokensLogitsProcessor,
-    process_dict_updates,
-)
-from vllm.v1.sample.logits_processor.interface import (
-    BatchUpdate,
-    LogitsProcessor,
-    MoveDirectionality,
-)
-from vllm.v1.sample.logits_processor.state import BatchUpdateBuilder, LogitsProcessors
+from vllm.v1.sample.logits_processor.builtin import (LogitBiasLogitsProcessor,
+                                                     MinPLogitsProcessor,
+                                                     MinTokensLogitsProcessor,
+                                                     process_dict_updates)
+from vllm.v1.sample.logits_processor.interface import (BatchUpdate,
+                                                       LogitsProcessor,
+                                                       MoveDirectionality)
+from vllm.v1.sample.logits_processor.state import (BatchUpdateBuilder,
+                                                   LogitsProcessors)
 
 if TYPE_CHECKING:
     from vllm.config import VllmConfig

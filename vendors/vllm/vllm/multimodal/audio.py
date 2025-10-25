@@ -7,7 +7,6 @@ from typing import Literal, Optional
 
 import numpy as np
 import numpy.typing as npt
-
 from vllm.utils import PlaceholderModule
 
 from .base import MediaIO

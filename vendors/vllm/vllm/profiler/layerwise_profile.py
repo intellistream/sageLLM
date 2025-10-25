@@ -11,15 +11,9 @@ from torch._C._autograd import DeviceType, _KinetoEvent, _ProfilerResult
 from torch._C._profiler import _EventType, _ExperimentalConfig, _ProfilerEvent
 from torch.autograd.profiler import FunctionEvent
 from torch.profiler import ProfilerActivity, profile
-
-from vllm.profiler.utils import (
-    TablePrinter,
-    event_has_module,
-    event_is_torch_op,
-    event_module_repr,
-    event_torch_op_stack_trace,
-    indent_string,
-)
+from vllm.profiler.utils import (TablePrinter, event_has_module,
+                                 event_is_torch_op, event_module_repr,
+                                 event_torch_op_stack_trace, indent_string)
 
 
 @dataclass

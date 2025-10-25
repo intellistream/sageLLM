@@ -6,7 +6,6 @@ import subprocess
 import tempfile
 
 import pytest
-
 from vllm.entrypoints.openai.protocol import BatchRequestOutput
 
 # ruff: noqa: E501

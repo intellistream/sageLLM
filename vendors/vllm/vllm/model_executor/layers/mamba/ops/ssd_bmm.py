@@ -7,7 +7,6 @@
 # ruff: noqa: E501,SIM102
 
 import torch
-
 from vllm.triton_utils import tl, triton
 
 

@@ -20,75 +20,46 @@ from openai.types.responses import (
     ResponseCodeInterpreterCallCompletedEvent,
     ResponseCodeInterpreterCallInProgressEvent,
     ResponseCodeInterpreterCallInterpretingEvent,
-    ResponseCodeInterpreterToolCallParam,
-    ResponseContentPartAddedEvent,
-    ResponseContentPartDoneEvent,
-    ResponseFunctionToolCall,
-    ResponseFunctionWebSearch,
-    ResponseOutputItem,
-    ResponseOutputItemAddedEvent,
-    ResponseOutputItemDoneEvent,
-    ResponseOutputMessage,
-    ResponseOutputText,
-    ResponseReasoningItem,
-    ResponseReasoningTextDeltaEvent,
-    ResponseReasoningTextDoneEvent,
-    ResponseStatus,
-    ResponseTextDeltaEvent,
-    ResponseTextDoneEvent,
-    ResponseWebSearchCallCompletedEvent,
-    ResponseWebSearchCallInProgressEvent,
-    ResponseWebSearchCallSearchingEvent,
-    response_function_web_search,
-    response_text_delta_event,
-)
-from openai.types.responses.response_output_text import Logprob, LogprobTopLogprob
-from openai.types.responses.response_reasoning_item import (
-    Content as ResponseReasoningTextContent,
-)
+    ResponseCodeInterpreterToolCallParam, ResponseContentPartAddedEvent,
+    ResponseContentPartDoneEvent, ResponseFunctionToolCall,
+    ResponseFunctionWebSearch, ResponseOutputItem,
+    ResponseOutputItemAddedEvent, ResponseOutputItemDoneEvent,
+    ResponseOutputMessage, ResponseOutputText, ResponseReasoningItem,
+    ResponseReasoningTextDeltaEvent, ResponseReasoningTextDoneEvent,
+    ResponseStatus, ResponseTextDeltaEvent, ResponseTextDoneEvent,
+    ResponseWebSearchCallCompletedEvent, ResponseWebSearchCallInProgressEvent,
+    ResponseWebSearchCallSearchingEvent, response_function_web_search,
+    response_text_delta_event)
+from openai.types.responses.response_output_text import (Logprob,
+                                                         LogprobTopLogprob)
+from openai.types.responses.response_reasoning_item import \
+    Content as ResponseReasoningTextContent
 from openai_harmony import Message as OpenAIHarmonyMessage
-
 from vllm import envs
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.chat_utils import (
-    ChatCompletionMessageParam,
-    ChatTemplateContentFormatOption,
-)
-from vllm.entrypoints.context import (
-    ConversationContext,
-    HarmonyContext,
-    SimpleContext,
-    StreamingHarmonyContext,
-)
+from vllm.entrypoints.chat_utils import (ChatCompletionMessageParam,
+                                         ChatTemplateContentFormatOption)
+from vllm.entrypoints.context import (ConversationContext, HarmonyContext,
+                                      SimpleContext, StreamingHarmonyContext)
 from vllm.entrypoints.harmony_utils import (
-    get_developer_message,
-    get_stop_tokens_for_assistant_actions,
-    get_system_message,
-    get_user_message,
-    has_custom_tools,
-    parse_output_message,
-    parse_remaining_state,
-    parse_response_input,
-    render_for_completion,
-)
+    get_developer_message, get_stop_tokens_for_assistant_actions,
+    get_system_message, get_user_message, has_custom_tools,
+    parse_output_message, parse_remaining_state, parse_response_input,
+    render_for_completion)
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (
-    DeltaMessage,
-    ErrorResponse,
-    InputTokensDetails,
-    OutputTokensDetails,
-    RequestResponseMetadata,
-    ResponseCompletedEvent,
-    ResponseCreatedEvent,
-    ResponseInProgressEvent,
-    ResponseReasoningPartAddedEvent,
-    ResponseReasoningPartDoneEvent,
-    ResponsesRequest,
-    ResponsesResponse,
-    ResponseUsage,
-    StreamingResponsesResponse,
-)
+from vllm.entrypoints.openai.protocol import (DeltaMessage, ErrorResponse,
+                                              InputTokensDetails,
+                                              OutputTokensDetails,
+                                              RequestResponseMetadata,
+                                              ResponseCompletedEvent,
+                                              ResponseCreatedEvent,
+                                              ResponseInProgressEvent,
+                                              ResponseReasoningPartAddedEvent,
+                                              ResponseReasoningPartDoneEvent,
+                                              ResponsesRequest,
+                                              ResponsesResponse, ResponseUsage,
+                                              StreamingResponsesResponse)
 from vllm.entrypoints.openai.serving_engine import OpenAIServing
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.tool_server import ToolServer

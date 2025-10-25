@@ -4,17 +4,15 @@
 import itertools
 import math
 from abc import ABC, abstractmethod
-from typing import Callable, Final, Generic, Literal, Optional, Protocol, TypeVar, Union
+from typing import (Callable, Final, Generic, Literal, Optional, Protocol,
+                    TypeVar, Union)
 
 import torch
 from transformers import PretrainedConfig
-
 from vllm.attention.backends.registry import _Backend
-from vllm.distributed import (
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-    tensor_model_parallel_all_gather,
-)
+from vllm.distributed import (get_tensor_model_parallel_rank,
+                              get_tensor_model_parallel_world_size,
+                              tensor_model_parallel_all_gather)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 

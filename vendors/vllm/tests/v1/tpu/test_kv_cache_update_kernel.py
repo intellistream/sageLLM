@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 import torch
 import torch_xla
-
 import vllm.v1.attention.backends.pallas  # noqa: F401
 from vllm.platforms import current_platform
 

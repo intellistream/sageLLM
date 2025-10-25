@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from tests.kernels.utils import opcheck
 from vllm._custom_ops import permute_cols
 

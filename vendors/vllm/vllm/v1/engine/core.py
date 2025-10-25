@@ -16,7 +16,6 @@ from typing import Any, Callable, Optional, TypeVar, Union
 
 import msgspec
 import zmq
-
 from vllm.config import ParallelConfig, VllmConfig
 from vllm.distributed import stateless_destroy_torch_distributed_process_group
 from vllm.logger import init_logger
@@ -25,39 +24,25 @@ from vllm.lora.request import LoRARequest
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.cache import engine_receiver_cache_from_config
 from vllm.tasks import POOLING_TASKS, SupportedTask
-from vllm.transformers_utils.config import maybe_register_config_serialize_by_value
-from vllm.utils import (
-    decorate_logs,
-    get_hash_fn_by_name,
-    make_zmq_socket,
-    resolve_obj_by_qualname,
-    set_process_title,
-)
+from vllm.transformers_utils.config import \
+    maybe_register_config_serialize_by_value
+from vllm.utils import (decorate_logs, get_hash_fn_by_name, make_zmq_socket,
+                        resolve_obj_by_qualname, set_process_title)
 from vllm.utils.gc_utils import maybe_attach_gc_debug_callback
-from vllm.v1.core.kv_cache_utils import (
-    BlockHash,
-    generate_scheduler_kv_cache_config,
-    get_kv_cache_configs,
-    get_request_block_hasher,
-    init_none_hash,
-)
+from vllm.v1.core.kv_cache_utils import (BlockHash,
+                                         generate_scheduler_kv_cache_config,
+                                         get_kv_cache_configs,
+                                         get_request_block_hasher,
+                                         init_none_hash)
 from vllm.v1.core.sched.interface import SchedulerInterface
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.core.sched.scheduler import Scheduler as V1Scheduler
-from vllm.v1.engine import (
-    EngineCoreOutputs,
-    EngineCoreRequest,
-    EngineCoreRequestType,
-    ReconfigureDistributedRequest,
-    ReconfigureRankType,
-    UtilityOutput,
-    UtilityResult,
-)
-from vllm.v1.engine.utils import (
-    EngineHandshakeMetadata,
-    EngineZmqAddresses,
-    get_device_indices,
-)
+from vllm.v1.engine import (EngineCoreOutputs, EngineCoreRequest,
+                            EngineCoreRequestType,
+                            ReconfigureDistributedRequest, ReconfigureRankType,
+                            UtilityOutput, UtilityResult)
+from vllm.v1.engine.utils import (EngineHandshakeMetadata, EngineZmqAddresses,
+                                  get_device_indices)
 from vllm.v1.executor.abstract import Executor
 from vllm.v1.kv_cache_interface import KVCacheConfig
 from vllm.v1.metrics.stats import SchedulerStats

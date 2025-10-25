@@ -6,7 +6,6 @@ from typing import Optional, cast
 
 import numpy as np
 import torch
-
 from vllm.lora.request import LoRARequest
 from vllm.sampling_params import SamplingType
 from vllm.utils import length_from_prompt_token_ids_or_embeds, swap_dict_values

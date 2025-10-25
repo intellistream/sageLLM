@@ -10,7 +10,6 @@ https://arxiv.org/abs/2310.18547
 from typing import Optional, Union, final
 
 import torch
-
 from vllm.lora.layers import LoRAMapping
 from vllm.lora.ops.ipex_ops import bgmv_expand, bgmv_expand_slice, bgmv_shrink
 

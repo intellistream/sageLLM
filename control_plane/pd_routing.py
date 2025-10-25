@@ -5,12 +5,8 @@
 
 import logging
 
-from .types import (
-    ExecutionInstance,
-    ExecutionInstanceType,
-    PDSeparationConfig,
-    RequestMetadata,
-)
+from .types import (ExecutionInstance, ExecutionInstanceType,
+                    PDSeparationConfig, RequestMetadata)
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,8 @@
 
 from typing import Optional, Union
 
-from vllm.entrypoints.openai.protocol import ChatCompletionRequest, DeltaMessage
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaMessage)
 from vllm.reasoning import ReasoningParser
 from vllm.transformers_utils.tokenizers.mistral import MistralTokenizer
 

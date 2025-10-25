@@ -37,21 +37,15 @@ from unittest.mock import patch
 
 import torch
 import torch.distributed
+import vllm.envs as envs
 from torch.distributed import Backend, ProcessGroup
 from typing_extensions import deprecated
-
-import vllm.envs as envs
-from vllm.distributed.device_communicators.base_device_communicator import (
-    DeviceCommunicatorBase,
-)
+from vllm.distributed.device_communicators.base_device_communicator import \
+    DeviceCommunicatorBase
 from vllm.distributed.utils import StatelessProcessGroup
 from vllm.logger import init_logger
-from vllm.utils import (
-    direct_register_custom_op,
-    get_distributed_init_method,
-    resolve_obj_by_qualname,
-    supports_custom_op,
-)
+from vllm.utils import (direct_register_custom_op, get_distributed_init_method,
+                        resolve_obj_by_qualname, supports_custom_op)
 
 
 @dataclass
@@ -271,7 +265,8 @@ class GroupCoordinator:
                 unique_name=self.unique_name,
             )
 
-        from vllm.distributed.device_communicators.shm_broadcast import MessageQueue
+        from vllm.distributed.device_communicators.shm_broadcast import \
+            MessageQueue
 
         self.mq_broadcaster: Optional[MessageQueue] = None
         if use_message_queue_broadcaster and self.world_size > 1:
@@ -336,9 +331,8 @@ class GroupCoordinator:
         # only cuda uses this function,
         # so we don't abstract it into the base class
         maybe_ca_context = nullcontext()
-        from vllm.distributed.device_communicators.cuda_communicator import (
-            CudaCommunicator,
-        )
+        from vllm.distributed.device_communicators.cuda_communicator import \
+            CudaCommunicator
 
         if self.device_communicator is not None:
             assert isinstance(self.device_communicator, CudaCommunicator)

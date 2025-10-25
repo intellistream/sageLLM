@@ -10,7 +10,6 @@ from typing import Optional
 
 import pytest
 from transformers import AutoTokenizer
-
 from vllm import LLM, SamplingParams
 
 

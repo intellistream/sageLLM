@@ -4,19 +4,13 @@
 import time
 
 import torch
-
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    per_token_group_quant_fp8,
-    w8a8_triton_block_scaled_mm,
-)
+    per_token_group_quant_fp8, w8a8_triton_block_scaled_mm)
 from vllm.triton_utils import triton
-from vllm.utils.deep_gemm import (
-    calc_diff,
-    fp8_gemm_nt,
-    get_col_major_tma_aligned_tensor,
-    per_block_cast_to_fp8,
-)
+from vllm.utils.deep_gemm import (calc_diff, fp8_gemm_nt,
+                                  get_col_major_tma_aligned_tensor,
+                                  per_block_cast_to_fp8)
 
 
 def benchmark_shape(

@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING, NamedTuple, Optional, Union
 import torch
 
 if TYPE_CHECKING:
-    from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
+    from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
+        KVConnectorStats
 
 
 class LogprobsLists(NamedTuple):

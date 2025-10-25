@@ -6,7 +6,6 @@ import os
 from typing import Optional
 
 import pytest
-
 from tests.utils import RemoteOpenAIServer
 from vllm.platforms import current_platform
 

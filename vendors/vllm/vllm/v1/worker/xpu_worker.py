@@ -4,14 +4,14 @@ import os
 
 import torch
 import torch.distributed
-
 import vllm.envs as envs
 from vllm.config import VllmConfig
 from vllm.distributed import get_world_group
 from vllm.logger import init_logger
 from vllm.model_executor import set_random_seed
 from vllm.platforms import current_platform
-from vllm.v1.worker.gpu_worker import Worker, init_worker_distributed_environment
+from vllm.v1.worker.gpu_worker import (Worker,
+                                       init_worker_distributed_environment)
 from vllm.v1.worker.xpu_model_runner import XPUModelRunner
 
 logger = init_logger(__name__)

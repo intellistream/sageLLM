@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm.entrypoints.openai.tool_parsers import DeepSeekV31ToolParser
 from vllm.transformers_utils.tokenizer import get_tokenizer
 

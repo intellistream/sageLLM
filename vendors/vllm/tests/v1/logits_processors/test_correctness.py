@@ -8,30 +8,23 @@ from typing import NamedTuple, Optional, Union
 import numpy as np
 import pytest
 import torch
-
 from tests.utils import create_new_process_for_each_test
-from tests.v1.sample.utils import (
-    LogitsprocsTestFakes,
-    create_fake_logits,
-    create_penalty_tensor,
-    create_prompt_tokens_tensor,
-    fake_apply_logitsprocs,
-    fake_update_logitsprocs_state,
-)
+from tests.v1.sample.utils import (LogitsprocsTestFakes, create_fake_logits,
+                                   create_penalty_tensor,
+                                   create_prompt_tokens_tensor,
+                                   fake_apply_logitsprocs,
+                                   fake_update_logitsprocs_state)
 from vllm.config import VllmConfig
 from vllm.platforms import current_platform
 from vllm.sampling_params import SamplingParams
 from vllm.utils import is_pin_memory_available
-from vllm.v1.sample.logits_processor import (
-    BatchUpdate,
-    BatchUpdateBuilder,
-    LogitBiasLogitsProcessor,
-    LogitsProcessor,
-    MinPLogitsProcessor,
-    MinTokensLogitsProcessor,
-    MoveDirectionality,
-    build_logitsprocs,
-)
+from vllm.v1.sample.logits_processor import (BatchUpdate, BatchUpdateBuilder,
+                                             LogitBiasLogitsProcessor,
+                                             LogitsProcessor,
+                                             MinPLogitsProcessor,
+                                             MinTokensLogitsProcessor,
+                                             MoveDirectionality,
+                                             build_logitsprocs)
 from vllm.v1.sample.metadata import SamplingMetadata
 
 PIN_MEMORY_AVAILABLE = is_pin_memory_available()

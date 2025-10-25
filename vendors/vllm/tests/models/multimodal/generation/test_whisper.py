@@ -3,7 +3,6 @@
 from typing import Optional
 
 import pytest
-
 from vllm import SamplingParams
 from vllm.assets.audio import AudioAsset
 

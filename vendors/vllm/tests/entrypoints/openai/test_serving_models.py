@@ -5,15 +5,13 @@ from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pytest
-
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.openai.protocol import (
-    ErrorResponse,
-    LoadLoRAAdapterRequest,
-    UnloadLoRAAdapterRequest,
-)
-from vllm.entrypoints.openai.serving_models import BaseModelPath, OpenAIServingModels
+from vllm.entrypoints.openai.protocol import (ErrorResponse,
+                                              LoadLoRAAdapterRequest,
+                                              UnloadLoRAAdapterRequest)
+from vllm.entrypoints.openai.serving_models import (BaseModelPath,
+                                                    OpenAIServingModels)
 from vllm.lora.request import LoRARequest
 
 MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct"

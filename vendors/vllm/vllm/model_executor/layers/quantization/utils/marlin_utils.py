@@ -5,7 +5,6 @@ from typing import Optional
 
 import numpy
 import torch
-
 import vllm.envs as envs
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger

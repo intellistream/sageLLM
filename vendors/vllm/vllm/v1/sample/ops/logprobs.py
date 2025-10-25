@@ -3,7 +3,6 @@
 """Some utilities for logprobs, including logits."""
 
 import torch
-
 from vllm.platforms import current_platform
 
 

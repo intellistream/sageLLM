@@ -13,25 +13,15 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
-from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
-    CheckpointWrapper,
-)
-from torch.distributed.fsdp.fully_sharded_data_parallel import FullyShardedDataParallel
+from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import \
+    CheckpointWrapper
+from torch.distributed.fsdp.fully_sharded_data_parallel import \
+    FullyShardedDataParallel
 from transformers import PretrainedConfig
-
 from vllm.model_executor.models.phi4mm_utils import (
-    AbsolutePositionalEncoding,
-    ConvModule,
-    FeedForward,
-    MeanVarianceNormLayer,
-    MultiHeadedAttention,
-    MultiSequential,
-    NemoConvSubsampling,
-    T5RelativeAttentionLogitBias,
-    adaptive_enc_mask,
-    get_offset,
-    unfold_tensor,
-)
+    AbsolutePositionalEncoding, ConvModule, FeedForward, MeanVarianceNormLayer,
+    MultiHeadedAttention, MultiSequential, NemoConvSubsampling,
+    T5RelativeAttentionLogitBias, adaptive_enc_mask, get_offset, unfold_tensor)
 
 _AUDIO_PLACEHOLDER_TOKEN_ID = 200011  # <|endoftext11|>
 

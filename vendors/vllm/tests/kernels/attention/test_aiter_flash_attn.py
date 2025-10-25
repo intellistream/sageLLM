@@ -5,7 +5,6 @@ from typing import Optional
 
 import pytest
 import torch
-
 import vllm.v1.attention.backends.rocm_aiter_fa  # noqa: F401
 from vllm.platforms import current_platform
 

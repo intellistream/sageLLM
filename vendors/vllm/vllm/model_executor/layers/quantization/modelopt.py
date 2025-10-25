@@ -4,78 +4,47 @@
 from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import torch
-from torch.nn import Module
-from torch.nn.parameter import Parameter
-
 import vllm.envs as envs
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
+from torch.nn import Module
+from torch.nn.parameter import Parameter
 from vllm._custom_ops import cutlass_scaled_fp4_mm, scaled_fp4_quant
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEConfig,
-    FusedMoEQuantConfig,
-    fp8_w8a8_moe_quant_config,
-    nvfp4_moe_quant_config,
-)
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
-    is_valid_flashinfer_cutlass_fused_moe,
-)
+    FusedMoEConfig, FusedMoEQuantConfig, fp8_w8a8_moe_quant_config,
+    nvfp4_moe_quant_config)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
+    is_valid_flashinfer_cutlass_fused_moe
 from vllm.model_executor.layers.fused_moe.layer import (
-    FusedMoE,
-    FusedMoEMethodBase,
-    FusedMoeWeightScaleSupported,
-)
-from vllm.model_executor.layers.linear import (
-    LinearBase,
-    LinearMethodBase,
-    UnquantizedLinearMethod,
-)
+    FusedMoE, FusedMoEMethodBase, FusedMoeWeightScaleSupported)
+from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
+                                               UnquantizedLinearMethod)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
+    QuantizationConfig, QuantizeMethodBase)
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
 from vllm.model_executor.layers.quantization.utils.flashinfer_fp4_moe import (
-    build_flashinfer_fp4_cutlass_moe_prepare_finalize,
-    reorder_w1w3_to_w3w1,
-    select_nvfp4_gemm_impl,
-)
+    build_flashinfer_fp4_cutlass_moe_prepare_finalize, reorder_w1w3_to_w3w1,
+    select_nvfp4_gemm_impl)
 from vllm.model_executor.layers.quantization.utils.flashinfer_utils import (
-    FlashinferMoeBackend,
-    apply_flashinfer_per_tensor_scale_fp8,
+    FlashinferMoeBackend, apply_flashinfer_per_tensor_scale_fp8,
     build_flashinfer_fp8_cutlass_moe_prepare_finalize,
-    flashinfer_cutlass_moe_fp8,
-    get_flashinfer_moe_backend,
-    register_moe_scaling_factors,
-    rotate_flashinfer_fp8_moe_weights,
-    select_cutlass_fp8_gemm_impl,
-    swap_w13_to_w31,
-)
+    flashinfer_cutlass_moe_fp8, get_flashinfer_moe_backend,
+    register_moe_scaling_factors, rotate_flashinfer_fp8_moe_weights,
+    select_cutlass_fp8_gemm_impl, swap_w13_to_w31)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    apply_fp4_marlin_linear,
-    is_fp4_marlin_supported,
-    prepare_fp4_layer_for_marlin,
-    prepare_moe_fp4_layer_for_marlin,
-)
+    apply_fp4_marlin_linear, is_fp4_marlin_supported,
+    prepare_fp4_layer_for_marlin, prepare_moe_fp4_layer_for_marlin)
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape,
-    cutlass_fp4_supported,
-    is_layer_skipped,
-    swizzle_blockscale,
-)
+    GroupShape, cutlass_fp4_supported, is_layer_skipped, swizzle_blockscale)
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp,
-    requantize_with_max_scale,
-)
-from vllm.model_executor.parameter import ModelWeightParameter, PerTensorScaleParameter
+    Fp8LinearOp, requantize_with_max_scale)
+from vllm.model_executor.parameter import (ModelWeightParameter,
+                                           PerTensorScaleParameter)
 from vllm.scalar_type import scalar_types
 from vllm.utils import next_power_of_2
-from vllm.utils.flashinfer import (
-    flashinfer_scaled_fp4_mm,
-    has_flashinfer,
-    has_flashinfer_moe,
-)
+from vllm.utils.flashinfer import (flashinfer_scaled_fp4_mm, has_flashinfer,
+                                   has_flashinfer_moe)
 
 if TYPE_CHECKING:
     from vllm.model_executor.models.utils import WeightsMapper
@@ -346,9 +315,8 @@ class ModelOptFp8MoEMethod(FusedMoEMethodBase):
         super().__init__(layer.moe_config)
         self.layer = layer
         self.quant_config = quant_config
-        from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-            cutlass_fp8_supported,
-        )
+        from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
+            cutlass_fp8_supported
 
         self.cutlass_fp8_supported = cutlass_fp8_supported()
         self.flashinfer_moe_backend: Optional[FlashinferMoeBackend] = None
@@ -474,9 +442,8 @@ class ModelOptFp8MoEMethod(FusedMoEMethodBase):
         layer.w2_weight = Parameter(layer.w2_weight.data, requires_grad=False)
 
         from vllm._custom_ops import scaled_fp8_quant
-        from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-            per_tensor_dequantize,
-        )
+        from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
+            per_tensor_dequantize
 
         # Handle scale parameters
         if hasattr(layer, "w13_weight_scale") and layer.w13_weight_scale is not None:
@@ -649,7 +616,8 @@ class ModelOptFp8MoEMethod(FusedMoEMethodBase):
                 apply_router_weight_on_input=apply_router_weight_on_input,
             )
         else:
-            from vllm.model_executor.layers.fused_moe.fused_moe import fused_experts
+            from vllm.model_executor.layers.fused_moe.fused_moe import \
+                fused_experts
 
             assert self.moe_quant_config is not None
 
@@ -1139,9 +1107,8 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
         moe: FusedMoEConfig,
         layer: torch.nn.Module,
     ) -> None:
-        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import (  # noqa: E501
-            detect_nvfp4_moe_support,
-        )
+        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import \
+            detect_nvfp4_moe_support  # noqa: E501
 
         super().__init__(moe)
         self.quant_config = quant_config
@@ -1324,8 +1291,7 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
         from flashinfer import nvfp4_block_scale_interleave
         from flashinfer.fused_moe.core import (
             _maybe_get_cached_w2_permute_indices,
-            _maybe_get_cached_w3_w1_permute_indices,
-        )
+            _maybe_get_cached_w3_w1_permute_indices)
 
         """Prepare quantized weights for kernel (done offline with weights)."""
         epilogue_tile_m = 128  # FIXME: this depends on the kernel internals
@@ -1612,7 +1578,6 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
             and self.flashinfer_moe_backend == FlashinferMoeBackend.TENSORRT_LLM
         ):
             import flashinfer
-
             from vllm.model_executor.models.llama4 import Llama4MoE
 
             assert self.fused_experts is None
@@ -1743,9 +1708,8 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
             self.allow_flashinfer
             and self.flashinfer_moe_backend == FlashinferMoeBackend.CUTLASS
         ):
-            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (  # noqa: E501
-                flashinfer_cutlass_moe_fp4,
-            )
+            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
+                flashinfer_cutlass_moe_fp4  # noqa: E501
 
             assert self.moe_quant_config is not None
 
@@ -1765,7 +1729,8 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
         else:
             # If no modular kernel is provided, use cutlass_moe_fp4 for TP case
             # only (no EP).
-            from vllm.model_executor.layers.fused_moe.cutlass_moe import cutlass_moe_fp4
+            from vllm.model_executor.layers.fused_moe.cutlass_moe import \
+                cutlass_moe_fp4
 
             assert self.moe_quant_config is not None
             return cutlass_moe_fp4(

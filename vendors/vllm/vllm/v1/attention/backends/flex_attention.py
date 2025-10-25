@@ -8,32 +8,20 @@ from typing import TYPE_CHECKING, Optional, Union
 import torch
 import torch._dynamo.decorators
 import torch.nn.functional as F
-from torch.nn.attention.flex_attention import (
-    BlockMask,
-    _mask_mod_signature,
-    _score_mod_signature,
-    and_masks,
-    create_block_mask,
-    flex_attention,
-)
-
-from vllm.attention.backends.abstract import (
-    AttentionBackend,
-    AttentionImpl,
-    AttentionMetadata,
-    AttentionType,
-    is_quantized_kv_cache,
-)
+from torch.nn.attention.flex_attention import (BlockMask, _mask_mod_signature,
+                                               _score_mod_signature, and_masks,
+                                               create_block_mask,
+                                               flex_attention)
+from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
+                                              AttentionMetadata, AttentionType,
+                                              is_quantized_kv_cache)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
-from vllm.model_executor.layers.batch_invariant import (
-    vllm_kernel_override_batch_invariant,
-)
+from vllm.model_executor.layers.batch_invariant import \
+    vllm_kernel_override_batch_invariant
 from vllm.utils import cdiv, is_torch_equal_or_newer
-from vllm.v1.attention.backends.utils import (
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
-)
+from vllm.v1.attention.backends.utils import (AttentionMetadataBuilder,
+                                              CommonAttentionMetadata)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 logger = init_logger(__name__)

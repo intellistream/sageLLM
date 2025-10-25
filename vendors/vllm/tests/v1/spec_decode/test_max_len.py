@@ -3,7 +3,6 @@
 """Test whether spec decoding handles the max model length properly."""
 
 import pytest
-
 from tests.utils import get_attn_backend_list_based_on_platform
 from vllm import LLM, SamplingParams
 from vllm.platforms import current_platform

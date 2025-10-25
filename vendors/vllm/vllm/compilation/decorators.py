@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 from packaging import version
 from torch._dynamo.symbolic_convert import InliningInstructionTranslator
-
 from vllm.compilation.counter import compilation_counter
 from vllm.compilation.wrapper import TorchCompileWrapperWithCustomDispatcher
 from vllm.config import CompilationLevel, VllmConfig
@@ -340,7 +339,6 @@ def maybe_use_cudagraph_partition_wrapper(vllm_config: VllmConfig):
         and compilation_config.use_inductor_graph_partition
     ):
         from torch._inductor.utils import CUDAGraphWrapperMetadata
-
         from vllm.compilation.cuda_graph import CUDAGraphOptions
         from vllm.platforms import current_platform
 
@@ -383,12 +381,10 @@ def _torch27_patch_tensor_subclasses():
     `BasevLLMParameters` without having to replace them with regular tensors
     before `torch.compile`-time.
     """
-    from vllm.model_executor.parameter import (
-        BasevLLMParameter,
-        ModelWeightParameter,
-        RowvLLMParameter,
-        _ColumnvLLMParameter,
-    )
+    from vllm.model_executor.parameter import (BasevLLMParameter,
+                                               ModelWeightParameter,
+                                               RowvLLMParameter,
+                                               _ColumnvLLMParameter)
 
     def return_false(*args, **kwargs):
         return False

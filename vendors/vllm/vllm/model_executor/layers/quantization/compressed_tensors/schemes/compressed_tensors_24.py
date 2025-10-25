@@ -5,33 +5,24 @@ from typing import Any, Callable, Optional
 
 import torch
 from compressed_tensors import CompressionFormat, ModelCompressor
-from compressed_tensors.quantization import (
-    QuantizationArgs,
-    QuantizationStrategy,
-    QuantizationType,
-)
+from compressed_tensors.quantization import (QuantizationArgs,
+                                             QuantizationStrategy,
+                                             QuantizationType)
 from compressed_tensors.utils import combine_shards
-
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.linear import (
-    MergedColumnParallelLinear,
-    QKVParallelLinear,
-)
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
-    CompressedTensorsScheme,
-)
+from vllm.model_executor.layers.linear import (MergedColumnParallelLinear,
+                                               QKVParallelLinear)
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
+    CompressedTensorsScheme
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
-from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    GroupShape
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    convert_to_channelwise,
-    sparse_cutlass_supported,
-)
-from vllm.model_executor.parameter import (
-    BasevLLMParameter,
-    ChannelQuantScaleParameter,
-    ModelWeightParameter,
-    PerTensorScaleParameter,
-)
+    convert_to_channelwise, sparse_cutlass_supported)
+from vllm.model_executor.parameter import (BasevLLMParameter,
+                                           ChannelQuantScaleParameter,
+                                           ModelWeightParameter,
+                                           PerTensorScaleParameter)
 
 __all__ = ["CompressedTensors24"]
 

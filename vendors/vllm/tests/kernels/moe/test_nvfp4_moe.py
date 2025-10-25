@@ -2,13 +2,10 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
-
 from tests.kernels.moe.utils import make_test_weights
-from tests.kernels.quantization.nvfp4_utils import (
-    FLOAT4_E2M1_MAX,
-    FLOAT8_E4M3_MAX,
-    dequantize_nvfp4_to_dtype,
-)
+from tests.kernels.quantization.nvfp4_utils import (FLOAT4_E2M1_MAX,
+                                                    FLOAT8_E4M3_MAX,
+                                                    dequantize_nvfp4_to_dtype)
 from tests.kernels.utils import torch_moe
 from vllm import _custom_ops as ops
 from vllm.config import ParallelConfig, VllmConfig, set_current_vllm_config

@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pybase64
 import pytest
 import torch
-
 from vllm.entrypoints.renderer import CompletionRenderer, RenderConfig
 from vllm.inputs.data import is_embeds_prompt
 

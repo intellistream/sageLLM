@@ -5,28 +5,18 @@ from itertools import accumulate
 from typing import Callable, Optional
 
 import torch
-from compressed_tensors.transform import (
-    TransformArgs,
-    TransformConfig,
-    TransformLocation,
-    TransformScheme,
-)
+from compressed_tensors.transform import (TransformArgs, TransformConfig,
+                                          TransformLocation, TransformScheme)
 from compressed_tensors.utils import is_match
-
-from vllm.model_executor.layers.linear import (
-    WEIGHT_LOADER_V2_SUPPORTED,
-    LinearMethodBase,
-    QKVCrossParallelLinear,
-)
-from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors import (  # noqa: E501
-    CompressedTensorsScheme,
-)
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.module import (  # noqa: E501
-    HadamardTransform,
-)
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (  # noqa: E501
-    TransformTuple,
-)
+from vllm.model_executor.layers.linear import (WEIGHT_LOADER_V2_SUPPORTED,
+                                               LinearMethodBase,
+                                               QKVCrossParallelLinear)
+from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors import \
+    CompressedTensorsScheme  # noqa: E501
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.module import \
+    HadamardTransform  # noqa: E501
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import \
+    TransformTuple  # noqa: E501
 
 
 class CompressedTensorsLinearTransformMethod(LinearMethodBase):
@@ -44,9 +34,7 @@ class CompressedTensorsLinearTransformMethod(LinearMethodBase):
         output_tfms: dict[int, TransformTuple],
     ) -> "CompressedTensorsLinearTransformMethod":
         from vllm.model_executor.layers.quantization.compressed_tensors.transform.schemes.linear_qutlass_nvfp4 import (  # noqa: E501
-            QutlassNvFP4LinearMethod,
-            is_qutlass_fp4_scheme,
-        )
+            QutlassNvFP4LinearMethod, is_qutlass_fp4_scheme)
 
         assert input_tfms or output_tfms
 

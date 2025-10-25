@@ -4,25 +4,18 @@
 import os
 from typing import Optional
 
-from vllm.model_executor.layers.quantization.kernels.scaled_mm.aiter import (
-    AiterScaledMMLinearKernel,
-)
-from vllm.model_executor.layers.quantization.kernels.scaled_mm.cpu import (
-    CPUScaledMMLinearKernel,
-)
-from vllm.model_executor.layers.quantization.kernels.scaled_mm.cutlass import (
-    CutlassScaledMMLinearKernel,
-)
+from vllm.model_executor.layers.quantization.kernels.scaled_mm.aiter import \
+    AiterScaledMMLinearKernel
+from vllm.model_executor.layers.quantization.kernels.scaled_mm.cpu import \
+    CPUScaledMMLinearKernel
+from vllm.model_executor.layers.quantization.kernels.scaled_mm.cutlass import \
+    CutlassScaledMMLinearKernel
 from vllm.model_executor.layers.quantization.kernels.scaled_mm.ScaledMMLinearKernel import (  # noqa: E501
-    ScaledMMLinearKernel,
-    ScaledMMLinearLayerConfig,
-)
-from vllm.model_executor.layers.quantization.kernels.scaled_mm.triton import (
-    TritonScaledMMLinearKernel,
-)
-from vllm.model_executor.layers.quantization.kernels.scaled_mm.xla import (
-    XLAScaledMMLinearKernel,
-)
+    ScaledMMLinearKernel, ScaledMMLinearLayerConfig)
+from vllm.model_executor.layers.quantization.kernels.scaled_mm.triton import \
+    TritonScaledMMLinearKernel
+from vllm.model_executor.layers.quantization.kernels.scaled_mm.xla import \
+    XLAScaledMMLinearKernel
 from vllm.platforms import PlatformEnum, current_platform
 
 # in priority/performance order (when available)

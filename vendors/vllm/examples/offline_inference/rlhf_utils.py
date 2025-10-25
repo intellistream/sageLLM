@@ -102,7 +102,8 @@ class ColocateWorkerExtension:
     """
 
     def update_weights_from_ipc(self, zmq_handles: dict[str, str]):
-        from vllm.model_executor.model_loader.utils import process_weights_after_loading
+        from vllm.model_executor.model_loader.utils import \
+            process_weights_after_loading
 
         assert self.device is not None
         if not hasattr(self, "_zmq_ctx") or self._zmq_ctx is None:

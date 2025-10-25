@@ -7,7 +7,6 @@ import openai
 import pytest
 import pytest_asyncio
 from transformers import AutoProcessor
-
 from vllm.multimodal.utils import encode_image_base64, fetch_image
 
 from ...utils import RemoteOpenAIServer

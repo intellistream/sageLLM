@@ -6,7 +6,6 @@ import json
 import openai
 import pytest
 import pytest_asyncio
-
 from tests.utils import RemoteOpenAIServer
 from vllm.multimodal.utils import encode_image_base64
 

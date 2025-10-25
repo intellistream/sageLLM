@@ -6,12 +6,11 @@ from typing import Any, Optional
 import ray
 import torch
 from ray.exceptions import RayChannelError
-from ray.experimental.channel.communicator import Communicator, TorchTensorAllocator
+from ray.experimental.channel.communicator import (Communicator,
+                                                   TorchTensorAllocator)
 from torch.distributed import ReduceOp
-
-from vllm.distributed.device_communicators.base_device_communicator import (
-    DeviceCommunicatorBase,
-)
+from vllm.distributed.device_communicators.base_device_communicator import \
+    DeviceCommunicatorBase
 from vllm.distributed.parallel_state import get_pp_group
 from vllm.logger import init_logger
 from vllm.utils import current_stream

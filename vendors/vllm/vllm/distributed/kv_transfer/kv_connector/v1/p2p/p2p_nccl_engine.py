@@ -14,18 +14,11 @@ from typing import Any, Optional
 import msgpack
 import torch
 import zmq
-
 from vllm.config.kv_transfer import KVTransferConfig
 from vllm.distributed.device_communicators.pynccl_wrapper import (
-    NCCLLibrary,
-    buffer_type,
-    cudaStream_t,
-    ncclComm_t,
-    ncclDataTypeEnum,
-)
-from vllm.distributed.kv_transfer.kv_connector.v1.p2p.tensor_memory_pool import (  # noqa: E501
-    TensorMemoryPool,
-)
+    NCCLLibrary, buffer_type, cudaStream_t, ncclComm_t, ncclDataTypeEnum)
+from vllm.distributed.kv_transfer.kv_connector.v1.p2p.tensor_memory_pool import \
+    TensorMemoryPool  # noqa: E501
 from vllm.utils import current_stream, get_ip
 
 logger = logging.getLogger(__name__)

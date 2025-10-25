@@ -4,17 +4,15 @@ from dataclasses import dataclass
 from typing import ClassVar, Optional
 
 import torch
-
-from vllm.attention.backends.abstract import AttentionBackend, AttentionMetadata
+from vllm.attention.backends.abstract import (AttentionBackend,
+                                              AttentionMetadata)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.utils.deep_gemm import get_paged_mqa_logits_metadata
-from vllm.v1.attention.backends.utils import (
-    AttentionCGSupport,
-    AttentionMetadataBuilder,
-    CommonAttentionMetadata,
-    split_decodes_and_prefills,
-)
+from vllm.v1.attention.backends.utils import (AttentionCGSupport,
+                                              AttentionMetadataBuilder,
+                                              CommonAttentionMetadata,
+                                              split_decodes_and_prefills)
 
 logger = init_logger(__name__)
 

@@ -37,7 +37,6 @@ import zmq
 from ray.util.placement_group import placement_group
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
 from torch.multiprocessing.reductions import reduce_tensor
-
 from vllm import LLM
 
 

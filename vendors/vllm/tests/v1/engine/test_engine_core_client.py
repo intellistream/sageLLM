@@ -13,18 +13,19 @@ from unittest.mock import MagicMock
 
 import pytest
 import torch
-from transformers import AutoTokenizer
-
 from tests.utils import multi_gpu_test
+from transformers import AutoTokenizer
 from vllm import SamplingParams
-from vllm.distributed.kv_events import BlockStored, KVEventBatch, ZmqEventPublisher
+from vllm.distributed.kv_events import (BlockStored, KVEventBatch,
+                                        ZmqEventPublisher)
 from vllm.engine.arg_utils import EngineArgs
 from vllm.platforms import current_platform
 from vllm.usage.usage_lib import UsageContext
 from vllm.utils import set_default_torch_num_threads
 from vllm.v1.engine import EngineCoreRequest
 from vllm.v1.engine.core import EngineCore
-from vllm.v1.engine.core_client import AsyncMPClient, EngineCoreClient, SyncMPClient
+from vllm.v1.engine.core_client import (AsyncMPClient, EngineCoreClient,
+                                        SyncMPClient)
 from vllm.v1.engine.utils import CoreEngineProcManager
 from vllm.v1.executor.abstract import Executor
 

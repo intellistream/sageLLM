@@ -14,7 +14,6 @@ import pytest
 import regex as re
 import torch
 from pydantic import BaseModel
-
 from tests.reasoning.utils import run_reasoning_extraction
 from vllm.config import StructuredOutputsConfig
 from vllm.distributed import cleanup_dist_env_and_memory
@@ -22,11 +21,8 @@ from vllm.entrypoints.llm import LLM
 from vllm.outputs import RequestOutput
 from vllm.platforms import current_platform
 from vllm.reasoning.abs_reasoning_parsers import ReasoningParserManager
-from vllm.sampling_params import (
-    GuidedDecodingParams,
-    SamplingParams,
-    StructuredOutputsParams,
-)
+from vllm.sampling_params import (GuidedDecodingParams, SamplingParams,
+                                  StructuredOutputsParams)
 
 if TYPE_CHECKING:
     from vllm.config import TokenizerMode

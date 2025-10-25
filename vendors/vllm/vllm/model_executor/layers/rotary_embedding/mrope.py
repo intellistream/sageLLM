@@ -7,7 +7,6 @@ from typing import Optional, Union
 import numpy as np
 import torch
 from transformers import PretrainedConfig
-
 from vllm.triton_utils import tl, triton
 
 from .base import RotaryEmbedding

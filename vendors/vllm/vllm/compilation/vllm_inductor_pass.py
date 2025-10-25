@@ -8,8 +8,8 @@ from typing import ClassVar, Optional
 import regex as re
 import torch
 from torch._dynamo.utils import lazy_format_graph_code
-from torch._inductor.pattern_matcher import PatternMatcherPass, PatternPrettyPrinter
-
+from torch._inductor.pattern_matcher import (PatternMatcherPass,
+                                             PatternPrettyPrinter)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 

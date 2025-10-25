@@ -12,21 +12,17 @@ from typing import Any
 
 import pytest
 import torch
-
 import vllm.model_executor.model_loader.tensorizer
 from tests.utils import VLLM_PATH, RemoteOpenAIServer
 from vllm import LLM, SamplingParams
 from vllm.engine.arg_utils import EngineArgs
-from vllm.model_executor.model_loader.tensorizer import (
-    TensorizerConfig,
-    TensorSerializer,
-    is_vllm_tensorized,
-    open_stream,
-    tensorize_vllm_model,
-)
-from vllm.model_executor.model_loader.tensorizer_loader import (
-    BLACKLISTED_TENSORIZER_ARGS,
-)
+from vllm.model_executor.model_loader.tensorizer import (TensorizerConfig,
+                                                         TensorSerializer,
+                                                         is_vllm_tensorized,
+                                                         open_stream,
+                                                         tensorize_vllm_model)
+from vllm.model_executor.model_loader.tensorizer_loader import \
+    BLACKLISTED_TENSORIZER_ARGS
 from vllm.utils import PlaceholderModule
 
 from .conftest import DummyExecutor, assert_from_collective_rpc

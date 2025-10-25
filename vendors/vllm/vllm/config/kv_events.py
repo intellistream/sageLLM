@@ -4,7 +4,6 @@
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
-
 from vllm.config.utils import config
 
 

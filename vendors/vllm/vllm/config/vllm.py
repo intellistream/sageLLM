@@ -12,10 +12,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 import torch
+import vllm.envs as envs
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
-
-import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.transformers_utils.runai_utils import is_runai_obj_uri
 from vllm.utils import random_uuid
@@ -37,8 +36,8 @@ from .utils import SupportsHash, config
 
 if TYPE_CHECKING:
     from transformers import PretrainedConfig
-
-    from vllm.model_executor.layers.quantization.base_config import QuantizationConfig
+    from vllm.model_executor.layers.quantization.base_config import \
+        QuantizationConfig
 else:
     PretrainedConfig = Any
 
@@ -216,7 +215,8 @@ class VllmConfig:
         from vllm.platforms import current_platform
 
         if model_config.quantization is not None:
-            from vllm.model_executor.model_loader.weight_utils import get_quant_config
+            from vllm.model_executor.model_loader.weight_utils import \
+                get_quant_config
 
             quant_config = get_quant_config(model_config, load_config)
             capability_tuple = current_platform.get_device_capability()
@@ -693,9 +693,7 @@ class VllmConfig:
             return
 
         from vllm.model_executor.models.config import (
-            MODELS_CONFIG_MAP,
-            HybridAttentionMambaModelConfig,
-        )
+            MODELS_CONFIG_MAP, HybridAttentionMambaModelConfig)
 
         cls = MODELS_CONFIG_MAP.get(architecture, None)
         if cls is not None:
@@ -706,7 +704,8 @@ class VllmConfig:
 
         if self.model_config.convert_type == "classify":
             # Maybe convert ForCausalLM into ForSequenceClassification model.
-            from vllm.model_executor.models.adapters import SequenceClassificationConfig
+            from vllm.model_executor.models.adapters import \
+                SequenceClassificationConfig
 
             SequenceClassificationConfig.verify_and_update_config(self)
 

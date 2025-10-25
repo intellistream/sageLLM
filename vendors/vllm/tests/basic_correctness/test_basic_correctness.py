@@ -11,7 +11,6 @@ from unittest.mock import Mock
 
 import pytest
 import torch
-
 from vllm import LLM
 from vllm.v1.engine.llm_engine import LLMEngine as LLMEngineV1
 

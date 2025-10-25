@@ -6,11 +6,7 @@
 import hashlib
 import random
 
-from .types import (
-    ExecutionInstance,
-    RequestMetadata,
-    SchedulingDecision,
-)
+from .types import ExecutionInstance, RequestMetadata, SchedulingDecision
 
 
 class RequestRouter:

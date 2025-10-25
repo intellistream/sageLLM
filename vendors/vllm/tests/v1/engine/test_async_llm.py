@@ -7,7 +7,6 @@ from typing import Optional
 from unittest.mock import MagicMock
 
 import pytest
-
 from vllm import SamplingParams
 from vllm.assets.image import ImageAsset
 from vllm.config import VllmConfig

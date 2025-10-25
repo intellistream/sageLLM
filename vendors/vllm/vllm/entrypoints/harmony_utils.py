@@ -8,44 +8,22 @@ import json
 from collections.abc import Iterable, Sequence
 from typing import Literal, Union
 
-from openai.types.responses import (
-    ResponseFunctionToolCall,
-    ResponseOutputItem,
-    ResponseOutputMessage,
-    ResponseOutputText,
-    ResponseReasoningItem,
-)
+from openai.types.responses import (ResponseFunctionToolCall,
+                                    ResponseOutputItem, ResponseOutputMessage,
+                                    ResponseOutputText, ResponseReasoningItem)
 from openai.types.responses.response_function_web_search import (
-    ActionFind,
-    ActionOpenPage,
-    ActionSearch,
-    ResponseFunctionWebSearch,
-)
-from openai.types.responses.response_reasoning_item import (
-    Content as ResponseReasoningTextContent,
-)
+    ActionFind, ActionOpenPage, ActionSearch, ResponseFunctionWebSearch)
+from openai.types.responses.response_reasoning_item import \
+    Content as ResponseReasoningTextContent
 from openai.types.responses.tool import Tool
-from openai_harmony import (
-    Author,
-    ChannelConfig,
-    Conversation,
-    DeveloperContent,
-    HarmonyEncodingName,
-    Message,
-    ReasoningEffort,
-    Role,
-    StreamableParser,
-    SystemContent,
-    TextContent,
-    ToolDescription,
-    load_harmony_encoding,
-)
-
+from openai_harmony import (Author, ChannelConfig, Conversation,
+                            DeveloperContent, HarmonyEncodingName, Message,
+                            ReasoningEffort, Role, StreamableParser,
+                            SystemContent, TextContent, ToolDescription,
+                            load_harmony_encoding)
 from vllm import envs
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionToolsParam,
-    ResponseInputOutputItem,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionToolsParam,
+                                              ResponseInputOutputItem)
 from vllm.utils import random_uuid
 
 REASONING_EFFORT = {

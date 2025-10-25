@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-
 from vllm.assets.video import VideoAsset
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.video import OpenCVDynamicVideoBackend, OpenCVVideoBackend

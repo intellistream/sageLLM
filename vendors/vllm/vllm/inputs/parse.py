@@ -1,22 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Literal, NamedTuple, Optional, TypedDict, Union, cast
+from typing import (TYPE_CHECKING, Literal, NamedTuple, Optional, TypedDict,
+                    Union, cast)
 
 from typing_extensions import TypeIs
-
 from vllm.utils import is_list_of
 
-from .data import (
-    EmbedsPrompt,
-    ExplicitEncoderDecoderPrompt,
-    ProcessorInputs,
-    PromptType,
-    SingletonInputs,
-    SingletonPrompt,
-    TextPrompt,
-    TokensPrompt,
-)
+from .data import (EmbedsPrompt, ExplicitEncoderDecoderPrompt, ProcessorInputs,
+                   PromptType, SingletonInputs, SingletonPrompt, TextPrompt,
+                   TokensPrompt)
 
 if TYPE_CHECKING:
     import torch

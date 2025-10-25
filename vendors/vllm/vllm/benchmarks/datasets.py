@@ -33,7 +33,6 @@ import numpy as np
 from PIL import Image
 from transformers import PreTrainedTokenizerBase
 from typing_extensions import deprecated
-
 from vllm.lora.request import LoRARequest
 from vllm.lora.utils import get_adapter_absolute_path
 from vllm.multimodal import MultiModalDataDict

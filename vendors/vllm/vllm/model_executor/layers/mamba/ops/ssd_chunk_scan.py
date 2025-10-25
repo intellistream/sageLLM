@@ -7,7 +7,6 @@
 # ruff: noqa: E501,SIM102
 
 from packaging import version
-
 from vllm.triton_utils import tl, triton
 
 TRITON_22 = version.parse(triton.__version__) >= version.parse("2.2.0")

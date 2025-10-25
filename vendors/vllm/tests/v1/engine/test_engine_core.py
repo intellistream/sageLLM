@@ -8,7 +8,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 
 import pytest
 from transformers import AutoTokenizer
-
 from vllm import SamplingParams
 from vllm.engine.arg_utils import EngineArgs
 from vllm.platforms import current_platform

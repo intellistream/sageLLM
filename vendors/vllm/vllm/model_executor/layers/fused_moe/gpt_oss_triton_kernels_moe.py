@@ -3,16 +3,12 @@
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import (
-    FUSED_MOE_UNQUANTIZED_CONFIG,
-    FusedMoEQuantConfig,
-)
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceNoOP,
-)
+    FUSED_MOE_UNQUANTIZED_CONFIG, FusedMoEQuantConfig)
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
+    TopKWeightAndReduceNoOP
 from vllm.triton_utils import tl, triton
 from vllm.utils import has_triton_kernels
 
@@ -21,8 +17,10 @@ logger = init_logger(__name__)
 if has_triton_kernels():
     try:
         import triton_kernels.swiglu
-        from triton_kernels.matmul_ogs import FnSpecs, FusedActivation, matmul_ogs
-        from triton_kernels.routing import RoutingData, routing, routing_from_bitmatrix
+        from triton_kernels.matmul_ogs import (FnSpecs, FusedActivation,
+                                               matmul_ogs)
+        from triton_kernels.routing import (RoutingData, routing,
+                                            routing_from_bitmatrix)
         from triton_kernels.tensor import Bitmatrix
     except (AttributeError, ImportError) as e:
         logger.error(

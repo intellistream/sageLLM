@@ -5,10 +5,8 @@ from typing import Optional, Union
 import torch
 import torch.distributed as dist
 from torch.distributed import ProcessGroup
-
-from vllm.distributed.device_communicators.all_reduce_utils import (
-    SYMM_MEM_ALL_REDUCE_MAX_SIZES,
-)
+from vllm.distributed.device_communicators.all_reduce_utils import \
+    SYMM_MEM_ALL_REDUCE_MAX_SIZES
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 

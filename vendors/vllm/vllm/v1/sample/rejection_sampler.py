@@ -4,7 +4,6 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
-
 from vllm.logger import init_logger
 from vllm.triton_utils import tl, triton
 from vllm.v1.sample.metadata import SamplingMetadata

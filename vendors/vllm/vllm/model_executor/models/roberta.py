@@ -7,27 +7,17 @@ from typing import Optional, Union
 import torch
 from torch import nn
 from transformers import RobertaConfig
-
 from vllm.config import ModelConfig, VllmConfig
-from vllm.model_executor.layers.pooler import (
-    ClassifierPooler,
-    CLSPool,
-    DispatchPooler,
-    Pooler,
-)
-from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
-from vllm.model_executor.models.bert import (
-    TOKEN_TYPE_SHIFT,
-    BertEmbeddingModel,
-    BertModel,
-    _decode_token_type_ids,
-    _encode_token_type_ids,
-)
-from vllm.model_executor.models.utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    maybe_prefix,
-)
+from vllm.model_executor.layers.pooler import (ClassifierPooler, CLSPool,
+                                               DispatchPooler, Pooler)
+from vllm.model_executor.layers.vocab_parallel_embedding import \
+    VocabParallelEmbedding
+from vllm.model_executor.models.bert import (TOKEN_TYPE_SHIFT,
+                                             BertEmbeddingModel, BertModel,
+                                             _decode_token_type_ids,
+                                             _encode_token_type_ids)
+from vllm.model_executor.models.utils import (AutoWeightsLoader, WeightsMapper,
+                                              maybe_prefix)
 from vllm.sequence import IntermediateTensors
 
 from .bert_with_rope import BertWithRope, JinaRobertaModel

@@ -10,72 +10,44 @@ import torch.nn as nn
 from pydantic import ValidationError
 from tqdm.auto import tqdm
 from typing_extensions import TypeVar
-
-from vllm.beam_search import (
-    BeamSearchInstance,
-    BeamSearchOutput,
-    BeamSearchSequence,
-    create_sort_beams_key_function,
-)
-from vllm.config import (
-    CompilationConfig,
-    ModelDType,
-    StructuredOutputsConfig,
-    TokenizerMode,
-    is_init_field,
-)
-from vllm.engine.arg_utils import (
-    ConvertOption,
-    EngineArgs,
-    HfOverrides,
-    PoolerConfig,
-    RunnerOption,
-)
-from vllm.entrypoints.chat_utils import (
-    ChatCompletionMessageParam,
-    ChatTemplateContentFormatOption,
-    apply_hf_chat_template,
-    apply_mistral_chat_template,
-    parse_chat_messages,
-    resolve_chat_template_content_format,
-)
-from vllm.entrypoints.score_utils import (
-    ScoreContentPartParam,
-    ScoreMultiModalParam,
-    _cosine_similarity,
-    _validate_score_input_lens,
-    compress_token_type_ids,
-    get_score_prompt,
-)
-from vllm.entrypoints.utils import _validate_truncation_size, log_non_default_args
-from vllm.inputs import (
-    DataPrompt,
-    PromptType,
-    SingletonPrompt,
-    TextPrompt,
-    TokensPrompt,
-)
+from vllm.beam_search import (BeamSearchInstance, BeamSearchOutput,
+                              BeamSearchSequence,
+                              create_sort_beams_key_function)
+from vllm.config import (CompilationConfig, ModelDType,
+                         StructuredOutputsConfig, TokenizerMode, is_init_field)
+from vllm.engine.arg_utils import (ConvertOption, EngineArgs, HfOverrides,
+                                   PoolerConfig, RunnerOption)
+from vllm.entrypoints.chat_utils import (ChatCompletionMessageParam,
+                                         ChatTemplateContentFormatOption,
+                                         apply_hf_chat_template,
+                                         apply_mistral_chat_template,
+                                         parse_chat_messages,
+                                         resolve_chat_template_content_format)
+from vllm.entrypoints.score_utils import (ScoreContentPartParam,
+                                          ScoreMultiModalParam,
+                                          _cosine_similarity,
+                                          _validate_score_input_lens,
+                                          compress_token_type_ids,
+                                          get_score_prompt)
+from vllm.entrypoints.utils import (_validate_truncation_size,
+                                    log_non_default_args)
+from vllm.inputs import (DataPrompt, PromptType, SingletonPrompt, TextPrompt,
+                         TokensPrompt)
 from vllm.inputs.parse import get_prompt_components
 from vllm.logger import init_logger
 from vllm.lora.request import LoRARequest
 from vllm.model_executor.layers.quantization import QuantizationMethods
-from vllm.outputs import (
-    ClassificationRequestOutput,
-    EmbeddingRequestOutput,
-    PoolingRequestOutput,
-    RequestOutput,
-    ScoringRequestOutput,
-)
+from vllm.outputs import (ClassificationRequestOutput, EmbeddingRequestOutput,
+                          PoolingRequestOutput, RequestOutput,
+                          ScoringRequestOutput)
 from vllm.plugins.io_processors import get_io_processor
 from vllm.pooling_params import PoolingParams
-from vllm.sampling_params import BeamSearchParams, RequestOutputKind, SamplingParams
+from vllm.sampling_params import (BeamSearchParams, RequestOutputKind,
+                                  SamplingParams)
 from vllm.tasks import PoolingTask
-from vllm.transformers_utils.tokenizer import (
-    AnyTokenizer,
-    MistralTokenizer,
-    get_cached_tokenizer,
-    init_tokenizer_from_configs,
-)
+from vllm.transformers_utils.tokenizer import (AnyTokenizer, MistralTokenizer,
+                                               get_cached_tokenizer,
+                                               init_tokenizer_from_configs)
 from vllm.usage.usage_lib import UsageContext
 from vllm.utils import Counter, Device, as_iter, is_list_of
 from vllm.v1.engine import EngineCoreRequest

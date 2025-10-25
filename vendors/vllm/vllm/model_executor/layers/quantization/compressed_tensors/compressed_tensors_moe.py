@@ -6,75 +6,50 @@ from enum import Enum
 from typing import Callable, Optional, Union
 
 import torch
-from compressed_tensors import CompressionFormat
-from compressed_tensors.quantization import ActivationOrdering, QuantizationStrategy
-
 import vllm.envs as envs
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
+from compressed_tensors import CompressionFormat
+from compressed_tensors.quantization import (ActivationOrdering,
+                                             QuantizationStrategy)
 from vllm import _custom_ops as ops
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe import (
-    FusedMoE,
-    FusedMoEActivationFormat,
-    FusedMoEConfig,
-    FusedMoEMethodBase,
-    FusedMoEPermuteExpertsUnpermute,
-    FusedMoeWeightScaleSupported,
-)
+    FusedMoE, FusedMoEActivationFormat, FusedMoEConfig, FusedMoEMethodBase,
+    FusedMoEPermuteExpertsUnpermute, FusedMoeWeightScaleSupported)
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig,
-    fp8_w8a8_moe_quant_config,
-    int4_w4a16_moe_quant_config,
-    int8_w8a8_moe_quant_config,
-    int8_w8a16_moe_quant_config,
-    nvfp4_moe_quant_config,
-)
+    FusedMoEQuantConfig, fp8_w8a8_moe_quant_config,
+    int4_w4a16_moe_quant_config, int8_w8a8_moe_quant_config,
+    int8_w8a16_moe_quant_config, nvfp4_moe_quant_config)
 from vllm.model_executor.layers.fused_moe.cpu_fused_moe import select_experts
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
-    is_valid_flashinfer_cutlass_fused_moe,
-)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
+    is_valid_flashinfer_cutlass_fused_moe
 from vllm.model_executor.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16 import (  # noqa
-    WNA16_SUPPORTED_BITS,
-    WNA16_SUPPORTED_TYPES_MAP,
-)
-from vllm.model_executor.layers.quantization.compressed_tensors.utils import (
-    find_matched_target,
-)
+    WNA16_SUPPORTED_BITS, WNA16_SUPPORTED_TYPES_MAP)
+from vllm.model_executor.layers.quantization.compressed_tensors.utils import \
+    find_matched_target
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.model_executor.layers.quantization.utils.flashinfer_fp4_moe import (
-    build_flashinfer_fp4_cutlass_moe_prepare_finalize,
-    reorder_w1w3_to_w3w1,
-    select_nvfp4_gemm_impl,
-)
+    build_flashinfer_fp4_cutlass_moe_prepare_finalize, reorder_w1w3_to_w3w1,
+    select_nvfp4_gemm_impl)
 from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    expert_weight_is_col_major,
-    requant_weight_ue8m0_inplace,
-)
+    expert_weight_is_col_major, requant_weight_ue8m0_inplace)
 from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    check_moe_marlin_supports_layer,
-    marlin_make_workspace_new,
-    marlin_moe_permute_scales,
-)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    prepare_moe_fp4_layer_for_marlin,
-)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
-    prepare_moe_fp8_layer_for_marlin,
-)
-from vllm.model_executor.layers.quantization.utils.quant_utils import swizzle_blockscale
+    check_moe_marlin_supports_layer, marlin_make_workspace_new,
+    marlin_moe_permute_scales)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import \
+    prepare_moe_fp4_layer_for_marlin
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import \
+    prepare_moe_fp8_layer_for_marlin
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    swizzle_blockscale
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    all_close_1d,
-    normalize_e4m3fn_to_e4m3fnuz,
-    per_tensor_dequantize,
-)
+    all_close_1d, normalize_e4m3fn_to_e4m3fnuz, per_tensor_dequantize)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import CpuArchEnum, current_platform
 from vllm.scalar_type import scalar_types
-from vllm.utils.deep_gemm import (
-    get_col_major_tma_aligned_tensor,
-    is_deep_gemm_e8m0_used,
-)
+from vllm.utils.deep_gemm import (get_col_major_tma_aligned_tensor,
+                                  is_deep_gemm_e8m0_used)
 
 logger = init_logger(__name__)
 
@@ -177,9 +152,8 @@ class CompressedTensorsMoEMethod(FusedMoEMethodBase):
 
 class CompressedTensorsW4A4MoeMethod(CompressedTensorsMoEMethod):
     def __init__(self, moe: FusedMoEConfig):
-        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import (  # noqa: E501
-            detect_nvfp4_moe_support,
-        )
+        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import \
+            detect_nvfp4_moe_support  # noqa: E501
 
         super().__init__(moe)
         _nvfp4 = detect_nvfp4_moe_support(self.__class__.__name__)
@@ -502,9 +476,8 @@ class CompressedTensorsW4A4MoeMethod(CompressedTensorsMoEMethod):
 
         # FlashInfer fused experts path
         elif self.allow_flashinfer:
-            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (  # noqa: E501
-                flashinfer_cutlass_moe_fp4,
-            )
+            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
+                flashinfer_cutlass_moe_fp4  # noqa: E501
 
             assert is_valid_flashinfer_cutlass_fused_moe(
                 x, layer.w13_weight, layer.w2_weight
@@ -526,7 +499,8 @@ class CompressedTensorsW4A4MoeMethod(CompressedTensorsMoEMethod):
                 apply_router_weight_on_input=apply_router_weight_on_input,
             )
         else:
-            from vllm.model_executor.layers.fused_moe.cutlass_moe import cutlass_moe_fp4
+            from vllm.model_executor.layers.fused_moe.cutlass_moe import \
+                cutlass_moe_fp4
 
             assert expert_map is None, (
                 "Expert Parallelism / expert_map "
@@ -599,9 +573,8 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
         # Disable marlin for rocm
         if current_platform.is_rocm():
             self.use_marlin = False
-        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
-            is_rocm_aiter_moe_enabled,
-        )
+        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
+            is_rocm_aiter_moe_enabled
 
         self.rocm_aiter_moe_enabled = is_rocm_aiter_moe_enabled()
 
@@ -847,9 +820,7 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
         # Property to determine if AITER is used
         if self.rocm_aiter_moe_enabled:
             from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa E501
-                rocm_aiter_fused_experts,
-                shuffle_weights,
-            )
+                rocm_aiter_fused_experts, shuffle_weights)
 
             # reshaping weights is required for aiter moe kernel.
             shuffled_w13, shuffled_w2 = shuffle_weights(
@@ -928,9 +899,7 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
         assert self.moe_quant_config is not None
         if self.use_cutlass:
             from vllm.model_executor.layers.fused_moe import (
-                CutlassBatchedExpertsFp8,
-                CutlassExpertsFp8,
-            )
+                CutlassBatchedExpertsFp8, CutlassExpertsFp8)
 
             experts: FusedMoEPermuteExpertsUnpermute
 
@@ -969,12 +938,10 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
             return experts
 
         # triton path
-        from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (  # noqa: E501
-            BatchedTritonOrDeepGemmExperts,
-        )
-        from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import (
-            TritonOrDeepGemmExperts,
-        )
+        from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import \
+            BatchedTritonOrDeepGemmExperts  # noqa: E501
+        from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import \
+            TritonOrDeepGemmExperts
 
         assert not self.rocm_aiter_moe_enabled and not self.use_marlin
 
@@ -1086,9 +1053,8 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
             )
 
         elif self.rocm_aiter_moe_enabled:
-            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa E501
-                rocm_aiter_fused_experts,
-            )
+            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
+                rocm_aiter_fused_experts  # noqa E501
 
             assert per_act_token == per_channel_quant
             assert self.moe_quant_config is not None
@@ -1140,9 +1106,8 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
                     quant_config=self.moe_quant_config,
                 )
             else:
-                from vllm.model_executor.layers.fused_moe.cutlass_moe import (
-                    cutlass_moe_fp8,
-                )
+                from vllm.model_executor.layers.fused_moe.cutlass_moe import \
+                    cutlass_moe_fp8
 
                 assert per_act_token == per_channel_quant
                 assert self.moe_quant_config is not None

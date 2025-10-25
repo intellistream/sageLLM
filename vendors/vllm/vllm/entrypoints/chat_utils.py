@@ -8,7 +8,8 @@ from collections import Counter, defaultdict, deque
 from collections.abc import Awaitable, Iterable
 from functools import cached_property, lru_cache, partial
 from pathlib import Path
-from typing import Any, Callable, Generic, Literal, Optional, TypeVar, Union, cast
+from typing import (Any, Callable, Generic, Literal, Optional, TypeVar, Union,
+                    cast)
 
 import jinja2
 import jinja2.ext
@@ -17,37 +18,35 @@ import jinja2.nodes
 import jinja2.parser
 import jinja2.sandbox
 import transformers.utils.chat_template_utils as hf_chat_utils
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionContentPartImageParam,
-    ChatCompletionContentPartInputAudioParam,
-    ChatCompletionContentPartRefusalParam,
-    ChatCompletionContentPartTextParam,
-    ChatCompletionMessageToolCallParam,
-    ChatCompletionToolMessageParam,
-)
-from openai.types.chat import (
-    ChatCompletionContentPartParam as OpenAIChatCompletionContentPartParam,
-)
-from openai.types.chat import (
-    ChatCompletionMessageParam as OpenAIChatCompletionMessageParam,
-)
-from openai.types.chat.chat_completion_content_part_input_audio_param import InputAudio
+from openai.types.chat import (ChatCompletionAssistantMessageParam,
+                               ChatCompletionContentPartImageParam,
+                               ChatCompletionContentPartInputAudioParam)
+from openai.types.chat import \
+    ChatCompletionContentPartParam as OpenAIChatCompletionContentPartParam
+from openai.types.chat import (ChatCompletionContentPartRefusalParam,
+                               ChatCompletionContentPartTextParam)
+from openai.types.chat import \
+    ChatCompletionMessageParam as OpenAIChatCompletionMessageParam
+from openai.types.chat import (ChatCompletionMessageToolCallParam,
+                               ChatCompletionToolMessageParam)
+from openai.types.chat.chat_completion_content_part_input_audio_param import \
+    InputAudio
 from openai.types.responses import ResponseInputImageParam
 from openai_harmony import Message as OpenAIHarmonyMessage
 from PIL import Image
 from pydantic import BaseModel, ConfigDict, TypeAdapter
-from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast, ProcessorMixin
-
+from transformers import (PreTrainedTokenizer, PreTrainedTokenizerFast,
+                          ProcessorMixin)
 # pydantic needs the TypedDict from typing_extensions
 from typing_extensions import Required, TypeAlias, TypedDict
-
 from vllm.config import ModelConfig
 from vllm.logger import init_logger
 from vllm.model_executor.models import SupportsMultiModal
-from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalDataDict, MultiModalUUIDDict
+from vllm.multimodal import (MULTIMODAL_REGISTRY, MultiModalDataDict,
+                             MultiModalUUIDDict)
 from vllm.multimodal.utils import MediaConnector
-from vllm.transformers_utils.chat_templates import get_chat_template_fallback_path
+from vllm.transformers_utils.chat_templates import \
+    get_chat_template_fallback_path
 from vllm.transformers_utils.processor import cached_get_processor
 from vllm.transformers_utils.tokenizer import AnyTokenizer, MistralTokenizer
 from vllm.utils import random_uuid, supports_kw

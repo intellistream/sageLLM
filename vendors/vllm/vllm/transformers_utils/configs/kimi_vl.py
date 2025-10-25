@@ -4,7 +4,6 @@
 from typing import Optional, Union
 
 from transformers.configuration_utils import PretrainedConfig
-
 from vllm.transformers_utils.configs.deepseek_vl2 import DeepseekV2Config
 from vllm.transformers_utils.configs.moonvit import MoonViTConfig
 

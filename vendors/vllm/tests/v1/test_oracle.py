@@ -3,7 +3,6 @@
 import os
 
 import pytest
-
 import vllm.envs as envs
 from vllm import LLM
 from vllm.engine.arg_utils import AsyncEngineArgs

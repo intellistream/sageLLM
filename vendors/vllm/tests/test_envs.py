@@ -5,7 +5,6 @@ import os
 from unittest.mock import patch
 
 import pytest
-
 from vllm.envs import env_list_with_choices, env_with_choices
 
 

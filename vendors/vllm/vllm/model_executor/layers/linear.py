@@ -8,31 +8,23 @@ from typing import Any, Literal, Optional, Union
 import torch
 import torch.nn as nn
 from torch.nn.parameter import Parameter, UninitializedParameter
-
-from vllm.distributed import (
-    divide,
-    get_tensor_model_parallel_rank,
-    get_tensor_model_parallel_world_size,
-    split_tensor_along_last_dim,
-    tensor_model_parallel_all_gather,
-    tensor_model_parallel_all_reduce,
-)
+from vllm.distributed import (divide, get_tensor_model_parallel_rank,
+                              get_tensor_model_parallel_world_size,
+                              split_tensor_along_last_dim,
+                              tensor_model_parallel_all_gather,
+                              tensor_model_parallel_all_reduce)
 from vllm.logger import init_logger
 from vllm.model_executor.custom_op import CustomOp
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
+    QuantizationConfig, QuantizeMethodBase)
 from vllm.model_executor.layers.utils import dispatch_unquantized_gemm
-from vllm.model_executor.parameter import (
-    BasevLLMParameter,
-    BlockQuantScaleParameter,
-    ModelWeightParameter,
-    PackedColumnParameter,
-    PackedvLLMParameter,
-    PerTensorScaleParameter,
-    RowvLLMParameter,
-)
+from vllm.model_executor.parameter import (BasevLLMParameter,
+                                           BlockQuantScaleParameter,
+                                           ModelWeightParameter,
+                                           PackedColumnParameter,
+                                           PackedvLLMParameter,
+                                           PerTensorScaleParameter,
+                                           RowvLLMParameter)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 from vllm.utils import GiB_bytes
@@ -245,7 +237,8 @@ class UnquantizedLinearMethod(LinearMethodBase):
 
     def process_weights_after_loading(self, layer: torch.nn.Module) -> None:
         if current_platform.is_cpu():
-            from vllm.model_executor.layers.utils import dispatch_cpu_unquantized_gemm
+            from vllm.model_executor.layers.utils import \
+                dispatch_cpu_unquantized_gemm
 
             dispatch_cpu_unquantized_gemm(layer, remove_weight=True)
 

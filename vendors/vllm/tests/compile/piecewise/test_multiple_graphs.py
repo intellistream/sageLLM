@@ -7,17 +7,12 @@ are compiled and graph captured separately.
 
 import torch
 from torch import nn
-
 from vllm.compilation.backends import set_model_tag
 from vllm.compilation.counter import compilation_counter
-from vllm.compilation.decorators import ignore_torch_compile, support_torch_compile
-from vllm.config import (
-    CompilationConfig,
-    CompilationLevel,
-    CUDAGraphMode,
-    VllmConfig,
-    set_current_vllm_config,
-)
+from vllm.compilation.decorators import (ignore_torch_compile,
+                                         support_torch_compile)
+from vllm.config import (CompilationConfig, CompilationLevel, CUDAGraphMode,
+                         VllmConfig, set_current_vllm_config)
 from vllm.forward_context import BatchDescriptor, set_forward_context
 
 # This import automatically registers `torch.ops.silly.attention`

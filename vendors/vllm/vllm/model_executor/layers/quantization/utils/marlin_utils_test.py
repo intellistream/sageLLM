@@ -6,16 +6,12 @@ from typing import Optional
 
 import numpy as np
 import torch
-
 from vllm.scalar_type import ScalarType
 
-from .marlin_utils import GPTQ_MARLIN_TILE, marlin_permute_scales, marlin_zero_points
-from .quant_utils import (
-    get_pack_factor,
-    gptq_quantize_weights,
-    quantize_weights,
-    sort_weights,
-)
+from .marlin_utils import (GPTQ_MARLIN_TILE, marlin_permute_scales,
+                           marlin_zero_points)
+from .quant_utils import (get_pack_factor, gptq_quantize_weights,
+                          quantize_weights, sort_weights)
 
 
 class MarlinWorkspace:

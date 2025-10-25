@@ -6,14 +6,8 @@ import random
 import tempfile
 from unittest.mock import patch
 
-from vllm.config import (
-    CacheConfig,
-    DeviceConfig,
-    ModelConfig,
-    ParallelConfig,
-    SchedulerConfig,
-    VllmConfig,
-)
+from vllm.config import (CacheConfig, DeviceConfig, ModelConfig,
+                         ParallelConfig, SchedulerConfig, VllmConfig)
 from vllm.config.load import LoadConfig
 from vllm.config.lora import LoRAConfig
 from vllm.lora.models import LoRAMapping

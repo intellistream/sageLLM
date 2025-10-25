@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 import pytest
-
 import vllm
 from vllm.assets.image import ImageAsset
 from vllm.lora.request import LoRARequest

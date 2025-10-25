@@ -11,10 +11,10 @@ from typing import Any, Optional, Union
 from fastapi import Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.background import BackgroundTask, BackgroundTasks
-
 from vllm.engine.arg_utils import EngineArgs
 from vllm.entrypoints.openai.cli_args import make_arg_parser
-from vllm.entrypoints.openai.protocol import ChatCompletionRequest, CompletionRequest
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              CompletionRequest)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.utils import FlexibleArgumentParser

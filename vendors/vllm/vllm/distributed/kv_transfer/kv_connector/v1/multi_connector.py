@@ -6,16 +6,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Optional
 
 import torch
-
 from vllm.config import VllmConfig
 from vllm.config.kv_transfer import KVTransferConfig
-from vllm.distributed.kv_transfer.kv_connector.factory import KVConnectorFactory
+from vllm.distributed.kv_transfer.kv_connector.factory import \
+    KVConnectorFactory
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
-    KVConnectorBase_V1,
-    KVConnectorMetadata,
-    KVConnectorRole,
-)
-from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
+    KVConnectorBase_V1, KVConnectorMetadata, KVConnectorRole)
+from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
+    KVConnectorStats
 from vllm.logger import init_logger
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.outputs import KVConnectorOutput

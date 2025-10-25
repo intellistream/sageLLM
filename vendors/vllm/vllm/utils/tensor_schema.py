@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
-from typing import Annotated, Any, Optional, Union, get_args, get_origin, get_type_hints
+from typing import (Annotated, Any, Optional, Union, get_args, get_origin,
+                    get_type_hints)
 
 import torch
-
 from vllm.logger import init_logger
 
 logger = init_logger(__name__)

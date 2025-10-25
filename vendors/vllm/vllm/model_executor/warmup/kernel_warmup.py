@@ -9,7 +9,6 @@ happen during model execution.
 from typing import TYPE_CHECKING
 
 import torch
-
 import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.model_executor.warmup.deep_gemm_warmup import deep_gemm_warmup

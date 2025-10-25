@@ -11,16 +11,13 @@ from typing import Callable, Generator, Literal
 
 import grpc
 import pytest
-from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
-    ExportTraceServiceResponse,
-)
+from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import \
+    ExportTraceServiceResponse
 from opentelemetry.proto.collector.trace.v1.trace_service_pb2_grpc import (
-    TraceServiceServicer,
-    add_TraceServiceServicer_to_server,
-)
+    TraceServiceServicer, add_TraceServiceServicer_to_server)
 from opentelemetry.proto.common.v1.common_pb2 import AnyValue, KeyValue
-from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_TRACES_INSECURE
-
+from opentelemetry.sdk.environment_variables import \
+    OTEL_EXPORTER_OTLP_TRACES_INSECURE
 from vllm import LLM, SamplingParams
 from vllm.tracing import SpanAttributes
 

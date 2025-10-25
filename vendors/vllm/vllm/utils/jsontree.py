@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Callable, TypeVar, Union, cast, overload
 
 if TYPE_CHECKING:
     import torch
-
     from vllm.multimodal.inputs import BatchedTensorInputs
 
 _T = TypeVar("_T")

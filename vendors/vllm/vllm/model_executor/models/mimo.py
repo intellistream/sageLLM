@@ -32,7 +32,6 @@ from typing import Optional, Union
 
 import torch
 import torch.nn as nn
-
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
 from vllm.distributed import get_pp_group
@@ -40,9 +39,7 @@ from vllm.logger import init_logger
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader,
-    maybe_remap_kv_scale_name,
-)
+    default_weight_loader, maybe_remap_kv_scale_name)
 from vllm.model_executor.models.qwen2 import Qwen2ForCausalLM, Qwen2Model
 from vllm.sequence import IntermediateTensors
 

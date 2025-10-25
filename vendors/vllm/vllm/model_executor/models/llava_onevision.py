@@ -7,27 +7,18 @@ from typing import Annotated, Final, Literal, Optional, Protocol, Union
 
 import torch
 import torch.nn as nn
-from transformers import BatchFeature, LlavaOnevisionConfig, LlavaOnevisionProcessor
+from transformers import (BatchFeature, LlavaOnevisionConfig,
+                          LlavaOnevisionProcessor)
 from transformers.models.llava_onevision.modeling_llava_onevision import (
-    get_anyres_image_grid_shape,
-    unpad_image,
-)
-
+    get_anyres_image_grid_shape, unpad_image)
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-)
-from vllm.multimodal.parse import (
-    ImageSize,
-    MultiModalDataItems,
-    VideoEmbeddingItems,
-    VideoProcessorItems,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems)
+from vllm.multimodal.parse import (ImageSize, MultiModalDataItems,
+                                   VideoEmbeddingItems, VideoProcessorItems)
 from vllm.multimodal.processing import PromptReplacement, PromptUpdate
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
@@ -35,19 +26,11 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 from .clip import CLIPVisionModel
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .llava import LlavaDummyInputsBuilder, init_vision_tower_for_llava
-from .llava_next import (
-    BaseLlavaNextMultiModalProcessor,
-    LlavaNextLikeConfig,
-    LlavaNextProcessingInfo,
-)
+from .llava_next import (BaseLlavaNextMultiModalProcessor, LlavaNextLikeConfig,
+                         LlavaNextProcessingInfo)
 from .siglip import SiglipVisionModel
-from .utils import (
-    AutoWeightsLoader,
-    WeightsMapper,
-    flatten_bn,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
+from .utils import (AutoWeightsLoader, WeightsMapper, flatten_bn,
+                    init_vllm_registered_model, maybe_prefix)
 
 # For profile run
 _MAX_FRAMES_PER_VIDEO = 16

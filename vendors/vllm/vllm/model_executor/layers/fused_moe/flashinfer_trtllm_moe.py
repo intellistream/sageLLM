@@ -3,14 +3,12 @@
 from typing import Optional
 
 import torch
-
-from vllm.model_executor.layers.fused_moe.utils import moe_kernel_quantize_input
-from vllm.model_executor.layers.quantization.utils.flashinfer_utils import (
-    calculate_tile_tokens_dim,
-)
-from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    per_token_group_quant_fp8,
-)
+from vllm.model_executor.layers.fused_moe.utils import \
+    moe_kernel_quantize_input
+from vllm.model_executor.layers.quantization.utils.flashinfer_utils import \
+    calculate_tile_tokens_dim
+from vllm.model_executor.layers.quantization.utils.fp8_utils import \
+    per_token_group_quant_fp8
 from vllm.utils import direct_register_custom_op
 
 
@@ -134,7 +132,8 @@ def flashinfer_fused_moe_per_tensor_scale_fp8(
         per_act_token_quant=False,
     )
 
-    from vllm.utils.flashinfer import flashinfer_trtllm_fp8_per_tensor_scale_moe
+    from vllm.utils.flashinfer import \
+        flashinfer_trtllm_fp8_per_tensor_scale_moe
 
     return flashinfer_trtllm_fp8_per_tensor_scale_moe(
         routing_logits=routing_logits,

@@ -4,15 +4,12 @@ from dataclasses import dataclass
 
 import vllm.envs as envs
 from vllm.logger import init_logger
-from vllm.model_executor.layers.quantization.utils.flashinfer_fp4_moe import (
-    is_flashinfer_fp4_cutlass_moe_available,
-)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    is_fp4_marlin_supported,
-)
-from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    cutlass_fp4_supported,
-)
+from vllm.model_executor.layers.quantization.utils.flashinfer_fp4_moe import \
+    is_flashinfer_fp4_cutlass_moe_available
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import \
+    is_fp4_marlin_supported
+from vllm.model_executor.layers.quantization.utils.quant_utils import \
+    cutlass_fp4_supported
 
 __all__ = ["detect_nvfp4_moe_support", "NvFp4Support"]
 

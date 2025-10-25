@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch
-
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.platforms import CpuArchEnum, current_platform
 from vllm.scalar_type import scalar_types

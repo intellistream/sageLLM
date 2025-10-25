@@ -6,13 +6,12 @@ from typing import Any, Callable, Optional, Union
 
 import torch
 import torch.distributed as dist
-
 from vllm.config import VllmConfig
 from vllm.executor.executor_base import ExecutorBase
-from vllm.executor.uniproc_executor import (  # noqa
-    ExecutorWithExternalLauncher as ExecutorWithExternalLauncherV0,
-)
-from vllm.executor.uniproc_executor import UniProcExecutor as UniProcExecutorV0  # noqa
+from vllm.executor.uniproc_executor import \
+    ExecutorWithExternalLauncher as ExecutorWithExternalLauncherV0  # noqa
+from vllm.executor.uniproc_executor import \
+    UniProcExecutor as UniProcExecutorV0  # noqa
 from vllm.utils import resolve_obj_by_qualname
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.kv_cache_interface import KVCacheConfig, KVCacheSpec
@@ -40,9 +39,8 @@ class Executor(ExecutorBase):
                 )
             executor_class = distributed_executor_backend
         elif distributed_executor_backend == "ray":
-            from vllm.v1.executor.ray_distributed_executor import (  # noqa
-                RayDistributedExecutor,
-            )
+            from vllm.v1.executor.ray_distributed_executor import \
+                RayDistributedExecutor  # noqa
 
             executor_class = RayDistributedExecutor
         elif distributed_executor_backend == "mp":

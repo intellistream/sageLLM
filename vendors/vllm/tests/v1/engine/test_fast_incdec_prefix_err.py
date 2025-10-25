@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 from transformers import AutoTokenizer
-
 from vllm.sampling_params import SamplingParams
 from vllm.v1.engine import EngineCoreRequest
 from vllm.v1.engine.detokenizer import IncrementalDetokenizer

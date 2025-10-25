@@ -11,7 +11,6 @@ pytest -s -v test_gsm8k_correctness.py \
 """
 
 import yaml
-
 from tests.utils import RemoteOpenAIServer
 
 from .gsm8k_eval import evaluate_gsm8k

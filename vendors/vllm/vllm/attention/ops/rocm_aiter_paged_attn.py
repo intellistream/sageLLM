@@ -4,7 +4,6 @@ from typing import Optional
 
 import aiter as rocm_aiter
 import torch
-
 from vllm.attention.ops.paged_attn import PagedAttention
 from vllm.platforms import current_platform
 from vllm.utils import cdiv

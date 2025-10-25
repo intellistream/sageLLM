@@ -4,7 +4,6 @@ import copy
 
 import pytest
 import torch
-
 from vllm.compilation.inductor_pass import CallableInductorPass, InductorPass
 from vllm.compilation.pass_manager import PostGradPassManager
 from vllm.config import VllmConfig

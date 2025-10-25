@@ -3,43 +3,33 @@
 
 import math
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Annotated, Final, Literal, Optional, Protocol, TypeVar, Union
+from typing import (Annotated, Final, Literal, Optional, Protocol, TypeVar,
+                    Union)
 
 import torch
 import torch.nn as nn
-from transformers import (
-    BatchFeature,
-    CLIPVisionConfig,
-    PretrainedConfig,
-    SiglipVisionConfig,
-)
+from transformers import BatchFeature, CLIPVisionConfig
 from transformers import LlavaConfig as HfLlavaConfig
+from transformers import PretrainedConfig, SiglipVisionConfig
 from transformers.image_utils import ImageInput, get_image_size, to_numpy_array
 from transformers.models.llava import LlavaProcessor
 from transformers.processing_utils import ProcessingKwargs, Unpack
 from transformers.tokenization_utils_base import PreTokenizedInput, TextInput
-
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.models.llava import LlavaDummyInputsBuilder
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.cache import BaseMultiModalProcessorCache
 from vllm.multimodal.inputs import MultiModalFieldConfig, MultiModalKwargsItems
-from vllm.multimodal.parse import (
-    ImageEmbeddingItems,
-    ImageProcessorItems,
-    ImageSize,
-    MultiModalDataItems,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    InputProcessingContext,
-    PromptReplacement,
-    PromptUpdate,
-)
+from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
+                                   ImageSize, MultiModalDataItems)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo,
+                                        InputProcessingContext,
+                                        PromptReplacement, PromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
@@ -47,17 +37,10 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 from .clip import CLIPVisionModel
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .siglip import SiglipVisionModel
-from .utils import (
-    AutoWeightsLoader,
-    flatten_bn,
-    init_vllm_registered_model,
-    maybe_prefix,
-)
-from .vision import (
-    VisionEncoderInfo,
-    get_num_selected_vision_tokens,
-    get_vision_encoder_info,
-)
+from .utils import (AutoWeightsLoader, flatten_bn, init_vllm_registered_model,
+                    maybe_prefix)
+from .vision import (VisionEncoderInfo, get_num_selected_vision_tokens,
+                     get_vision_encoder_info)
 
 
 class TarsierImagePixelInputs(TensorSchema):

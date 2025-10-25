@@ -4,7 +4,6 @@ import threading
 from typing import Optional
 
 import torch
-
 from vllm import forward_context
 from vllm.forward_context import ForwardContext
 from vllm.utils import current_stream

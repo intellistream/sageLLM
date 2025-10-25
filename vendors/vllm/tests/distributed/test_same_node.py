@@ -4,7 +4,6 @@
 import os
 
 import torch.distributed as dist
-
 from vllm.distributed.parallel_state import in_the_same_node_as
 from vllm.distributed.utils import StatelessProcessGroup
 from vllm.utils import get_ip, get_open_port

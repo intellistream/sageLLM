@@ -5,7 +5,6 @@ from typing import Optional
 
 import pytest
 import torch._dynamo
-
 from tests.compile.backend import LazyInitPass, TestBackend
 from tests.models.utils import check_outputs_equal
 from tests.v1.attention.utils import BatchSpec, create_common_attn_metadata
@@ -19,23 +18,14 @@ from vllm.compilation.fusion_attn import ATTN_OP, AttnFusionPass
 from vllm.compilation.fx_utils import find_op_nodes
 from vllm.compilation.noop_elimination import NoOpEliminationPass
 from vllm.compilation.post_cleanup import PostCleanupPass
-from vllm.config import (
-    CacheConfig,
-    CompilationConfig,
-    CompilationLevel,
-    ModelConfig,
-    PassConfig,
-    SchedulerConfig,
-    VllmConfig,
-    set_current_vllm_config,
-)
+from vllm.config import (CacheConfig, CompilationConfig, CompilationLevel,
+                         ModelConfig, PassConfig, SchedulerConfig, VllmConfig,
+                         set_current_vllm_config)
 from vllm.forward_context import get_forward_context, set_forward_context
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey,
-    kFp8StaticTensorSym,
-    kNvfp4Quant,
-)
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import Fp8LinearOp
+    QuantKey, kFp8StaticTensorSym, kNvfp4Quant)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
+    Fp8LinearOp
 from vllm.platforms import current_platform
 from vllm.utils import is_torch_equal_or_newer
 from vllm.v1.kv_cache_interface import AttentionSpec

@@ -4,7 +4,6 @@
 
 import pytest
 from transformers import SmolVLMConfig
-
 from vllm.multimodal import MULTIMODAL_REGISTRY
 
 from ....conftest import ImageTestAssets

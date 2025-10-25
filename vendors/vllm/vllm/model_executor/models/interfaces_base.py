@@ -1,21 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    ClassVar,
-    Literal,
-    Optional,
-    Protocol,
-    Union,
-    overload,
-    runtime_checkable,
-)
+from typing import (TYPE_CHECKING, Any, ClassVar, Literal, Optional, Protocol,
+                    Union, overload, runtime_checkable)
 
 import torch
 import torch.nn as nn
 from typing_extensions import TypeIs, TypeVar
-
 from vllm.logger import init_logger
 from vllm.utils import supports_kw
 

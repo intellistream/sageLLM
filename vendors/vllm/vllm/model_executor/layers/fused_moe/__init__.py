@@ -6,15 +6,10 @@ from typing import Any, Optional
 
 from vllm.model_executor.layers.fused_moe.config import FusedMoEConfig
 from vllm.model_executor.layers.fused_moe.layer import (
-    FusedMoE,
-    FusedMoEMethodBase,
-    FusedMoeWeightScaleSupported,
-)
+    FusedMoE, FusedMoEMethodBase, FusedMoeWeightScaleSupported)
 from vllm.model_executor.layers.fused_moe.modular_kernel import (
-    FusedMoEActivationFormat,
-    FusedMoEPermuteExpertsUnpermute,
-    FusedMoEPrepareAndFinalize,
-)
+    FusedMoEActivationFormat, FusedMoEPermuteExpertsUnpermute,
+    FusedMoEPrepareAndFinalize)
 from vllm.model_executor.layers.fused_moe.utils import activation_without_mul
 from vllm.triton_utils import HAS_TRITON
 
@@ -50,32 +45,22 @@ __all__ = [
 if HAS_TRITON:
     # import to register the custom ops
     import vllm.model_executor.layers.fused_moe.fused_marlin_moe  # noqa
-    from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import (
-        BatchedDeepGemmExperts,
-    )
-    from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (  # noqa: E501
-        BatchedTritonOrDeepGemmExperts,
-    )
+    from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import \
+        BatchedDeepGemmExperts
+    from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import \
+        BatchedTritonOrDeepGemmExperts  # noqa: E501
     from vllm.model_executor.layers.fused_moe.cutlass_moe import (
-        CutlassBatchedExpertsFp8,
-        CutlassExpertsFp8,
-        cutlass_moe_fp4,
-        cutlass_moe_fp8,
-    )
-    from vllm.model_executor.layers.fused_moe.deep_gemm_moe import DeepGemmExperts
-    from vllm.model_executor.layers.fused_moe.fused_batched_moe import (
-        BatchedTritonExperts,
-    )
+        CutlassBatchedExpertsFp8, CutlassExpertsFp8, cutlass_moe_fp4,
+        cutlass_moe_fp8)
+    from vllm.model_executor.layers.fused_moe.deep_gemm_moe import \
+        DeepGemmExperts
+    from vllm.model_executor.layers.fused_moe.fused_batched_moe import \
+        BatchedTritonExperts
     from vllm.model_executor.layers.fused_moe.fused_moe import (
-        TritonExperts,
-        fused_experts,
-        fused_topk,
-        get_config_file_name,
-        grouped_topk,
-    )
-    from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import (
-        TritonOrDeepGemmExperts,
-    )
+        TritonExperts, fused_experts, fused_topk, get_config_file_name,
+        grouped_topk)
+    from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import \
+        TritonOrDeepGemmExperts
 
     __all__ += [
         "fused_topk",

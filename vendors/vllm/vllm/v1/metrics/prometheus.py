@@ -6,7 +6,6 @@ import tempfile
 from typing import Optional
 
 from prometheus_client import REGISTRY, CollectorRegistry, multiprocess
-
 from vllm.logger import init_logger
 
 logger = init_logger(__name__)

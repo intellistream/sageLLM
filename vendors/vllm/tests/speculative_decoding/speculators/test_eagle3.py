@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
-
 from vllm.config import SpeculativeConfig
 from vllm.model_executor.models.interfaces import supports_eagle3
 

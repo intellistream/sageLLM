@@ -12,19 +12,14 @@ from typing import TYPE_CHECKING
 
 import torch
 from regex import escape as regex_escape
-
 from vllm.sampling_params import SamplingParams
 from vllm.utils import LazyLoader
-from vllm.v1.structured_output.backend_types import (
-    StructuredOutputBackend,
-    StructuredOutputGrammar,
-    StructuredOutputOptions,
-)
-from vllm.v1.structured_output.utils import (
-    OutlinesVocabulary,
-    get_outlines_cache,
-    get_outlines_vocabulary,
-)
+from vllm.v1.structured_output.backend_types import (StructuredOutputBackend,
+                                                     StructuredOutputGrammar,
+                                                     StructuredOutputOptions)
+from vllm.v1.structured_output.utils import (OutlinesVocabulary,
+                                             get_outlines_cache,
+                                             get_outlines_vocabulary)
 
 if TYPE_CHECKING:
     import outlines_core as oc

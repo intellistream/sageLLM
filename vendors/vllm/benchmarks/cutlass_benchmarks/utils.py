@@ -5,7 +5,6 @@
 from collections.abc import Iterable
 
 import torch
-
 import vllm._custom_ops as ops
 
 

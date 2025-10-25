@@ -5,23 +5,18 @@
 from typing import Callable, Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
 from vllm.model_executor.layers.fused_moe.moe_permute_unpermute import (
-    moe_permute,
-    moe_unpermute,
-)
-from vllm.model_executor.layers.fused_moe.prepare_finalize import (
-    MoEPrepareAndFinalizeNoEP,
-)
+    moe_permute, moe_unpermute)
+from vllm.model_executor.layers.fused_moe.prepare_finalize import \
+    MoEPrepareAndFinalizeNoEP
 from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceDelegate,
-    TopKWeightAndReduceNoOP,
-)
-from vllm.model_executor.layers.fused_moe.utils import _fp8_quantize, _resize_cache
+    TopKWeightAndReduceDelegate, TopKWeightAndReduceNoOP)
+from vllm.model_executor.layers.fused_moe.utils import (_fp8_quantize,
+                                                        _resize_cache)
 from vllm.scalar_type import scalar_types
 
 logger = init_logger(__name__)

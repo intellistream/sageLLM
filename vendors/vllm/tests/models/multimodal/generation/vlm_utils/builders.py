@@ -7,28 +7,17 @@ from pathlib import PosixPath
 from typing import Callable, Optional, Union
 
 import torch
-
 from vllm.multimodal.audio import AudioResampler
 from vllm.multimodal.image import rescale_image_size
-from vllm.multimodal.video import (
-    rescale_video_size,
-    resize_video,
-    sample_frames_from_video,
-)
+from vllm.multimodal.video import (rescale_video_size, resize_video,
+                                   sample_frames_from_video)
 
 from .....conftest import AudioTestAssets, ImageTestAssets, VideoTestAssets
-from .types import (
-    SINGLE_AUDIO_BASE_PROMPT,
-    SINGLE_IMAGE_BASE_PROMPTS,
-    TEST_AUDIO_PLACEHOLDER,
-    TEST_IMG_PLACEHOLDER,
-    TEST_VIDEO_PLACEHOLDER,
-    VIDEO_BASE_PROMPT,
-    ImageSizeWrapper,
-    PromptWithMultiModalInput,
-    SizeType,
-    VLMTestInfo,
-)
+from .types import (SINGLE_AUDIO_BASE_PROMPT, SINGLE_IMAGE_BASE_PROMPTS,
+                    TEST_AUDIO_PLACEHOLDER, TEST_IMG_PLACEHOLDER,
+                    TEST_VIDEO_PLACEHOLDER, VIDEO_BASE_PROMPT,
+                    ImageSizeWrapper, PromptWithMultiModalInput, SizeType,
+                    VLMTestInfo)
 
 
 def replace_test_placeholder(

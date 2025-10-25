@@ -4,7 +4,6 @@
 from typing import Optional
 
 import torch
-
 from vllm.platforms import current_platform
 
 from .cutlass import CutlassScaledMMLinearKernel

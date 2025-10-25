@@ -3,15 +3,14 @@
 from typing import Optional
 
 import torch
-
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.distributed import get_dp_group, get_ep_group
-from vllm.distributed.device_communicators.base_device_communicator import (
-    All2AllManagerBase,
-)
+from vllm.distributed.device_communicators.base_device_communicator import \
+    All2AllManagerBase
 from vllm.forward_context import get_forward_context
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.utils import moe_kernel_quantize_input
+from vllm.model_executor.layers.fused_moe.utils import \
+    moe_kernel_quantize_input
 from vllm.utils.flashinfer import nvfp4_block_scale_interleave
 
 

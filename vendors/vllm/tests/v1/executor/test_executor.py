@@ -6,7 +6,6 @@ import os
 from typing import Any, Callable, Optional, Union
 
 import pytest
-
 from vllm.engine.arg_utils import AsyncEngineArgs, EngineArgs
 from vllm.sampling_params import SamplingParams
 from vllm.v1.engine.async_llm import AsyncLLM

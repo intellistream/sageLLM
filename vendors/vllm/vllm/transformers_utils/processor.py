@@ -4,18 +4,13 @@
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
-from transformers import (
-    AutoFeatureExtractor,
-    AutoImageProcessor,
-    AutoProcessor,
-    AutoVideoProcessor,
-)
+from transformers import (AutoFeatureExtractor, AutoImageProcessor,
+                          AutoProcessor, AutoVideoProcessor)
 from transformers.feature_extraction_utils import FeatureExtractionMixin
 from transformers.image_processing_utils import BaseImageProcessor
 from transformers.processing_utils import ProcessorMixin
 from transformers.video_processing_utils import BaseVideoProcessor
 from typing_extensions import TypeVar
-
 from vllm.utils import get_allowed_kwarg_only_overrides
 
 if TYPE_CHECKING:

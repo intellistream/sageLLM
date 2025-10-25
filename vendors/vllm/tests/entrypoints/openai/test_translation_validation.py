@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import io
-
 # imports for structured outputs tests
 import json
 

@@ -3,7 +3,6 @@
 
 import pytest
 import torch
-
 from vllm.distributed.eplb.rebalance_algo import rebalance_experts
 
 

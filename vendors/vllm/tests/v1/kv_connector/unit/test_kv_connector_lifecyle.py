@@ -1,15 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
-from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import (  # noqa: E501
-    SharedStorageConnectorMetadata,
-)
+from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import \
+    SharedStorageConnectorMetadata  # noqa: E501
 from vllm.distributed.kv_transfer.kv_transfer_state import (
-    ensure_kv_transfer_initialized,
-    get_kv_transfer_group,
-)
+    ensure_kv_transfer_initialized, get_kv_transfer_group)
 from vllm.v1.core.sched.output import CachedRequestData, SchedulerOutput
-from vllm.v1.worker.kv_connector_model_runner_mixin import KVConnectorModelRunnerMixin
+from vllm.v1.worker.kv_connector_model_runner_mixin import \
+    KVConnectorModelRunnerMixin
 
 # Importing utils registers TestSharedStorageConnector with the factory
 from .utils import create_vllm_config

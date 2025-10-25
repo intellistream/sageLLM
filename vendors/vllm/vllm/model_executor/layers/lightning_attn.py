@@ -4,7 +4,6 @@ from typing import Optional
 
 import torch
 from einops import rearrange
-
 from vllm.triton_utils import tl, triton
 
 

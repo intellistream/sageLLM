@@ -11,11 +11,8 @@ import regex as re
 if TYPE_CHECKING:
     from vllm.transformers_utils.tokenizer import AnyTokenizer
 
-from vllm.entrypoints.openai.protocol import (
-    ChatCompletionRequest,
-    DeltaMessage,
-    ResponsesRequest,
-)
+from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
+                                              DeltaMessage, ResponsesRequest)
 from vllm.logger import init_logger
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
 

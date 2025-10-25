@@ -9,37 +9,26 @@ import numpy as np
 import torch
 from fastapi import Request
 from typing_extensions import assert_never, override
-
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.chat_utils import ChatTemplateContentFormatOption
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (
-    EmbeddingChatRequest,
-    EmbeddingCompletionRequest,
-    EmbeddingRequest,
-    EmbeddingResponse,
-    EmbeddingResponseData,
-    ErrorResponse,
-    UsageInfo,
-)
-from vllm.entrypoints.openai.serving_engine import (
-    EmbeddingServeContext,
-    OpenAIServing,
-    ServeContext,
-    TextTokensPrompt,
-)
+from vllm.entrypoints.openai.protocol import (EmbeddingChatRequest,
+                                              EmbeddingCompletionRequest,
+                                              EmbeddingRequest,
+                                              EmbeddingResponse,
+                                              EmbeddingResponseData,
+                                              ErrorResponse, UsageInfo)
+from vllm.entrypoints.openai.serving_engine import (EmbeddingServeContext,
+                                                    OpenAIServing,
+                                                    ServeContext,
+                                                    TextTokensPrompt)
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.renderer import RenderConfig
 from vllm.inputs.data import TokensPrompt as EngineTokensPrompt
 from vllm.logger import init_logger
-from vllm.outputs import (
-    EmbeddingOutput,
-    EmbeddingRequestOutput,
-    PoolingOutput,
-    PoolingRequestOutput,
-    RequestOutput,
-)
+from vllm.outputs import (EmbeddingOutput, EmbeddingRequestOutput,
+                          PoolingOutput, PoolingRequestOutput, RequestOutput)
 from vllm.pooling_params import PoolingParams
 from vllm.utils import chunk_list
 

@@ -14,37 +14,23 @@ from typing import Optional, Union
 import torch
 from PIL import Image
 from transformers import PretrainedConfig
-
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalKwargsItems, MultiModalUUIDDict
-from vllm.multimodal.parse import (
-    ImageEmbeddingItems,
-    ImageProcessorItems,
-    MultiModalDataItems,
-)
-from vllm.multimodal.processing import (
-    MultiModalProcessingInfo,
-    PromptReplacement,
-    PromptUpdate,
-    PromptUpdateDetails,
-)
+from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
+                                   MultiModalDataItems)
+from vllm.multimodal.processing import (MultiModalProcessingInfo,
+                                        PromptReplacement, PromptUpdate,
+                                        PromptUpdateDetails)
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
 from .intern_vit import InternVisionModel
-from .internvl import (
-    IMG_CONTEXT,
-    IMG_END,
-    IMG_START,
-    BaseInternVLDummyInputsBuilder,
-    BaseInternVLMultiModalProcessor,
-    BaseInternVLProcessingInfo,
-    BaseInternVLProcessor,
-    InternVLChatModel,
-    build_transform,
-    find_closest_aspect_ratio,
-    get_internvl_target_ratios,
-)
+from .internvl import (IMG_CONTEXT, IMG_END, IMG_START,
+                       BaseInternVLDummyInputsBuilder,
+                       BaseInternVLMultiModalProcessor,
+                       BaseInternVLProcessingInfo, BaseInternVLProcessor,
+                       InternVLChatModel, build_transform,
+                       find_closest_aspect_ratio, get_internvl_target_ratios)
 
 
 def resolve_h2ovl_min_max_num(

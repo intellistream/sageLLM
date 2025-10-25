@@ -10,7 +10,6 @@ from tempfile import TemporaryDirectory
 import pytest
 import torch
 from huggingface_hub import snapshot_download
-
 from vllm import LLM, SamplingParams
 from vllm.model_executor.model_loader import ShardedStateLoader
 

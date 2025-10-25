@@ -4,28 +4,19 @@
 from typing import Any, Callable, Optional, Union
 
 import torch
-
 from vllm.distributed import get_tensor_model_parallel_rank, get_tp_group
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig,
-    int4_w4a16_moe_quant_config,
-    int8_w8a16_moe_quant_config,
-)
+    FusedMoEQuantConfig, int4_w4a16_moe_quant_config,
+    int8_w8a16_moe_quant_config)
 from vllm.model_executor.layers.fused_moe.layer import (
-    FusedMoE,
-    FusedMoEConfig,
-    FusedMoEMethodBase,
-    FusedMoeWeightScaleSupported,
-)
-from vllm.model_executor.layers.linear import LinearBase, UnquantizedLinearMethod
+    FusedMoE, FusedMoEConfig, FusedMoEMethodBase, FusedMoeWeightScaleSupported)
+from vllm.model_executor.layers.linear import (LinearBase,
+                                               UnquantizedLinearMethod)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig,
-    QuantizeMethodBase,
-)
-from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    check_marlin_supports_layer,
-)
+    QuantizationConfig, QuantizeMethodBase)
+from vllm.model_executor.layers.quantization.utils.marlin_utils import \
+    check_marlin_supports_layer
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 
@@ -54,8 +45,10 @@ class MoeWNA16Config(QuantizationConfig):
         self.use_marlin = False
         # Avoid circular import
         from vllm.model_executor.layers.quantization.awq import AWQConfig
-        from vllm.model_executor.layers.quantization.awq_marlin import AWQMarlinConfig
-        from vllm.model_executor.layers.quantization.gptq_marlin import GPTQMarlinConfig
+        from vllm.model_executor.layers.quantization.awq_marlin import \
+            AWQMarlinConfig
+        from vllm.model_executor.layers.quantization.gptq_marlin import \
+            GPTQMarlinConfig
 
         if self.linear_quant_method == "gptq":
             self.use_marlin = GPTQMarlinConfig.is_gptq_marlin_compatible(full_config)
@@ -166,13 +159,11 @@ class MoeWNA16Config(QuantizationConfig):
         elif isinstance(layer, LinearBase):
             # Avoid circular import
             from vllm.model_executor.layers.quantization.awq import AWQConfig
-            from vllm.model_executor.layers.quantization.awq_marlin import (
-                AWQMarlinConfig,
-            )
+            from vllm.model_executor.layers.quantization.awq_marlin import \
+                AWQMarlinConfig
             from vllm.model_executor.layers.quantization.gptq import GPTQConfig
-            from vllm.model_executor.layers.quantization.gptq_marlin import (
-                GPTQMarlinConfig,
-            )
+            from vllm.model_executor.layers.quantization.gptq_marlin import \
+                GPTQMarlinConfig
 
             if self.linear_quant_method == "gptq":
                 if self.use_marlin:

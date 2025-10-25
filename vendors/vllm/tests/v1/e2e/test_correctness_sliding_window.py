@@ -3,7 +3,6 @@
 from dataclasses import dataclass
 
 import pytest
-
 from vllm import LLM, SamplingParams
 
 from ...utils import check_answers, prep_prompts

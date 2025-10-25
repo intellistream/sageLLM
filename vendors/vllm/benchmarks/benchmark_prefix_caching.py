@@ -35,7 +35,6 @@ import time
 from typing import Optional
 
 from transformers import PreTrainedTokenizerBase
-
 from vllm import LLM, SamplingParams
 from vllm.engine.arg_utils import EngineArgs
 from vllm.utils import FlexibleArgumentParser

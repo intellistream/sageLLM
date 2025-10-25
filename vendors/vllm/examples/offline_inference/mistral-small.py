@@ -5,8 +5,8 @@
 import argparse
 
 from vllm import LLM
-from vllm.sampling_params import SamplingParams
 from vllm.assets.image import ImageAsset
+from vllm.sampling_params import SamplingParams
 
 # This script is an offline demo for running Mistral-Small-3.1
 #

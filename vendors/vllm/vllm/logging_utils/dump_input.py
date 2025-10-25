@@ -7,7 +7,6 @@ import json
 from typing import Optional
 
 import torch
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.v1.core.sched.output import SchedulerOutput

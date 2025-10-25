@@ -7,11 +7,8 @@ import tempfile
 import huggingface_hub.constants
 import pytest
 from huggingface_hub.utils import LocalEntryNotFoundError
-
 from vllm.model_executor.model_loader.weight_utils import (
-    download_weights_from_hf,
-    enable_hf_transfer,
-)
+    download_weights_from_hf, enable_hf_transfer)
 
 
 def test_hf_transfer_auto_activation():

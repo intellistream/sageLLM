@@ -7,24 +7,18 @@ import pytest
 import torch
 from safetensors.torch import load_file
 from torch import nn
-
 from vllm.config import ModelConfig, VllmConfig
 from vllm.config.lora import LoRAConfig
-from vllm.lora.layers import (
-    ColumnParallelLinearWithLoRA,
-    MergedColumnParallelLinearWithLoRA,
-    RowParallelLinearWithLoRA,
-)
+from vllm.lora.layers import (ColumnParallelLinearWithLoRA,
+                              MergedColumnParallelLinearWithLoRA,
+                              RowParallelLinearWithLoRA)
 from vllm.lora.lora_weights import LoRALayerWeights, PackedLoRALayerWeights
-from vllm.lora.models import (
-    LoRAMapping,
-    LoRAModel,
-    LoRAModelManager,
-    LRUCacheLoRAModelManager,
-)
+from vllm.lora.models import (LoRAMapping, LoRAModel, LoRAModelManager,
+                              LRUCacheLoRAModelManager)
 from vllm.lora.peft_helper import PEFTHelper
 from vllm.lora.request import LoRARequest
-from vllm.lora.worker_manager import LRUCacheWorkerLoRAManager, WorkerLoRAManager
+from vllm.lora.worker_manager import (LRUCacheWorkerLoRAManager,
+                                      WorkerLoRAManager)
 from vllm.platforms import current_platform
 
 from .utils import create_peft_lora

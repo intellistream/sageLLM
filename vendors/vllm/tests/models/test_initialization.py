@@ -5,22 +5,15 @@ from functools import partial
 from unittest.mock import patch
 
 import pytest
-
 from vllm import LLM
 from vllm.utils import GiB_bytes
-from vllm.v1.core.kv_cache_utils import (
-    generate_scheduler_kv_cache_config,
-    get_kv_cache_configs,
-)
+from vllm.v1.core.kv_cache_utils import (generate_scheduler_kv_cache_config,
+                                         get_kv_cache_configs)
 from vllm.v1.engine.core import EngineCore as V1EngineCore
 
 from ..utils import create_new_process_for_each_test
-from .registry import (
-    _TRANSFORMERS_BACKEND_MODELS,
-    AUTO_EXAMPLE_MODELS,
-    HF_EXAMPLE_MODELS,
-    HfExampleModels,
-)
+from .registry import (_TRANSFORMERS_BACKEND_MODELS, AUTO_EXAMPLE_MODELS,
+                       HF_EXAMPLE_MODELS, HfExampleModels)
 from .utils import dummy_hf_overrides
 
 # This minimal list of model architectures is smaller than the total list of

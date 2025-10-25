@@ -29,8 +29,8 @@ from collections.abc import Iterable
 from typing import Callable, Optional, Union
 
 import torch
-from transformers.models.qwen3_vl_moe.configuration_qwen3_vl_moe import Qwen3VLMoeConfig
-
+from transformers.models.qwen3_vl_moe.configuration_qwen3_vl_moe import \
+    Qwen3VLMoeConfig
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
 from vllm.distributed import get_pp_group
@@ -38,20 +38,14 @@ from vllm.logger import init_logger
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader,
-    maybe_remap_kv_scale_name,
-)
+    default_weight_loader, maybe_remap_kv_scale_name)
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.sequence import IntermediateTensors
 
 from .qwen3_moe import Qwen3MoeForCausalLM, Qwen3MoeModel
-from .qwen3_vl import (
-    Qwen3_VisionTransformer,
-    Qwen3VLDummyInputsBuilder,
-    Qwen3VLForConditionalGeneration,
-    Qwen3VLMultiModalProcessor,
-    Qwen3VLProcessingInfo,
-)
+from .qwen3_vl import (Qwen3_VisionTransformer, Qwen3VLDummyInputsBuilder,
+                       Qwen3VLForConditionalGeneration,
+                       Qwen3VLMultiModalProcessor, Qwen3VLProcessingInfo)
 from .utils import is_pp_missing_parameter, maybe_prefix
 
 logger = init_logger(__name__)

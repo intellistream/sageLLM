@@ -12,18 +12,13 @@ import regex as re
 import torch
 import torch.nn as nn
 from mistral_common.audio import mel_filter_bank
-from mistral_common.protocol.instruct.messages import (
-    AudioChunk,
-    RawAudio,
-    TextChunk,
-    UserMessage,
-)
+from mistral_common.protocol.instruct.messages import (AudioChunk, RawAudio,
+                                                       TextChunk, UserMessage)
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
 from mistral_common.protocol.transcription.request import TranscriptionRequest
 from mistral_common.tokens.tokenizers.audio import Audio, AudioEncoder
 from transformers import BatchFeature, TensorType, WhisperConfig
 from transformers.tokenization_utils_base import TextInput
-
 from vllm.config import ModelConfig, SpeechToTextConfig, VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.inputs.data import PromptType
@@ -34,31 +29,19 @@ from vllm.model_executor.models import SupportsPP
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.model_executor.models.whisper import WhisperEncoder
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (
-    MultiModalDataDict,
-    MultiModalFieldConfig,
-    MultiModalKwargsItems,
-    MultiModalUUIDDict,
-    NestedTensors,
-)
-from vllm.multimodal.parse import (
-    AudioProcessorItems,
-    MultiModalDataItems,
-    MultiModalDataParser,
-)
-from vllm.multimodal.processing import (
-    BaseMultiModalProcessor,
-    BaseProcessingInfo,
-    MultiModalProcessingInfo,
-    PromptReplacement,
-    PromptUpdate,
-)
+from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
+                                    MultiModalKwargsItems, MultiModalUUIDDict,
+                                    NestedTensors)
+from vllm.multimodal.parse import (AudioProcessorItems, MultiModalDataItems,
+                                   MultiModalDataParser)
+from vllm.multimodal.processing import (BaseMultiModalProcessor,
+                                        BaseProcessingInfo,
+                                        MultiModalProcessingInfo,
+                                        PromptReplacement, PromptUpdate)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder, ProcessorInputs
 from vllm.sequence import IntermediateTensors
-from vllm.transformers_utils.tokenizer import (
-    MistralTokenizer,
-    cached_tokenizer_from_config,
-)
+from vllm.transformers_utils.tokenizer import (MistralTokenizer,
+                                               cached_tokenizer_from_config)
 
 from .interfaces import SupportsLoRA, SupportsMultiModal, SupportsTranscription
 from .utils import flatten_bn, init_vllm_registered_model, maybe_prefix

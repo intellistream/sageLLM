@@ -3,7 +3,6 @@
 
 import torch
 import torch.nn as nn
-
 from vllm.config import VllmConfig
 from vllm.forward_context import set_forward_context
 from vllm.logger import init_logger

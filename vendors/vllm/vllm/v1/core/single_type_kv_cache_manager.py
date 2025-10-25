@@ -7,15 +7,10 @@ from collections import defaultdict
 from vllm.utils import cdiv
 from vllm.v1.core.block_pool import BlockPool
 from vllm.v1.core.kv_cache_utils import BlockHash, KVCacheBlock
-from vllm.v1.kv_cache_interface import (
-    ChunkedLocalAttentionSpec,
-    CrossAttentionSpec,
-    FullAttentionSpec,
-    KVCacheSpec,
-    MambaSpec,
-    MLAAttentionSpec,
-    SlidingWindowSpec,
-)
+from vllm.v1.kv_cache_interface import (ChunkedLocalAttentionSpec,
+                                        CrossAttentionSpec, FullAttentionSpec,
+                                        KVCacheSpec, MambaSpec,
+                                        MLAAttentionSpec, SlidingWindowSpec)
 from vllm.v1.request import Request
 
 

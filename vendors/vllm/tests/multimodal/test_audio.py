@@ -7,13 +7,9 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-
-from vllm.multimodal.audio import (
-    AudioMediaIO,
-    AudioResampler,
-    resample_audio_librosa,
-    resample_audio_scipy,
-)
+from vllm.multimodal.audio import (AudioMediaIO, AudioResampler,
+                                   resample_audio_librosa,
+                                   resample_audio_scipy)
 
 
 @pytest.fixture

@@ -7,12 +7,8 @@ Run `pytest tests/kernels/quantization/test_awq_triton.py`.
 
 import pytest
 import torch
-
 from vllm.model_executor.layers.quantization.awq_triton import (
-    AWQ_TRITON_SUPPORTED_GROUP_SIZES,
-    awq_dequantize_triton,
-    awq_gemm_triton,
-)
+    AWQ_TRITON_SUPPORTED_GROUP_SIZES, awq_dequantize_triton, awq_gemm_triton)
 from vllm.platforms import current_platform
 
 device = "cuda"

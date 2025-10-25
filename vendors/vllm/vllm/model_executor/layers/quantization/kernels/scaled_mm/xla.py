@@ -6,14 +6,13 @@ from typing import Optional
 
 import torch
 from functorch.experimental.control_flow import cond  # noqa: F401
-
 from vllm.model_executor.layers.quantization.utils import replace_parameter
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    convert_to_channelwise,
-)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
+    convert_to_channelwise
 from vllm.platforms import current_platform
 
-from .ScaledMMLinearKernel import ScaledMMLinearKernel, ScaledMMLinearLayerConfig
+from .ScaledMMLinearKernel import (ScaledMMLinearKernel,
+                                   ScaledMMLinearLayerConfig)
 
 
 class XLAScaledMMLinearKernel(ScaledMMLinearKernel):

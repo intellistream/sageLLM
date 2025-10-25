@@ -9,7 +9,6 @@ import huggingface_hub
 import regex as re
 from huggingface_hub import HfApi, hf_hub_download
 from transformers.tokenization_utils_base import BatchEncoding
-
 from vllm.logger import init_logger
 from vllm.transformers_utils.tokenizer_base import TokenizerBase
 from vllm.utils import is_list_of
@@ -19,10 +18,8 @@ if TYPE_CHECKING:
     # so that users who only use non-mistral models
     # will not be bothered by the dependency.
     from mistral_common.protocol.instruct.request import ChatCompletionRequest
-    from mistral_common.tokens.tokenizers.mistral import (
-        MistralTokenizer as PublicMistralTokenizer,
-    )
-
+    from mistral_common.tokens.tokenizers.mistral import \
+        MistralTokenizer as PublicMistralTokenizer
     from vllm.entrypoints.chat_utils import ChatCompletionMessageParam
 
 logger = init_logger(__name__)
@@ -217,9 +214,8 @@ class MistralTokenizer(TokenizerBase):
         from mistral_common.tokens.tokenizers.tekken import Tekkenizer
 
         self.is_tekken = isinstance(tokenizer_, Tekkenizer)
-        from mistral_common.tokens.tokenizers.sentencepiece import (
-            SentencePieceTokenizer,
-        )
+        from mistral_common.tokens.tokenizers.sentencepiece import \
+            SentencePieceTokenizer
 
         self.is_spm = isinstance(tokenizer_, SentencePieceTokenizer)
         self._special_token_policy = (
@@ -255,9 +251,8 @@ class MistralTokenizer(TokenizerBase):
             assert Path(path_or_repo_id).is_file(), f"Invalid path: {path_or_repo_id}"
             tokenizer_file = str(Path(path_or_repo_id))
 
-        from mistral_common.tokens.tokenizers.mistral import (
-            MistralTokenizer as PublicMistralTokenizer,
-        )
+        from mistral_common.tokens.tokenizers.mistral import \
+            MistralTokenizer as PublicMistralTokenizer
 
         mistral_tokenizer = PublicMistralTokenizer.from_file(tokenizer_file)
         return cls(mistral_tokenizer)
@@ -495,7 +490,8 @@ class MistralTokenizer(TokenizerBase):
         skip_special_tokens: bool = True,
     ) -> list[str]:
         from mistral_common.tokens.tokenizers.base import SpecialTokens
-        from mistral_common.tokens.tokenizers.instruct import InstructTokenizerV13
+        from mistral_common.tokens.tokenizers.instruct import \
+            InstructTokenizerV13
 
         # TODO(Patrick) - potentially allow special tokens to not be skipped
         assert skip_special_tokens, (

@@ -6,15 +6,12 @@ from typing import Optional, Union, cast
 import torch
 import torch.nn as nn
 from transformers import PretrainedConfig
-
 from vllm.config.lora import LoRAConfig
 from vllm.distributed import tensor_model_parallel_all_gather
 from vllm.distributed.utils import divide
-from vllm.model_executor.layers.linear import (
-    ColumnParallelLinear,
-    MergedColumnParallelLinear,
-    QKVParallelLinear,
-)
+from vllm.model_executor.layers.linear import (ColumnParallelLinear,
+                                               MergedColumnParallelLinear,
+                                               QKVParallelLinear)
 from vllm.platforms import current_platform
 
 from .base_linear import BaseLinearLayerWithLoRA

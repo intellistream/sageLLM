@@ -18,34 +18,21 @@ from typing import Any, Callable, Optional, TypeVar, Union
 import msgspec.msgpack
 import zmq
 import zmq.asyncio
-
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.lora.request import LoRARequest
 from vllm.tasks import SupportedTask
-from vllm.utils import (
-    close_sockets,
-    get_open_port,
-    get_open_zmq_inproc_path,
-    in_loop,
-    make_zmq_socket,
-)
-from vllm.v1.engine import (
-    EngineCoreOutputs,
-    EngineCoreRequest,
-    EngineCoreRequestType,
-    ReconfigureDistributedRequest,
-    ReconfigureRankType,
-    UtilityOutput,
-)
+from vllm.utils import (close_sockets, get_open_port, get_open_zmq_inproc_path,
+                        in_loop, make_zmq_socket)
+from vllm.v1.engine import (EngineCoreOutputs, EngineCoreRequest,
+                            EngineCoreRequestType,
+                            ReconfigureDistributedRequest, ReconfigureRankType,
+                            UtilityOutput)
 from vllm.v1.engine.coordinator import DPCoordinator
 from vllm.v1.engine.core import EngineCore, EngineCoreProc
 from vllm.v1.engine.exceptions import EngineDeadError
-from vllm.v1.engine.utils import (
-    CoreEngineActorManager,
-    CoreEngineProcManager,
-    launch_core_engines,
-)
+from vllm.v1.engine.utils import (CoreEngineActorManager,
+                                  CoreEngineProcManager, launch_core_engines)
 from vllm.v1.executor.abstract import Executor
 from vllm.v1.serial_utils import MsgpackDecoder, MsgpackEncoder, bytestr
 

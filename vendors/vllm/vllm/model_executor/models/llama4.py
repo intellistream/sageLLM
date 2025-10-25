@@ -24,38 +24,27 @@ from typing import Any, Optional
 import torch
 from torch import nn
 from transformers import Llama4TextConfig
-
 from vllm.attention import Attention
 from vllm.attention.layers.chunked_local_attention import ChunkedLocalAttention
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import CacheConfig, VllmConfig
-from vllm.distributed import (
-    get_tensor_model_parallel_world_size,
-    tensor_model_parallel_all_gather,
-)
+from vllm.distributed import (get_tensor_model_parallel_world_size,
+                              tensor_model_parallel_all_gather)
 from vllm.model_executor.layers.fused_moe import FusedMoE
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (
-    QKVParallelLinear,
-    ReplicatedLinear,
-    RowParallelLinear,
-)
+from vllm.model_executor.layers.linear import (QKVParallelLinear,
+                                               ReplicatedLinear,
+                                               RowParallelLinear)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.shared_fused_moe import SharedFusedMoE
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader,
-    maybe_remap_kv_scale_name,
-)
+    default_weight_loader, maybe_remap_kv_scale_name)
 from vllm.model_executor.models.utils import sequence_parallel_chunk
 
 from .llama import LlamaForCausalLM, LlamaMLP, LlamaModel
-from .utils import (
-    AutoWeightsLoader,
-    extract_layer_index,
-    fast_topk,
-    is_pp_missing_parameter,
-)
+from .utils import (AutoWeightsLoader, extract_layer_index, fast_topk,
+                    is_pp_missing_parameter)
 
 
 class Llama4MoE(nn.Module):

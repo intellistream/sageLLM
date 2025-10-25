@@ -9,14 +9,10 @@ from typing import Optional
 import pytest
 import torch
 from packaging import version
-
 from vllm.model_executor.layers.quantization.quark.quark import (  # noqa: E501
-    QuarkLinearMethod,
-    QuarkW4A4MXFP4,
-)
-from vllm.model_executor.layers.quantization.quark.quark_moe import (  # noqa: E501
-    QuarkW4A4MXFp4MoEMethod,
-)
+    QuarkLinearMethod, QuarkW4A4MXFP4)
+from vllm.model_executor.layers.quantization.quark.quark_moe import \
+    QuarkW4A4MXFp4MoEMethod  # noqa: E501
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import has_flashinfer
 
@@ -35,15 +31,10 @@ HOPPER_MXFP4_BF16_AVAILABLE = (
 )
 
 if TRTLLM_GEN_MXFP4_AVAILABLE:
-    from flashinfer import (
-        fp4_quantize,
-        mxfp8_quantize,
-        next_positive_power_of_2,
-        reorder_rows_for_gated_act_gemm,
-        shuffle_matrix_a,
-        shuffle_matrix_sf_a,
-        trtllm_fp4_block_scale_moe,
-    )
+    from flashinfer import (fp4_quantize, mxfp8_quantize,
+                            next_positive_power_of_2,
+                            reorder_rows_for_gated_act_gemm, shuffle_matrix_a,
+                            shuffle_matrix_sf_a, trtllm_fp4_block_scale_moe)
     from flashinfer.fp4_quantization import nvfp4_block_scale_interleave
     from flashinfer.fused_moe.core import _maybe_get_cached_w2_permute_indices
 

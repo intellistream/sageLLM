@@ -10,17 +10,17 @@ from typing import Optional, Union
 import pytest
 import torch.distributed
 from torch.distributed import ProcessGroup
-
 from vllm import _custom_ops as ops
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.fused_moe import TritonExperts
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.fused_batched_moe import BatchedTritonExperts
-from vllm.model_executor.layers.fused_moe.modular_kernel import FusedMoEModularKernel
-from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    per_token_group_quant_fp8,
-)
+from vllm.model_executor.layers.fused_moe.fused_batched_moe import \
+    BatchedTritonExperts
+from vllm.model_executor.layers.fused_moe.modular_kernel import \
+    FusedMoEModularKernel
+from vllm.model_executor.layers.quantization.utils.fp8_utils import \
+    per_token_group_quant_fp8
 from vllm.platforms import current_platform
 from vllm.utils import has_deep_ep
 
@@ -28,12 +28,10 @@ from ...utils import multi_gpu_test
 from .parallel_utils import ProcessGroupInfo, parallel_launch
 
 if has_deep_ep():
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (  # noqa: E501
-        DeepEPHTPrepareAndFinalize,
-    )
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (  # noqa: E501
-        DeepEPLLPrepareAndFinalize,
-    )
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import \
+        DeepEPHTPrepareAndFinalize  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import \
+        DeepEPLLPrepareAndFinalize  # noqa: E501
 
     from .parallel_utils import DeepEPHTArgs, DeepEPLLArgs, make_deepep_a2a
 

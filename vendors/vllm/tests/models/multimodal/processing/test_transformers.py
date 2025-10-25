@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
-
 from vllm.assets.image import ImageAsset
 from vllm.config import ModelConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY

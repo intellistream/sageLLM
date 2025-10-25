@@ -6,7 +6,6 @@ from typing import Optional
 import flashinfer
 import pytest
 import torch
-
 from vllm.platforms import current_platform
 
 NUM_HEADS = [(32, 8), (6, 1)]

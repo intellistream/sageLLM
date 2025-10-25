@@ -7,17 +7,13 @@ from typing import Optional, Union
 import torch
 from torch import nn
 from transformers import PretrainedConfig
-
 from vllm.config import CacheConfig, VllmConfig
 from vllm.distributed import get_pp_group
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.models.internlm2 import (
-    InternLM2Attention,
-    InternLM2ForCausalLM,
-    InternLM2MLP,
-    InternLM2Model,
-)
+from vllm.model_executor.models.internlm2 import (InternLM2Attention,
+                                                  InternLM2ForCausalLM,
+                                                  InternLM2MLP, InternLM2Model)
 from vllm.sequence import IntermediateTensors
 
 

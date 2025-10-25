@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 import pytest
-
 from vllm import SamplingParams
 from vllm.config import VllmConfig
 from vllm.engine.arg_utils import AsyncEngineArgs

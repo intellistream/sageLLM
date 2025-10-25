@@ -6,52 +6,37 @@ import json
 import warnings
 from dataclasses import InitVar, field
 from importlib.util import find_spec
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Literal,
-    Optional,
-    Union,
-    cast,
-    get_args,
-)
+from typing import (TYPE_CHECKING, Any, Callable, Literal, Optional, Union,
+                    cast, get_args)
 
 import torch
-from pydantic import ConfigDict, SkipValidation, field_validator, model_validator
+import vllm.envs as envs
+from pydantic import (ConfigDict, SkipValidation, field_validator,
+                      model_validator)
 from pydantic.dataclasses import dataclass
 from safetensors.torch import _TYPES as _SAFETENSORS_TO_TORCH_DTYPE
-
-import vllm.envs as envs
-from vllm.config.multimodal import MMCacheType, MMEncoderTPMode, MultiModalConfig
+from vllm.config.multimodal import (MMCacheType, MMEncoderTPMode,
+                                    MultiModalConfig)
 from vllm.config.pooler import PoolerConfig
 from vllm.config.scheduler import RunnerType
 from vllm.config.utils import assert_hashable, config, getattr_iter
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.transformers_utils.config import (
-    ConfigFormat,
-    get_config,
-    get_hf_image_processor_config,
-    get_hf_text_config,
-    get_pooling_config,
-    get_sentence_transformer_tokenizer_config,
-    is_encoder_decoder,
-    is_interleaved,
-    try_get_generation_config,
-    try_get_safetensors_metadata,
-    try_get_tokenizer_config,
-    uses_mrope,
-)
-from vllm.transformers_utils.runai_utils import ObjectStorageModel, is_runai_obj_uri
+    ConfigFormat, get_config, get_hf_image_processor_config,
+    get_hf_text_config, get_pooling_config,
+    get_sentence_transformer_tokenizer_config, is_encoder_decoder,
+    is_interleaved, try_get_generation_config, try_get_safetensors_metadata,
+    try_get_tokenizer_config, uses_mrope)
+from vllm.transformers_utils.runai_utils import (ObjectStorageModel,
+                                                 is_runai_obj_uri)
 from vllm.transformers_utils.utils import maybe_model_redirect
 from vllm.utils import LayerBlockType, LazyLoader, common_broadcastable_dtype
 
 if TYPE_CHECKING:
-    from transformers import PretrainedConfig
-
     import vllm.model_executor.layers.quantization as me_quant
     import vllm.model_executor.models as me_models
+    from transformers import PretrainedConfig
     from vllm.config.load import LoadConfig
     from vllm.config.parallel import ParallelConfig
     from vllm.model_executor.layers.quantization import QuantizationMethods
@@ -343,7 +328,6 @@ class ModelConfig:
             hf_config_json = self.hf_config.to_json_string(use_diff=False)
         except TypeError:
             from transformers import PretrainedConfig
-
             from vllm.utils.jsontree import json_map_leaves
 
             # Handle nested HF configs with unserializable values gracefully
@@ -1103,9 +1087,8 @@ class ModelConfig:
     ) -> None:
         if hasattr(self.hf_config, "dual_chunk_attention_config"):
             # Try loading the sparse attention config
-            from vllm.model_executor.model_loader.weight_utils import (
-                get_sparse_attention_config,
-            )
+            from vllm.model_executor.model_loader.weight_utils import \
+                get_sparse_attention_config
 
             sparse_attn_config = get_sparse_attention_config(self, load_config)
             if sparse_attn_config:
