@@ -5,7 +5,6 @@
 
 import hashlib
 import random
-from typing import Optional
 
 from .types import (
     ExecutionInstance,
@@ -37,8 +36,8 @@ class RequestRouter:
         self,
         request: RequestMetadata,
         instances: list[ExecutionInstance],
-        decision: Optional[SchedulingDecision] = None,
-    ) -> Optional[ExecutionInstance]:
+        decision: SchedulingDecision | None = None,
+    ) -> ExecutionInstance | None:
         """
         Route a request to an execution instance.
 
@@ -141,7 +140,7 @@ class RequestRouter:
         """Update user affinity mapping."""
         self.affinity_map[user_id] = instance_id
 
-    def clear_affinity(self, user_id: Optional[str] = None):
+    def clear_affinity(self, user_id: str | None = None):
         """Clear affinity mapping for a user or all users."""
         if user_id:
             self.affinity_map.pop(user_id, None)
@@ -160,7 +159,7 @@ class LoadBalancer:
         self,
         instances: list[ExecutionInstance],
         algorithm: str = "weighted_round_robin",
-    ) -> Optional[ExecutionInstance]:
+    ) -> ExecutionInstance | None:
         """
         Select instance using specified algorithm.
 
@@ -204,7 +203,7 @@ class LoadBalancer:
         rand = random.uniform(0, total_weight)
         cumulative = 0
 
-        for instance, weight in zip(instances, weights):
+        for instance, weight in zip(instances, weights, strict=False):
             cumulative += weight
             if rand <= cumulative:
                 return instance

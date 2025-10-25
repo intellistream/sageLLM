@@ -4,7 +4,6 @@
 """PD-aware routing for Prefilling/Decoding separation."""
 
 import logging
-from typing import Optional
 
 from .types import (
     ExecutionInstance,
@@ -29,7 +28,7 @@ class PDRoutingStrategy:
 
     def determine_request_phase(
         self, request: RequestMetadata, avg_output_tokens: float = 100.0
-    ) -> Optional[ExecutionInstanceType]:
+    ) -> ExecutionInstanceType | None:
         """Determine if request should go to prefilling or decoding phase.
 
         Args:
@@ -163,7 +162,7 @@ class PDRoutingStrategy:
         self,
         instance: ExecutionInstance,
         request: RequestMetadata,
-        target_type: Optional[ExecutionInstanceType] = None,
+        target_type: ExecutionInstanceType | None = None,
     ) -> dict[str, int]:
         """Recommend parallelism configuration based on instance type.
 

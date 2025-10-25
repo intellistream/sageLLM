@@ -3,11 +3,10 @@
 
 """Execution coordinator for managing vLLM instances."""
 
-import asyncio
 import logging
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 # Optional vLLM dependencies - gracefully handle if not installed/compiled
 try:
@@ -98,7 +97,7 @@ class ExecutionCoordinator:
             instance.is_healthy = False
             raise
 
-    async def get_engine(self, instance_id: str) -> Optional[Any]:
+    async def get_engine(self, instance_id: str) -> Any | None:
         """Get the vLLM engine for an instance, initializing if needed."""
         if instance_id not in self.engines:
             instance = self.instances.get(instance_id)
@@ -125,7 +124,7 @@ class ExecutionCoordinator:
             del self.instances[instance_id]
             logger.info("Unregistered instance: %s", instance_id)
 
-    def get_instance(self, instance_id: str) -> Optional[ExecutionInstance]:
+    def get_instance(self, instance_id: str) -> ExecutionInstance | None:
         """Get instance by ID."""
         return self.instances.get(instance_id)
 
@@ -265,7 +264,7 @@ class ExecutionCoordinator:
                 "vllm_request_id": outputs[0].request_id if outputs else None,
             }
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(
                 "Timeout executing request %s on %s",
                 request.request_id,
@@ -414,7 +413,7 @@ class ExecutionCoordinator:
             logger.debug("Health check passed for %s", instance_id)
             return True
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("Health check timeout for %s", instance_id)
             instance.is_healthy = False
             instance.is_available = False
@@ -454,7 +453,7 @@ class ExecutionCoordinator:
 
         return self.metrics
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
+    def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
         """Get metrics for a specific instance."""
 
         instance = self.get_instance(instance_id)

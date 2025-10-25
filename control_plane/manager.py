@@ -7,7 +7,7 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from .executor import ExecutionCoordinator
 from .parallelism import ParallelismOptimizer
@@ -48,7 +48,7 @@ class ControlPlaneManager:
         enable_auto_scaling: bool = False,
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
-        pd_config: Optional[PDSeparationConfig] = None,
+        pd_config: PDSeparationConfig | None = None,
     ):
         """
         Initialize Control Plane Manager.
@@ -183,7 +183,7 @@ class ControlPlaneManager:
 
         return request.request_id
 
-    async def get_request_status(self, request_id: str) -> Optional[RequestStatus]:
+    async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
 
         # Check if running
@@ -201,7 +201,7 @@ class ControlPlaneManager:
         """Cancel a pending request."""
 
         # Remove from pending queue
-        for i, req in enumerate(self.pending_queue):
+        for _i, req in enumerate(self.pending_queue):
             if req.request_id == request_id:
                 self.pending_queue.remove(req)
                 logger.info("Request %s cancelled", request_id)
@@ -251,7 +251,7 @@ class ControlPlaneManager:
         )
 
         # Execute scheduled requests
-        for decision, request in zip(decisions, requests_to_schedule):
+        for decision, request in zip(decisions, requests_to_schedule, strict=False):
             await self._execute_scheduled_request(request, decision)
 
     async def _execute_scheduled_request(
@@ -404,7 +404,7 @@ class ControlPlaneManager:
         """Get all registered instances."""
         return self.executor.get_all_instances()
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
+    def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
         """Get metrics for a specific instance."""
         return self.executor.get_instance_metrics(instance_id)
 

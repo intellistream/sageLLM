@@ -5,8 +5,9 @@
 
 import asyncio
 import logging
+from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any, AsyncGenerator, Optional
+from typing import Any, Optional
 
 import aiohttp
 
@@ -180,7 +181,7 @@ class ExecutionCoordinator:
 
             # Extract completion data from vLLM response
             completion = result.get("choices", [{}])[0]
-            tokens_generated = completion.get("finish_reason") == "length"
+            completion.get("finish_reason") == "length"
             
             latency_ms = (datetime.now() - start_time).total_seconds() * 1000
 

@@ -6,7 +6,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class RequestPriority(Enum):
@@ -55,41 +55,41 @@ class RequestMetadata:
     """Metadata for an inference request."""
 
     request_id: str
-    user_id: Optional[str] = None
+    user_id: str | None = None
     priority: RequestPriority = RequestPriority.NORMAL
-    slo_deadline_ms: Optional[float] = None  # SLO deadline in milliseconds
-    max_tokens: Optional[int] = None
+    slo_deadline_ms: float | None = None  # SLO deadline in milliseconds
+    max_tokens: int | None = None
     temperature: float = 1.0
     top_p: float = 1.0
-    model_name: Optional[str] = None
+    model_name: str | None = None
 
     # Timing information
     arrival_time: datetime = field(default_factory=datetime.now)
-    queue_time: Optional[datetime] = None
-    schedule_time: Optional[datetime] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    queue_time: datetime | None = None
+    schedule_time: datetime | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     # Resource preferences
-    preferred_instance_id: Optional[str] = None
-    parallelism_hint: Optional[ParallelismType] = None
+    preferred_instance_id: str | None = None
+    parallelism_hint: ParallelismType | None = None
 
     # Cost and billing
-    cost_budget: Optional[float] = None
+    cost_budget: float | None = None
     billing_tier: str = "standard"
 
     # Additional metadata
     tags: dict[str, Any] = field(default_factory=dict)
 
     @property
-    def latency_ms(self) -> Optional[float]:
+    def latency_ms(self) -> float | None:
         """Calculate end-to-end latency in milliseconds."""
         if self.end_time and self.arrival_time:
             return (self.end_time - self.arrival_time).total_seconds() * 1000
         return None
 
     @property
-    def queue_wait_ms(self) -> Optional[float]:
+    def queue_wait_ms(self) -> float | None:
         """Calculate queue waiting time in milliseconds."""
         if self.schedule_time and self.queue_time:
             return (self.schedule_time - self.queue_time).total_seconds() * 1000
@@ -152,8 +152,8 @@ class ExecutionInstance:
 
     # PD Separation: Instance type and specialized configs
     instance_type: ExecutionInstanceType = ExecutionInstanceType.GENERAL
-    prefilling_config: Optional[PreffillingConfig] = None
-    decoding_config: Optional[DecodingConfig] = None
+    prefilling_config: PrefillingConfig | None = None
+    decoding_config: DecodingConfig | None = None
 
     # Resource information
     gpu_count: int = 1
