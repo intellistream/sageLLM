@@ -68,8 +68,10 @@ def sample_execution_instance():  # noqa: E501
 def sample_request_metadata():  # noqa: E501
     """Fixture providing a sample request metadata."""
     try:
-        from control_plane import RequestMetadata  # noqa: F401, E402
-        from control_plane import RequestPriority
+        from control_plane import (
+            RequestMetadata,  # noqa: F401, E402
+            RequestPriority,
+        )
 
         return RequestMetadata(
             request_id="test-req-1",

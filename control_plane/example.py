@@ -15,8 +15,7 @@ This example demonstrates:
 import asyncio
 import random
 
-from . import (ControlPlaneManager, ExecutionInstance, RequestMetadata,
-               RequestPriority)
+from . import ControlPlaneManager, ExecutionInstance, RequestMetadata, RequestPriority
 from .types import ParallelismType
 
 

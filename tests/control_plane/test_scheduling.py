@@ -12,8 +12,12 @@ import pytest
 root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root))
 
-from control_plane import ControlPlaneManager  # noqa: E402
-from control_plane import ExecutionInstance, RequestMetadata, RequestPriority
+from control_plane import (
+    ControlPlaneManager,  # noqa: E402
+    ExecutionInstance,
+    RequestMetadata,
+    RequestPriority,
+)
 
 
 @pytest.mark.asyncio
