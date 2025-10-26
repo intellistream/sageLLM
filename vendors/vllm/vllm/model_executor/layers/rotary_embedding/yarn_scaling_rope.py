@@ -4,8 +4,7 @@
 import torch
 
 from .base import RotaryEmbedding
-from .common import (yarn_find_correction_range, yarn_get_mscale,
-                     yarn_linear_ramp_mask)
+from .common import yarn_find_correction_range, yarn_get_mscale, yarn_linear_ramp_mask
 
 
 class YaRNScalingRotaryEmbedding(RotaryEmbedding):

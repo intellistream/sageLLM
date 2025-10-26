@@ -6,8 +6,9 @@ from typing import Union
 
 import torch
 import torch.distributed as dist
-import vllm.envs as envs
 from torch.distributed import ProcessGroup
+
+import vllm.envs as envs
 from vllm import _custom_ops as ops
 from vllm.config import get_current_vllm_config
 from vllm.distributed.parallel_state import in_the_same_node_as

@@ -6,8 +6,8 @@ from typing import Optional
 
 import nvtx
 import torch
-from vllm.model_executor.layers.rotary_embedding import (RotaryEmbedding,
-                                                         get_rope)
+
+from vllm.model_executor.layers.rotary_embedding import RotaryEmbedding, get_rope
 from vllm.platforms import current_platform
 from vllm.utils import FlexibleArgumentParser
 

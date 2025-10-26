@@ -5,12 +5,16 @@ from typing import Optional
 
 import numpy as np
 import torch
+
 from vllm.config import ParallelConfig, VllmConfig
 from vllm.forward_context import DPMetadata
 from vllm.logger import init_logger
 from vllm.utils import round_up
-from vllm.v1.worker.ubatch_utils import (UBatchSlice, UBatchSlices,
-                                         is_second_ubatch_empty)
+from vllm.v1.worker.ubatch_utils import (
+    UBatchSlice,
+    UBatchSlices,
+    is_second_ubatch_empty,
+)
 
 logger = init_logger(__name__)
 

@@ -7,9 +7,13 @@ from typing import TYPE_CHECKING, Optional
 
 from vllm.config import VllmConfig
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
-    KVConnectorMetadata, KVConnectorRole)
+    KVConnectorMetadata,
+    KVConnectorRole,
+)
 from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import (
-    SharedStorageConnector, SharedStorageConnectorMetadata)
+    SharedStorageConnector,
+    SharedStorageConnectorMetadata,
+)
 from vllm.forward_context import ForwardContext
 from vllm.v1.core.kv_cache_manager import KVCacheBlocks
 from vllm.v1.request import Request

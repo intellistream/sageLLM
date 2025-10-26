@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
+
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import flashinfer_scaled_fp8_mm

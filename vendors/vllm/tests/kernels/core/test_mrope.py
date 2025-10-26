@@ -7,6 +7,7 @@ import torch
 from packaging.version import Version
 from transformers import AutoConfig
 from transformers import __version__ as TRANSFORMERS_VERSION
+
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.platforms import current_platform
 

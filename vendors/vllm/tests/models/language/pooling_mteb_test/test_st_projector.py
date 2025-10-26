@@ -1,8 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
-from tests.models.utils import (CLSPoolingEmbedModelInfo, EmbedModelInfo,
-                                LASTPoolingEmbedModelInfo)
+
+from tests.models.utils import (
+    CLSPoolingEmbedModelInfo,
+    EmbedModelInfo,
+    LASTPoolingEmbedModelInfo,
+)
 
 from .mteb_utils import mteb_test_embed_models
 

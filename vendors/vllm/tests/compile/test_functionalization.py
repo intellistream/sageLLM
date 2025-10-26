@@ -3,6 +3,7 @@
 
 import pytest
 import torch
+
 import vllm.envs as envs
 from vllm.compilation.activation_quant_fusion import ActivationQuantFusionPass
 from vllm.compilation.fix_functionalization import FixFunctionalizationPass
@@ -13,10 +14,8 @@ from vllm.compilation.post_cleanup import PostCleanupPass
 from vllm.config import CompilationConfig, PassConfig, VllmConfig
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    GroupShape
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    Fp8LinearOp
+from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import Fp8LinearOp
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.platforms import current_platform
 

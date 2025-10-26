@@ -5,15 +5,22 @@ from typing import Callable, Optional
 
 import torch
 from compressed_tensors.quantization import QuantizationStrategy
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
-    CompressedTensorsScheme
+
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
+    CompressedTensorsScheme,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
-    apply_fp8_marlin_linear, prepare_fp8_layer_for_marlin)
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    convert_to_channelwise
-from vllm.model_executor.parameter import (ChannelQuantScaleParameter,
-                                           ModelWeightParameter,
-                                           PerTensorScaleParameter)
+    apply_fp8_marlin_linear,
+    prepare_fp8_layer_for_marlin,
+)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    convert_to_channelwise,
+)
+from vllm.model_executor.parameter import (
+    ChannelQuantScaleParameter,
+    ModelWeightParameter,
+    PerTensorScaleParameter,
+)
 
 __all__ = ["CompressedTensorsW8A16Fp8"]
 

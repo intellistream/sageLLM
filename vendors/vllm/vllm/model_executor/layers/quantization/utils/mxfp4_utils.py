@@ -3,6 +3,7 @@
 from typing import Any, Callable, Optional
 
 import torch
+
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op, is_torch_equal_or_newer
@@ -36,8 +37,11 @@ def _swizzle_mxfp4(quant_tensor, scale, num_warps):
         value_layout = StridedLayout
         scale_layout = StridedLayout
     elif current_platform.is_rocm():
-        from triton_kernels.tensor_details.layout import (GFX950MXScaleLayout,
-                                                          StridedLayout)
+        from triton_kernels.tensor_details.layout import (
+            GFX950MXScaleLayout,
+            StridedLayout,
+        )
+
         from vllm.platforms.rocm import on_gfx950
 
         value_layout = StridedLayout

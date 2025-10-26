@@ -12,12 +12,19 @@ from typing import Any, Optional
 import pytest
 import torch
 import torch.nn.functional as F
-from vllm.model_executor.layers.linear import LinearBase  # noqa: E501
-from vllm.model_executor.layers.linear import UnquantizedLinearMethod
+
+from vllm.model_executor.layers.linear import (
+    LinearBase,  # noqa: E501
+    UnquantizedLinearMethod,
+)
 from vllm.model_executor.layers.quantization import (
-    QuantizationMethods, get_quantization_config, register_quantization_config)
-from vllm.model_executor.layers.quantization.base_config import \
-    QuantizationConfig  # noqa: E501
+    QuantizationMethods,
+    get_quantization_config,
+    register_quantization_config,
+)
+from vllm.model_executor.layers.quantization.base_config import (
+    QuantizationConfig,  # noqa: E501
+)
 
 
 class FakeQuantLinearMethod(UnquantizedLinearMethod):

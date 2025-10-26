@@ -5,6 +5,7 @@ import random
 
 import pytest
 import torch
+
 from vllm import LLM, SamplingParams
 from vllm.config import CompilationConfig, CompilationLevel
 from vllm.distributed import cleanup_dist_env_and_memory

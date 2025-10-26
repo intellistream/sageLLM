@@ -10,8 +10,13 @@ from datetime import datetime
 from typing import Any, Optional
 
 import aiohttp
-from vllm.control_plane.types import (ExecutionInstance, PerformanceMetrics,
-                                      RequestMetadata, SchedulingDecision)
+
+from vllm.control_plane.types import (
+    ExecutionInstance,
+    PerformanceMetrics,
+    RequestMetadata,
+    SchedulingDecision,
+)
 
 logger = logging.getLogger(__name__)
 

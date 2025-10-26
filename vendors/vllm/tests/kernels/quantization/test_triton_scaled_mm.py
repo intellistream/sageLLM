@@ -10,6 +10,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 from vllm.platforms import current_platform
 
 device = "cuda"

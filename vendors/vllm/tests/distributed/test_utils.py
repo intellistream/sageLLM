@@ -6,11 +6,15 @@ import socket
 import pytest
 import ray
 import torch
+
 import vllm.envs as envs
 from vllm.distributed.device_communicators.pynccl import PyNcclCommunicator
 from vllm.distributed.utils import StatelessProcessGroup
-from vllm.utils import (cuda_device_count_stateless, get_open_port,
-                        update_environment_variables)
+from vllm.utils import (
+    cuda_device_count_stateless,
+    get_open_port,
+    update_environment_variables,
+)
 
 from ..utils import multi_gpu_test
 

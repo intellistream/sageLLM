@@ -7,6 +7,7 @@ This script contains:
 """
 
 import pytest
+
 from tests.utils import multi_gpu_test
 from vllm import LLM, SamplingParams
 from vllm.lora.request import LoRARequest

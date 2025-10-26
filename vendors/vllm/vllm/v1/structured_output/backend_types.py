@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import torch
+
     from vllm.config import VllmConfig
     from vllm.transformers_utils.tokenizer import AnyTokenizer
 

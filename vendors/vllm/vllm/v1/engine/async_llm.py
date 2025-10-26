@@ -10,6 +10,7 @@ from typing import Any, Optional, Union
 
 import numpy as np
 import torch
+
 import vllm.envs as envs
 from vllm.config import ModelConfig, VllmConfig
 from vllm.engine.arg_utils import AsyncEngineArgs
@@ -26,18 +27,14 @@ from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import SamplingParams
 from vllm.tasks import SupportedTask
 from vllm.tracing import init_tracer
-from vllm.transformers_utils.config import \
-    maybe_register_config_serialize_by_value
-from vllm.transformers_utils.tokenizer import (AnyTokenizer,
-                                               init_tokenizer_from_configs)
+from vllm.transformers_utils.config import maybe_register_config_serialize_by_value
+from vllm.transformers_utils.tokenizer import AnyTokenizer, init_tokenizer_from_configs
 from vllm.usage.usage_lib import UsageContext
-from vllm.utils import (Device, as_list, cancel_task_threadsafe, cdiv,
-                        deprecate_kwargs)
+from vllm.utils import Device, as_list, cancel_task_threadsafe, cdiv, deprecate_kwargs
 from vllm.v1.engine import EngineCoreRequest
 from vllm.v1.engine.core_client import EngineCoreClient
 from vllm.v1.engine.exceptions import EngineDeadError, EngineGenerateError
-from vllm.v1.engine.output_processor import (OutputProcessor,
-                                             RequestOutputCollector)
+from vllm.v1.engine.output_processor import OutputProcessor, RequestOutputCollector
 from vllm.v1.engine.parallel_sampling import ParentRequest
 from vllm.v1.engine.processor import Processor
 from vllm.v1.executor.abstract import Executor

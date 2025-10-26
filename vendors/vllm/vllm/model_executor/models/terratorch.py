@@ -23,9 +23,14 @@ from typing import Any, Callable, Optional, Union
 
 import torch
 import torch.nn as nn
-from terratorch.vllm import (DummyDataGenerator, InferenceRunner,
-                             InputDefinition, InputTypeEnum)
+from terratorch.vllm import (
+    DummyDataGenerator,
+    InferenceRunner,
+    InputDefinition,
+    InputTypeEnum,
+)
 from transformers import BatchFeature
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.logger import init_logger
@@ -34,19 +39,31 @@ from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.utils import AutoWeightsLoader
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.cache import MultiModalProcessorOnlyCache
-from vllm.multimodal.inputs import (ImageItem, ModalityData,
-                                    MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalInputs, MultiModalKwargsItems,
-                                    MultiModalUUIDDict, PlaceholderRange)
-from vllm.multimodal.parse import (DictEmbeddingItems, ModalityDataItems,
-                                   MultiModalDataItems, MultiModalDataParser)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptUpdate)
+from vllm.multimodal.inputs import (
+    ImageItem,
+    ModalityData,
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalInputs,
+    MultiModalKwargsItems,
+    MultiModalUUIDDict,
+    PlaceholderRange,
+)
+from vllm.multimodal.parse import (
+    DictEmbeddingItems,
+    ModalityDataItems,
+    MultiModalDataItems,
+    MultiModalDataParser,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 
-from .interfaces import (IsAttentionFree, MultiModalEmbeddings,
-                         SupportsMultiModal)
+from .interfaces import IsAttentionFree, MultiModalEmbeddings, SupportsMultiModal
 from .interfaces_base import default_pooling_type
 
 logger = init_logger(__name__)

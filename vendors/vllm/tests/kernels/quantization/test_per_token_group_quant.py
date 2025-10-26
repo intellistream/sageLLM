@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 import torch
+
 from vllm.model_executor.layers.quantization.utils import fp8_utils, int8_utils
 
 

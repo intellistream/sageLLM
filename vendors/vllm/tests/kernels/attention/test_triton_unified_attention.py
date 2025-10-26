@@ -5,6 +5,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 from vllm.attention.ops.triton_unified_attention import unified_attention
 from vllm.platforms import current_platform
 

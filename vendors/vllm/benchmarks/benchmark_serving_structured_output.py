@@ -37,8 +37,11 @@ from typing import Optional
 import datasets
 import numpy as np
 import pandas as pd
-from backend_request_func import (ASYNC_REQUEST_FUNCS, RequestFuncInput,
-                                  RequestFuncOutput)
+from backend_request_func import (
+    ASYNC_REQUEST_FUNCS,
+    RequestFuncInput,
+    RequestFuncOutput,
+)
 from tqdm.asyncio import tqdm
 from transformers import PreTrainedTokenizerBase
 
@@ -52,8 +55,9 @@ try:
 except ImportError:
     from argparse import ArgumentParser as FlexibleArgumentParser
 
-from vllm.v1.structured_output.backend_xgrammar import \
-    has_xgrammar_unsupported_json_features
+from vllm.v1.structured_output.backend_xgrammar import (
+    has_xgrammar_unsupported_json_features,
+)
 
 MILLISECONDS_TO_SECONDS_CONVERSION = 1000
 

@@ -12,9 +12,9 @@ from typing import Optional, Union
 
 import torch
 from torch import nn
+
 from vllm.config import VllmConfig
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
 from vllm.model_executor.layers.pooler import DispatchPooler, Pooler
 from vllm.sequence import IntermediateTensors
 

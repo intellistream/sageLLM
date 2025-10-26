@@ -6,8 +6,12 @@ from typing import Any, NamedTuple, Optional, cast
 import numpy as np
 import pytest
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
-from vllm.benchmarks.datasets import (RandomDataset, RandomMultiModalDataset,
-                                      SampleRequest)
+
+from vllm.benchmarks.datasets import (
+    RandomDataset,
+    RandomMultiModalDataset,
+    SampleRequest,
+)
 
 
 @pytest.fixture(scope="session")

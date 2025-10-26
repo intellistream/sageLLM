@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+
 from vllm.v1.outputs import LogprobsTensors, SamplerOutput
 from vllm.v1.sample.tpu.metadata import TPUSupportedSamplingMetadata
 

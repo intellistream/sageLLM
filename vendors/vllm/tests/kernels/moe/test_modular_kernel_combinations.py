@@ -9,6 +9,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.platforms import current_platform
@@ -16,15 +17,25 @@ from vllm.utils import has_deep_ep, has_deep_gemm, has_pplx
 from vllm.utils.flashinfer import has_flashinfer_cutlass_fused_moe
 
 from ...utils import multi_gpu_test
-from .modular_kernel_tools.common import (Config, RankTensors, WeightTensors,
-                                          reference_moe_impl,
-                                          run_modular_kernel)
+from .modular_kernel_tools.common import (
+    Config,
+    RankTensors,
+    WeightTensors,
+    reference_moe_impl,
+    run_modular_kernel,
+)
 from .modular_kernel_tools.mk_objects import (
-    MK_FUSED_EXPERT_TYPES, MK_MULTI_GPU_PREPARE_FINALIZE_TYPES,
-    MK_QUANT_CONFIGS, MK_SINGLE_GPU_PREPARE_FINALIZE_TYPES, TestMoEQuantConfig,
-    expert_info)
-from .modular_kernel_tools.parallel_utils import (ProcessGroupInfo,
-                                                  parallel_launch_with_config)
+    MK_FUSED_EXPERT_TYPES,
+    MK_MULTI_GPU_PREPARE_FINALIZE_TYPES,
+    MK_QUANT_CONFIGS,
+    MK_SINGLE_GPU_PREPARE_FINALIZE_TYPES,
+    TestMoEQuantConfig,
+    expert_info,
+)
+from .modular_kernel_tools.parallel_utils import (
+    ProcessGroupInfo,
+    parallel_launch_with_config,
+)
 
 has_any_multi_gpu_package = (
     has_deep_ep() or has_deep_gemm() or has_pplx() or has_flashinfer_cutlass_fused_moe()
@@ -255,8 +266,7 @@ def test_modular_kernel_combinations_singlegpu(
 
 if __name__ == "__main__":
     # Ability to test individual PrepareAndFinalize and FusedExperts combination
-    from .modular_kernel_tools.cli_args import (make_config,
-                                                make_config_arg_parser)
+    from .modular_kernel_tools.cli_args import make_config, make_config_arg_parser
 
     parser = make_config_arg_parser(
         description=(

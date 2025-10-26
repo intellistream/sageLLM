@@ -4,8 +4,9 @@
 import traceback
 import unittest
 
-from vllm.distributed.device_communicators.shm_object_storage import \
-    SingleWriterShmRingBuffer
+from vllm.distributed.device_communicators.shm_object_storage import (
+    SingleWriterShmRingBuffer,
+)
 
 
 class TestSingleWriterShmRingBuffer(unittest.TestCase):

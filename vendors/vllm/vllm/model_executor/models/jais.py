@@ -28,26 +28,37 @@ from typing import Optional, Union
 
 import torch
 from torch import nn
+
 from vllm.attention import Attention
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import CacheConfig, VllmConfig
-from vllm.distributed import (get_pp_group, get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size)
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.distributed import (
+    get_pp_group,
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs import JAISConfig
 
 from .interfaces import SupportsPP
-from .utils import (is_pp_missing_parameter,
-                    make_empty_intermediate_tensors_factory, make_layers,
-                    maybe_prefix)
+from .utils import (
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 
 
 class SwiGLUActivation(nn.Module):

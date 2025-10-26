@@ -4,6 +4,7 @@ from typing import Union
 
 import pytest
 from transformers import AutoModel
+
 from vllm.entrypoints.chat_utils import ChatCompletionContentPartImageParam
 from vllm.entrypoints.score_utils import ScoreMultiModalParam
 

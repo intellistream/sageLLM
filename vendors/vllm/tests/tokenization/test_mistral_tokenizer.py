@@ -2,15 +2,22 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-from mistral_common.protocol.instruct.messages import (AssistantMessage,
-                                                       ToolMessage,
-                                                       UserMessage)
+from mistral_common.protocol.instruct.messages import (
+    AssistantMessage,
+    ToolMessage,
+    UserMessage,
+)
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
-from mistral_common.protocol.instruct.tool_calls import (Function,
-                                                         FunctionCall, Tool,
-                                                         ToolCall)
-from vllm.transformers_utils.tokenizers.mistral import \
-    make_mistral_chat_completion_request
+from mistral_common.protocol.instruct.tool_calls import (
+    Function,
+    FunctionCall,
+    Tool,
+    ToolCall,
+)
+
+from vllm.transformers_utils.tokenizers.mistral import (
+    make_mistral_chat_completion_request,
+)
 
 
 @pytest.mark.parametrize(

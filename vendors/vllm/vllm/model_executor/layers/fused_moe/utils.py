@@ -4,15 +4,19 @@ from math import prod
 from typing import Optional, Union
 
 import torch
+
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    per_token_group_quant_fp8
+from vllm.model_executor.layers.quantization.utils.fp8_utils import (
+    per_token_group_quant_fp8,
+)
 from vllm.model_executor.layers.quantization.utils.int8_utils import (
-    per_token_group_quant_int8, per_token_quant_int8)
-from vllm.model_executor.layers.quantization.utils.mxfp4_utils import \
-    quant_dequant_mxfp4
-from vllm.model_executor.layers.quantization.utils.mxfp8_utils import \
-    mxfp8_quantize
+    per_token_group_quant_int8,
+    per_token_quant_int8,
+)
+from vllm.model_executor.layers.quantization.utils.mxfp4_utils import (
+    quant_dequant_mxfp4,
+)
+from vllm.model_executor.layers.quantization.utils.mxfp8_utils import mxfp8_quantize
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton
 from vllm.utils import cdiv

@@ -8,6 +8,7 @@ from typing import Callable, Union
 
 from torch import fx
 from torch._ops import OpOverload
+
 from vllm.compilation.fx_utils import find_op_nodes
 from vllm.compilation.inductor_pass import InductorPass
 from vllm.compilation.pass_manager import with_pattern_match_debug

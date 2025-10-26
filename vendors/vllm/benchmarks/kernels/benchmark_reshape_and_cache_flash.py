@@ -7,13 +7,18 @@ import time
 
 import torch
 from tabulate import tabulate
+
 from vllm import _custom_ops as ops
-from vllm.attention.ops.triton_reshape_and_cache_flash import \
-    triton_reshape_and_cache_flash
+from vllm.attention.ops.triton_reshape_and_cache_flash import (
+    triton_reshape_and_cache_flash,
+)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
-from vllm.utils import (STR_DTYPE_TO_TORCH_DTYPE, FlexibleArgumentParser,
-                        create_kv_caches_with_random_flash)
+from vllm.utils import (
+    STR_DTYPE_TO_TORCH_DTYPE,
+    FlexibleArgumentParser,
+    create_kv_caches_with_random_flash,
+)
 
 logger = init_logger(__name__)
 

@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 import torch
 import torch.distributed as dist
+
 import vllm.envs as envs
 from vllm.distributed import get_dp_group, get_ep_group
 from vllm.forward_context import get_forward_context
@@ -153,9 +154,11 @@ class PPLXAll2AllManager(All2AllManagerBase):
         if self.internode:
             # inter-node communication needs nvshmem,
             # intra-node communication uses p2p mapping directly
-            from pplx_kernels.nvshmem import (nvshmem_alloc_empty_unique_id,
-                                              nvshmem_get_unique_id,
-                                              nvshmem_init)
+            from pplx_kernels.nvshmem import (
+                nvshmem_alloc_empty_unique_id,
+                nvshmem_get_unique_id,
+                nvshmem_init,
+            )
 
             logger.debug(
                 "Initialize NVSHMEM for pplx_kernels: rank=%d, world size=%d",
@@ -404,8 +407,9 @@ class FlashInferAllToAllManager(All2AllManagerBase):
             tp_size=world_size,
         )
 
-        from vllm.distributed.device_communicators.mnnvl_compat import \
-            CustomCommunicator
+        from vllm.distributed.device_communicators.mnnvl_compat import (
+            CustomCommunicator,
+        )
 
         dp_config = MnnvlConfig(
             comm_backend=CustomCommunicator(get_dp_group().cpu_group),

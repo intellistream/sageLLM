@@ -8,36 +8,49 @@ import torch.nn as nn
 from transformers import AriaConfig, AriaTextConfig, BatchFeature
 from transformers.models.aria.modeling_aria import AriaCrossAttention
 from transformers.models.aria.processing_aria import AriaProcessor
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import get_tensor_model_parallel_rank
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.model_executor.layers.fused_moe import FusedMoE
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, maybe_remap_kv_scale_name)
+    default_weight_loader,
+    maybe_remap_kv_scale_name,
+)
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
 from vllm.multimodal.parse import MultiModalDataItems
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .idefics2_vision_model import Idefics2VisionConfig
-from .idefics2_vision_model import \
-    Idefics2VisionTransformer as Idefics3VisionTransformer
+from .idefics2_vision_model import (
+    Idefics2VisionTransformer as Idefics3VisionTransformer,
+)
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsQuant
 from .llama import LlamaDecoderLayer, LlamaMLP, LlamaModel
-from .utils import (AutoWeightsLoader, WeightsMapper, is_pp_missing_parameter,
-                    maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    is_pp_missing_parameter,
+    maybe_prefix,
+)
 
 
 class AriaImagePixelInputs(TensorSchema):

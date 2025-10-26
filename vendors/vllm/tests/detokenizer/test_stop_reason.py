@@ -10,6 +10,7 @@ Run `pytest tests/engine/test_stop_reason.py`.
 
 import pytest
 import transformers
+
 from vllm import SamplingParams
 
 MODEL = "distilbert/distilgpt2"

@@ -40,6 +40,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, Literal, Optional
 
 import torch
+
 from vllm.logger import init_logger
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.outputs import KVConnectorOutput
@@ -48,8 +49,7 @@ if TYPE_CHECKING:
     from vllm.attention.backends.abstract import AttentionMetadata
     from vllm.config import VllmConfig
     from vllm.distributed.kv_events import KVCacheEvent
-    from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
-        KVConnectorStats
+    from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
     from vllm.forward_context import ForwardContext
     from vllm.v1.core.kv_cache_manager import KVCacheBlocks
     from vllm.v1.request import Request

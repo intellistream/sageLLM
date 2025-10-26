@@ -6,6 +6,7 @@ from functools import lru_cache, partial
 from typing import Optional, Union
 
 import torch
+
 from vllm.sampling_params import LogitsProcessor
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 

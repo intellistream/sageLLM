@@ -20,11 +20,16 @@ from typing import Optional, Union
 
 import torch
 from transformers import AutoModelForSequenceClassification
+
 from vllm.attention import Attention, AttentionType
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
-from vllm.model_executor.layers.pooler import (ClassifierPooler, CLSPool,
-                                               DispatchPooler, Pooler)
+from vllm.model_executor.layers.pooler import (
+    ClassifierPooler,
+    CLSPool,
+    DispatchPooler,
+    Pooler,
+)
 from vllm.sequence import IntermediateTensors
 
 from .interfaces_base import VllmModelForPooling

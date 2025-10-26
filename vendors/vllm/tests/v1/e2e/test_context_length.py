@@ -24,9 +24,10 @@ the 1st will be sampled after the prefill and the 2nd after the first decode
 
 import pytest
 import torch
+from transformers import AutoModelForCausalLM
+
 from tests.models.utils import check_outputs_equal
 from tests.utils import create_new_process_for_each_test
-from transformers import AutoModelForCausalLM
 from vllm import LLM, SamplingParams
 from vllm.inputs import TokensPrompt
 

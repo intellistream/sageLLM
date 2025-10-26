@@ -8,6 +8,7 @@ from typing import Optional
 
 import flashinfer
 import torch
+
 from vllm.utils import round_up
 
 FLOAT32_BYTES = torch.finfo(torch.float).bits // 8

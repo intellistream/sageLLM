@@ -9,6 +9,7 @@ import pybase64
 import pytest
 import regex as re
 import torch
+
 from vllm.entrypoints.renderer import BaseRenderer
 
 from ...utils import RemoteOpenAIServer

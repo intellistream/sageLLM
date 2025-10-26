@@ -3,6 +3,7 @@
 import pytest
 import torch
 import torch.nn.functional as F
+
 from tests.models.utils import softmax
 from vllm.config import PoolerConfig
 

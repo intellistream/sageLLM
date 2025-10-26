@@ -7,22 +7,30 @@ from functools import cache
 from typing import ClassVar, Optional
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm import envs
-from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
-                                              AttentionMetadata, AttentionType)
-from vllm.attention.ops.chunked_prefill_paged_decode import \
-    chunked_prefill_paged_decode
+from vllm.attention.backends.abstract import (
+    AttentionBackend,
+    AttentionImpl,
+    AttentionMetadata,
+    AttentionType,
+)
+from vllm.attention.ops.chunked_prefill_paged_decode import chunked_prefill_paged_decode
 from vllm.attention.ops.paged_attn import PagedAttention
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey, kFp8StaticTensorSym)
+    QuantKey,
+    kFp8StaticTensorSym,
+)
 from vllm.platforms import current_platform
 from vllm.v1.attention.backends.flash_attn import FlashAttentionMetadata
-from vllm.v1.attention.backends.utils import (AttentionCGSupport,
-                                              AttentionMetadataBuilder,
-                                              CommonAttentionMetadata)
+from vllm.v1.attention.backends.utils import (
+    AttentionCGSupport,
+    AttentionMetadataBuilder,
+    CommonAttentionMetadata,
+)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 logger = init_logger(__name__)
@@ -267,14 +275,14 @@ class RocmAttentionImpl(AttentionImpl):
             # unified attention implementation.
             if use_aiter_unified_attention():
                 logger.info_once("Using aiter unified attention for RocmAttentionImpl")
-                from aiter.ops.triton.unified_attention import \
-                    unified_attention
+                from aiter.ops.triton.unified_attention import unified_attention
 
                 self.unified_attention = unified_attention
             else:
                 logger.info_once("Using vllm unified attention for RocmAttentionImpl")
-                from vllm.attention.ops.triton_unified_attention import \
-                    unified_attention
+                from vllm.attention.ops.triton_unified_attention import (
+                    unified_attention,
+                )
 
                 self.unified_attention = unified_attention
 

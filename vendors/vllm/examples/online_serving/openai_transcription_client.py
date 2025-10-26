@@ -21,6 +21,7 @@ The script performs:
 import asyncio
 
 from openai import AsyncOpenAI, OpenAI
+
 from vllm.assets.audio import AudioAsset
 
 

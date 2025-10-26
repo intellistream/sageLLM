@@ -8,19 +8,28 @@ from types import MethodType, SimpleNamespace
 import numpy as np
 import pytest
 import torch
+
 from tests.v1.attention.test_mla_backends import (
-    BATCH_SPECS, BatchSpec, MockAttentionLayer,
-    create_and_prepopulate_kv_cache)
-from tests.v1.attention.utils import (create_common_attn_metadata,
-                                      create_standard_kv_cache_spec,
-                                      create_vllm_config)
+    BATCH_SPECS,
+    BatchSpec,
+    MockAttentionLayer,
+    create_and_prepopulate_kv_cache,
+)
+from tests.v1.attention.utils import (
+    create_common_attn_metadata,
+    create_standard_kv_cache_spec,
+    create_vllm_config,
+)
 from vllm import _custom_ops as ops
 from vllm.attention.ops import flashmla
 from vllm.model_executor.layers.linear import ColumnParallelLinear
 from vllm.utils import cdiv
 from vllm.v1.attention.backends.mla.flashmla_sparse import (
-    FlashMLASparseBackend, FlashMLASparseDecodeAndContextMetadata,
-    FlashMLASparseImpl, FlashMLASparseMetadata)
+    FlashMLASparseBackend,
+    FlashMLASparseDecodeAndContextMetadata,
+    FlashMLASparseImpl,
+    FlashMLASparseMetadata,
+)
 from vllm.v1.attention.backends.mla.indexer import split_prefill_chunks
 
 SPARSE_BACKEND_BATCH_SPECS = {

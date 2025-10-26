@@ -10,20 +10,28 @@ from typing import Optional
 import pytest
 import torch
 from compressed_tensors.quantization import QuantizationType
+
 from tests.models.utils import check_logprobs_close
 from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors import (  # noqa: E501
-    CompressedTensors24, CompressedTensorsLinearMethod,
-    CompressedTensorsW4A4Fp4, CompressedTensorsW4A8Fp8,
-    CompressedTensorsW4A16Fp4, CompressedTensorsW4A16Sparse24,
-    CompressedTensorsW8A8Fp8, CompressedTensorsW8A8Int8,
-    CompressedTensorsW8A16Fp8, CompressedTensorsWNA16)
+    CompressedTensors24,
+    CompressedTensorsLinearMethod,
+    CompressedTensorsW4A4Fp4,
+    CompressedTensorsW4A8Fp8,
+    CompressedTensorsW4A16Fp4,
+    CompressedTensorsW4A16Sparse24,
+    CompressedTensorsW8A8Fp8,
+    CompressedTensorsW8A8Int8,
+    CompressedTensorsW8A16Fp8,
+    CompressedTensorsWNA16,
+)
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    W8A8BlockFp8LinearOp
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    cutlass_fp4_supported
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    sparse_cutlass_supported
+from vllm.model_executor.layers.quantization.utils.fp8_utils import W8A8BlockFp8LinearOp
+from vllm.model_executor.layers.quantization.utils.quant_utils import (
+    cutlass_fp4_supported,
+)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    sparse_cutlass_supported,
+)
 from vllm.platforms import current_platform
 
 # AITER only supports per-channel-per-channel INT8 gemm

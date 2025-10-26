@@ -20,6 +20,7 @@ from typing import Any
 
 import torch
 import torch.nn as nn
+
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config.utils import getattr_iter
 from vllm.distributed import get_dp_group, get_ep_group
@@ -29,9 +30,13 @@ from vllm.model_executor.layers.fused_moe import FusedMoE
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op
 
-from .transformers import (TransformersBase, TransformersForCausalLM,
-                           TransformersForMultimodalLM,
-                           can_enable_torch_compile, log_replacement)
+from .transformers import (
+    TransformersBase,
+    TransformersForCausalLM,
+    TransformersForMultimodalLM,
+    can_enable_torch_compile,
+    log_replacement,
+)
 from .utils import maybe_prefix
 
 

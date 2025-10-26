@@ -6,26 +6,42 @@ from typing import Annotated, Literal, Optional, Union
 
 import torch
 import torch.nn as nn
-from transformers import (BatchFeature, Blip2Config, Blip2QFormerConfig,
-                          apply_chunking_to_forward)
+from transformers import (
+    BatchFeature,
+    Blip2Config,
+    Blip2QFormerConfig,
+    apply_chunking_to_forward,
+)
+
 from vllm.config import CacheConfig, VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
 from vllm.multimodal.parse import MultiModalDataItems
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptIndexTargets,
-                                        PromptInsertion, PromptUpdate)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptIndexTargets,
+    PromptInsertion,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .blip import BlipVisionModel
-from .interfaces import (MultiModalEmbeddings, SupportsMultiModal, SupportsPP,
-                         SupportsQuant)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsMultiModal,
+    SupportsPP,
+    SupportsQuant,
+)
 from .utils import AutoWeightsLoader, init_vllm_registered_model, maybe_prefix
 
 

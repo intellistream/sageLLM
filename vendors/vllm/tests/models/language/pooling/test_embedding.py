@@ -3,6 +3,7 @@
 from typing import Optional
 
 import pytest
+
 from vllm.config import PoolerConfig
 from vllm.platforms import current_platform
 

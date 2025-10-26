@@ -8,15 +8,23 @@ from typing import Optional
 
 import torch
 from tqdm import tqdm
+
 from vllm.config import VllmConfig, set_current_vllm_config
-from vllm.model_executor.layers.fused_moe.config import \
-    FUSED_MOE_UNQUANTIZED_CONFIG
+from vllm.model_executor.layers.fused_moe.config import FUSED_MOE_UNQUANTIZED_CONFIG
 from vllm.platforms import current_platform
 
-from .common import (Config, RankTensors, WeightTensors, reference_moe_impl,
-                     run_modular_kernel)
-from .mk_objects import (MK_FUSED_EXPERT_TYPES,
-                         MK_MULTI_GPU_PREPARE_FINALIZE_TYPES, MK_QUANT_CONFIGS)
+from .common import (
+    Config,
+    RankTensors,
+    WeightTensors,
+    reference_moe_impl,
+    run_modular_kernel,
+)
+from .mk_objects import (
+    MK_FUSED_EXPERT_TYPES,
+    MK_MULTI_GPU_PREPARE_FINALIZE_TYPES,
+    MK_QUANT_CONFIGS,
+)
 from .parallel_utils import ProcessGroupInfo, parallel_launch_with_config
 
 

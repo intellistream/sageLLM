@@ -2,8 +2,9 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
-from tests.reasoning.utils import run_reasoning_extraction
 from transformers import AutoTokenizer
+
+from tests.reasoning.utils import run_reasoning_extraction
 from vllm.reasoning import ReasoningParser, ReasoningParserManager
 
 parser_name = "olmo3"

@@ -7,14 +7,22 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
 import torch
-from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
-                                              AttentionMetadata, AttentionType)
+
+from vllm.attention.backends.abstract import (
+    AttentionBackend,
+    AttentionImpl,
+    AttentionMetadata,
+    AttentionType,
+)
 from vllm.attention.ops.triton_unified_attention import unified_attention
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.v1.attention.backends.utils import (
-    AttentionMetadataBuilder, CommonAttentionMetadata,
-    reorder_batch_to_split_decodes_and_prefills, split_decodes_and_prefills)
+    AttentionMetadataBuilder,
+    CommonAttentionMetadata,
+    reorder_batch_to_split_decodes_and_prefills,
+    split_decodes_and_prefills,
+)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 if TYPE_CHECKING:

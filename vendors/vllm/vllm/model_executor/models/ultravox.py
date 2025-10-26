@@ -13,6 +13,7 @@ from torch.nn import functional as F
 from transformers import BatchFeature, ProcessorMixin
 from transformers.models.whisper import WhisperFeatureExtractor
 from transformers.models.whisper.modeling_whisper import WhisperEncoder
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import MulAndSilu, get_act_fn
@@ -20,21 +21,37 @@ from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.model_loader import DefaultModelLoader
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems, NestedTensors)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    NestedTensors,
+)
 from vllm.multimodal.parse import MultiModalDataItems, MultiModalDataParser
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs.ultravox import UltravoxConfig
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
-                         SupportsMultiModal, SupportsPP)
-from .utils import (AutoWeightsLoader, WeightsMapper, flatten_bn,
-                    init_vllm_registered_model, maybe_prefix)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsPP,
+)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    flatten_bn,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 _AUDIO_PLACEHOLDER_OVERRIDE = "<|audio|>"
 _MAX_ENCODER_BATCH_SIZE = 16

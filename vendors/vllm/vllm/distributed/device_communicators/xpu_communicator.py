@@ -5,8 +5,9 @@ from typing import Optional
 
 import torch
 import torch.distributed as dist
-import vllm.envs as envs
 from torch.distributed import ProcessGroup
+
+import vllm.envs as envs
 from vllm.logger import init_logger
 
 from .base_device_communicator import DeviceCommunicatorBase

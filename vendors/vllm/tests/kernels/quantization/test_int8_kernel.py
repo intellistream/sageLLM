@@ -6,11 +6,13 @@ import itertools
 
 import pytest
 import torch
+
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.fused_moe import fused_experts
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.quantization.utils.int8_utils import \
-    per_token_quant_int8
+from vllm.model_executor.layers.quantization.utils.int8_utils import (
+    per_token_quant_int8,
+)
 from vllm.platforms import current_platform
 
 if current_platform.get_device_capability() < (7, 0):

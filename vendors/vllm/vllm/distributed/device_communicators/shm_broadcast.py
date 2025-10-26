@@ -12,15 +12,26 @@ from unittest.mock import patch
 
 import torch
 import torch.distributed as dist
-import vllm.envs as envs
 import zmq
 from torch.distributed import ProcessGroup
+from zmq import (  # type: ignore
+    IPV6,  # type: ignore
+    SUB,
+    SUBSCRIBE,
+    XPUB,
+    XPUB_VERBOSE,
+    Context,
+)
+
+import vllm.envs as envs
 from vllm.distributed.utils import StatelessProcessGroup, sched_yield
 from vllm.logger import init_logger
-from vllm.utils import (get_ip, get_open_port, get_open_zmq_ipc_path,
-                        is_valid_ipv6_address)
-from zmq import IPV6  # type: ignore
-from zmq import SUB, SUBSCRIBE, XPUB, XPUB_VERBOSE, Context  # type: ignore
+from vllm.utils import (
+    get_ip,
+    get_open_port,
+    get_open_zmq_ipc_path,
+    is_valid_ipv6_address,
+)
 
 VLLM_RINGBUFFER_WARNING_INTERVAL = envs.VLLM_RINGBUFFER_WARNING_INTERVAL
 

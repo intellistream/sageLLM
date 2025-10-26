@@ -10,17 +10,24 @@ from typing import Optional, cast
 import torch
 from torch import nn
 from transformers.utils import SAFE_WEIGHTS_INDEX_NAME
+
 from vllm.config import ModelConfig
 from vllm.config.load import LoadConfig
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader.base_loader import BaseModelLoader
 from vllm.model_executor.model_loader.weight_utils import (
-    download_safetensors_index_file_from_hf, download_weights_from_hf,
-    fastsafetensors_weights_iterator, filter_duplicate_safetensors_files,
-    filter_files_not_needed_for_inference, maybe_download_from_modelscope,
+    download_safetensors_index_file_from_hf,
+    download_weights_from_hf,
+    fastsafetensors_weights_iterator,
+    filter_duplicate_safetensors_files,
+    filter_files_not_needed_for_inference,
+    maybe_download_from_modelscope,
     multi_thread_pt_weights_iterator,
-    multi_thread_safetensors_weights_iterator, np_cache_weights_iterator,
-    pt_weights_iterator, safetensors_weights_iterator)
+    multi_thread_safetensors_weights_iterator,
+    np_cache_weights_iterator,
+    pt_weights_iterator,
+    safetensors_weights_iterator,
+)
 from vllm.platforms import current_platform
 
 logger = init_logger(__name__)
@@ -290,8 +297,9 @@ class DefaultModelLoader(BaseModelLoader):
             )
         else:
             # to avoid circular dependency
-            from vllm.model_executor.model_loader.online_quantization import \
-                load_weights_and_online_quantize
+            from vllm.model_executor.model_loader.online_quantization import (
+                load_weights_and_online_quantize,
+            )
 
             # subsequent runs of weight loading with online
             # quantization

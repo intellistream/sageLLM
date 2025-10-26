@@ -4,17 +4,19 @@ from dataclasses import dataclass
 
 import pytest
 import torch
+
 from vllm.config import ParallelConfig, VllmConfig, set_current_vllm_config
-from vllm.model_executor.layers.fused_moe.config import \
-    fp8_w8a8_moe_quant_config
+from vllm.model_executor.layers.fused_moe.config import fp8_w8a8_moe_quant_config
 from vllm.model_executor.layers.fused_moe.fused_moe import fused_experts
 from vllm.model_executor.layers.fused_moe.layer import FusedMoE
 from vllm.model_executor.layers.quantization.utils.flashinfer_utils import (
-    apply_flashinfer_per_tensor_scale_fp8, flashinfer_cutlass_moe_fp8,
-    register_moe_scaling_factors, rotate_flashinfer_fp8_moe_weights,
-    swap_w13_to_w31)
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    input_to_float8
+    apply_flashinfer_per_tensor_scale_fp8,
+    flashinfer_cutlass_moe_fp8,
+    register_moe_scaling_factors,
+    rotate_flashinfer_fp8_moe_weights,
+    swap_w13_to_w31,
+)
+from vllm.model_executor.layers.quantization.utils.fp8_utils import input_to_float8
 from vllm.model_executor.models.llama4 import Llama4MoE
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import has_flashinfer_cutlass_fused_moe

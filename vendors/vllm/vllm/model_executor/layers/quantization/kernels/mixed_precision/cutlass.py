@@ -4,12 +4,11 @@
 from typing import Optional
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    GroupShape
-from vllm.model_executor.parameter import (BasevLLMParameter,
-                                           permute_param_layout_)
+from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
+from vllm.model_executor.parameter import BasevLLMParameter, permute_param_layout_
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 

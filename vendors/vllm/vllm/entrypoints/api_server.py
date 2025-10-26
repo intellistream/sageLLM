@@ -15,9 +15,10 @@ from argparse import Namespace
 from collections.abc import AsyncGenerator
 from typing import Any, Optional
 
-import vllm.envs as envs
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
+
+import vllm.envs as envs
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.entrypoints.launcher import serve_http

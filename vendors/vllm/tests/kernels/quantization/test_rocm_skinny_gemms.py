@@ -4,6 +4,7 @@ import math
 
 import pytest
 import torch
+
 import vllm._custom_ops as ops
 from tests.kernels.quant_utils import ref_dynamic_per_tensor_fp8_quant
 from vllm.platforms import current_platform

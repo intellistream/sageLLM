@@ -4,24 +4,34 @@
 from typing import Optional
 
 import vllm.envs as envs
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.allspark import \
-    AllSparkLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.bitblas import \
-    BitBLASLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.conch import \
-    ConchLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.cutlass import \
-    CutlassW4A8LinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.dynamic_4bit import \
-    Dynamic4bitLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.exllama import \
-    ExllamaLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.machete import \
-    MacheteLinearKernel  # noqa: E501
-from vllm.model_executor.layers.quantization.kernels.mixed_precision.marlin import \
-    MarlinLinearKernel  # noqa: E501
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.allspark import (
+    AllSparkLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.bitblas import (
+    BitBLASLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.conch import (
+    ConchLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.cutlass import (
+    CutlassW4A8LinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.dynamic_4bit import (
+    Dynamic4bitLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.exllama import (
+    ExllamaLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.machete import (
+    MacheteLinearKernel,  # noqa: E501
+)
+from vllm.model_executor.layers.quantization.kernels.mixed_precision.marlin import (
+    MarlinLinearKernel,  # noqa: E501
+)
 from vllm.model_executor.layers.quantization.kernels.mixed_precision.MPLinearKernel import (  # noqa: E501
-    MPLinearKernel, MPLinearLayerConfig)
+    MPLinearKernel,
+    MPLinearLayerConfig,
+)
 from vllm.platforms import current_platform
 
 # in priority/performance order (when available)

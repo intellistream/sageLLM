@@ -3,10 +3,13 @@
 
 import pytest
 import torch
+
 import vllm._custom_ops as ops
-from tests.kernels.quant_utils import (FP8_DTYPE,
-                                       ref_dynamic_per_tensor_fp8_quant,
-                                       ref_dynamic_per_token_quant)
+from tests.kernels.quant_utils import (
+    FP8_DTYPE,
+    ref_dynamic_per_tensor_fp8_quant,
+    ref_dynamic_per_token_quant,
+)
 from tests.kernels.utils import opcheck
 from vllm.platforms import current_platform
 

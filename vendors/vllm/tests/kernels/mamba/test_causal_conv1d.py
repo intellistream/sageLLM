@@ -7,9 +7,12 @@ import pytest
 import torch
 import torch.nn.functional as F
 from einops import rearrange
+
 from vllm.attention.backends.utils import PAD_SLOT_ID
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn, causal_conv1d_update)
+    causal_conv1d_fn,
+    causal_conv1d_update,
+)
 from vllm.platforms import current_platform
 
 

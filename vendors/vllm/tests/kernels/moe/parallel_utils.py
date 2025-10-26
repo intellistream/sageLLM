@@ -11,16 +11,18 @@ from typing import Callable, Optional
 
 import torch
 from torch.distributed import ProcessGroup
-from torch.multiprocessing import \
-    spawn  # pyright: ignore[reportPrivateImportUsage]
+from torch.multiprocessing import spawn  # pyright: ignore[reportPrivateImportUsage]
 from typing_extensions import Concatenate, ParamSpec
+
 from vllm.utils import get_open_port, has_deep_ep
 
 if has_deep_ep():
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import \
-        DeepEPHTPrepareAndFinalize  # noqa: E501
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import \
-        DeepEPLLPrepareAndFinalize  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (
+        DeepEPHTPrepareAndFinalize,  # noqa: E501
+    )
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (
+        DeepEPLLPrepareAndFinalize,  # noqa: E501
+    )
 
 ## Parallel Processes Utils
 

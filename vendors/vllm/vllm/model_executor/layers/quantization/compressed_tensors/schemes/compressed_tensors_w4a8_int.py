@@ -4,14 +4,20 @@
 from typing import Callable, Optional
 
 import torch
+
 from vllm.logger import init_logger
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
-    CompressedTensorsScheme
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
+    CompressedTensorsScheme,
+)
 from vllm.model_executor.layers.quantization.kernels.mixed_precision import (
-    MPLinearLayerConfig, choose_mp_linear_kernel)
-from vllm.model_executor.parameter import (ChannelQuantScaleParameter,
-                                           GroupQuantScaleParameter,
-                                           ModelWeightParameter)
+    MPLinearLayerConfig,
+    choose_mp_linear_kernel,
+)
+from vllm.model_executor.parameter import (
+    ChannelQuantScaleParameter,
+    GroupQuantScaleParameter,
+    ModelWeightParameter,
+)
 from vllm.scalar_type import scalar_types
 
 logger = init_logger(__name__)

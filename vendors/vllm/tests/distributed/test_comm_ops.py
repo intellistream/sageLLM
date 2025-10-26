@@ -12,13 +12,20 @@ from typing import Any, Callable
 import pytest
 import ray
 import torch
-from vllm.distributed import (broadcast_tensor_dict, get_pp_group,
-                              tensor_model_parallel_all_gather,
-                              tensor_model_parallel_all_reduce,
-                              tensor_model_parallel_reduce_scatter)
 
-from ..utils import (init_test_distributed_environment, multi_gpu_test,
-                     multi_process_parallel)
+from vllm.distributed import (
+    broadcast_tensor_dict,
+    get_pp_group,
+    tensor_model_parallel_all_gather,
+    tensor_model_parallel_all_reduce,
+    tensor_model_parallel_reduce_scatter,
+)
+
+from ..utils import (
+    init_test_distributed_environment,
+    multi_gpu_test,
+    multi_process_parallel,
+)
 
 
 @ray.remote(num_gpus=1, max_calls=1)

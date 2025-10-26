@@ -7,12 +7,13 @@ Run `pytest tests/quantization/test_gptq_dynamic.py --forked`.
 
 import pytest
 import torch
+
 from vllm.model_executor.layers.linear import UnquantizedLinearMethod
 from vllm.model_executor.layers.quantization.gptq import GPTQLinearMethod
-from vllm.model_executor.layers.quantization.gptq_marlin import \
-    GPTQMarlinLinearMethod
-from vllm.model_executor.layers.quantization.utils.gptq_utils import \
-    get_dynamic_override
+from vllm.model_executor.layers.quantization.gptq_marlin import GPTQMarlinLinearMethod
+from vllm.model_executor.layers.quantization.utils.gptq_utils import (
+    get_dynamic_override,
+)
 
 PROMPT = "On the surface of Mars, we found"
 

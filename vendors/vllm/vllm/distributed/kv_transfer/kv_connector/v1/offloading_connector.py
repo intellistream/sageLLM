@@ -7,13 +7,15 @@ from itertools import islice
 from typing import Any, Optional
 
 import torch
+
 from vllm.attention import AttentionMetadata
 from vllm.config import VllmConfig
 from vllm.distributed.kv_events import BlockRemoved, BlockStored, KVCacheEvent
-from vllm.distributed.kv_transfer.kv_connector.v1 import (KVConnectorBase_V1,
-                                                          KVConnectorRole)
-from vllm.distributed.kv_transfer.kv_connector.v1.base import \
-    KVConnectorMetadata
+from vllm.distributed.kv_transfer.kv_connector.v1 import (
+    KVConnectorBase_V1,
+    KVConnectorRole,
+)
+from vllm.distributed.kv_transfer.kv_connector.v1.base import KVConnectorMetadata
 from vllm.forward_context import ForwardContext
 from vllm.logger import init_logger
 from vllm.v1.core.kv_cache_manager import KVCacheBlocks

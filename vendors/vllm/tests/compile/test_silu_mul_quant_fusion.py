@@ -4,20 +4,29 @@ from typing import cast
 
 import pytest
 import torch
+
 import vllm.envs as envs
 from tests.kernels.quantization.nvfp4_utils import quant_nvfp4_tensor
 from vllm._custom_ops import cutlass_scaled_fp4_mm, scaled_fp4_quant
 from vllm.compilation.activation_quant_fusion import (
-    FUSED_OPS, SILU_MUL_OP, ActivationQuantFusionPass)
+    FUSED_OPS,
+    SILU_MUL_OP,
+    ActivationQuantFusionPass,
+)
 from vllm.compilation.fusion import QUANT_OPS
 from vllm.compilation.noop_elimination import NoOpEliminationPass
 from vllm.compilation.post_cleanup import PostCleanupPass
 from vllm.config import CompilationConfig, PassConfig, VllmConfig
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape, kFp8StaticTensorSym, kNvfp4Quant)
+    GroupShape,
+    kFp8StaticTensorSym,
+    kNvfp4Quant,
+)
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp, cutlass_fp8_supported)
+    Fp8LinearOp,
+    cutlass_fp8_supported,
+)
 from vllm.platforms import current_platform
 
 from ..utils import override_cutlass_fp8_supported
@@ -61,8 +70,9 @@ class TestSiluMulFp8QuantModel(torch.nn.Module):
 class TestSiluMulNvfp4QuantModel(torch.nn.Module):
     def __init__(self, hidden_size: int, x: torch.Tensor, **kwargs):
         super().__init__()
-        from vllm.compilation.activation_quant_fusion import \
-            silu_and_mul_nvfp4_quant_supported
+        from vllm.compilation.activation_quant_fusion import (
+            silu_and_mul_nvfp4_quant_supported,
+        )
 
         assert silu_and_mul_nvfp4_quant_supported
 

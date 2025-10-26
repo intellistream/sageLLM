@@ -8,6 +8,7 @@ import random
 
 import pytest
 import torch
+
 from tests.kernels.moe.utils import per_token_cast_to_fp8
 from tests.kernels.utils import baseline_scaled_mm
 from vllm import _custom_ops as ops

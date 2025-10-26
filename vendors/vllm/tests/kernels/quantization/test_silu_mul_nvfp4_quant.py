@@ -2,9 +2,12 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
-from tests.kernels.quantization.nvfp4_utils import (FLOAT4_E2M1_MAX,
-                                                    FLOAT8_E4M3_MAX,
-                                                    dequantize_nvfp4_to_dtype)
+
+from tests.kernels.quantization.nvfp4_utils import (
+    FLOAT4_E2M1_MAX,
+    FLOAT8_E4M3_MAX,
+    dequantize_nvfp4_to_dtype,
+)
 from vllm._custom_ops import scaled_fp4_quant
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.platforms import current_platform

@@ -7,19 +7,22 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union, cast
 
 import torch
-from vllm.outputs import (CompletionOutput, PoolingOutput,
-                          PoolingRequestOutput, RequestOutput)
+
+from vllm.outputs import (
+    CompletionOutput,
+    PoolingOutput,
+    PoolingRequestOutput,
+    RequestOutput,
+)
 from vllm.sampling_params import RequestOutputKind
-from vllm.tracing import (SpanAttributes, SpanKind, Tracer,
-                          extract_trace_context)
+from vllm.tracing import SpanAttributes, SpanKind, Tracer, extract_trace_context
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 from vllm.utils import length_from_prompt_token_ids_or_embeds
 from vllm.v1.engine import EngineCoreOutput, EngineCoreRequest, FinishReason
 from vllm.v1.engine.detokenizer import IncrementalDetokenizer
 from vllm.v1.engine.logprobs import LogprobsProcessor
 from vllm.v1.engine.parallel_sampling import ParentRequest
-from vllm.v1.metrics.stats import (IterationStats, LoRARequestStates,
-                                   RequestStateStats)
+from vllm.v1.metrics.stats import IterationStats, LoRARequestStates, RequestStateStats
 
 
 class RequestOutputCollector:

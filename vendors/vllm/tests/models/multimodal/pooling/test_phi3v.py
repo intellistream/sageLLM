@@ -4,6 +4,7 @@
 import pytest
 import torch.nn.functional as F
 from PIL import Image
+
 from vllm.assets.base import get_vllm_public_assets
 from vllm.assets.image import VLM_IMAGES_DIR
 

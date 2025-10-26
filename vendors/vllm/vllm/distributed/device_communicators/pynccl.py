@@ -6,11 +6,18 @@ from typing import Optional, Union
 # ===================== import region =====================
 import torch
 import torch.distributed as dist
-import vllm.envs as envs
 from torch.distributed import ProcessGroup, ReduceOp
+
+import vllm.envs as envs
 from vllm.distributed.device_communicators.pynccl_wrapper import (
-    NCCLLibrary, buffer_type, cudaStream_t, ncclComm_t, ncclDataTypeEnum,
-    ncclRedOpTypeEnum, ncclUniqueId)
+    NCCLLibrary,
+    buffer_type,
+    cudaStream_t,
+    ncclComm_t,
+    ncclDataTypeEnum,
+    ncclRedOpTypeEnum,
+    ncclUniqueId,
+)
 from vllm.distributed.utils import StatelessProcessGroup
 from vllm.logger import init_logger
 from vllm.utils import current_stream
@@ -21,8 +28,9 @@ _NCCL_SYMM_OPS_REGISTERED = False
 
 
 def register_nccl_symmetric_ops(pynccl_comm):
-    from vllm.distributed.device_communicators.pynccl_allocator import \
-        nccl_symm_mem_context
+    from vllm.distributed.device_communicators.pynccl_allocator import (
+        nccl_symm_mem_context,
+    )
     from vllm.utils import direct_register_custom_op
 
     global _NCCL_SYMM_OPS_REGISTERED

@@ -4,18 +4,26 @@ from typing import Any, Optional
 
 import torch
 from packaging import version
+
 from vllm.logger import init_logger
 from vllm.model_executor.layers.linear import LinearBase, LinearMethodBase
-from vllm.model_executor.layers.quantization import (QuantizationConfig,
-                                                     QuantizationMethods)
+from vllm.model_executor.layers.quantization import (
+    QuantizationConfig,
+    QuantizationMethods,
+)
 from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
-    BITBLAS_OPTIMIZE_FEATURES, BITBLAS_SUPPORTED_NUM_BITS,
-    BITBLAS_SUPPORTED_SYM, MINIMUM_BITBLAS_VERSION)
+    BITBLAS_OPTIMIZE_FEATURES,
+    BITBLAS_SUPPORTED_NUM_BITS,
+    BITBLAS_SUPPORTED_SYM,
+    MINIMUM_BITBLAS_VERSION,
+)
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
-from vllm.model_executor.parameter import (BasevLLMParameter,
-                                           ChannelQuantScaleParameter,
-                                           GroupQuantScaleParameter,
-                                           PackedvLLMParameter)
+from vllm.model_executor.parameter import (
+    BasevLLMParameter,
+    ChannelQuantScaleParameter,
+    GroupQuantScaleParameter,
+    PackedvLLMParameter,
+)
 from vllm.model_executor.utils import set_weight_attrs
 
 logger = init_logger(__name__)

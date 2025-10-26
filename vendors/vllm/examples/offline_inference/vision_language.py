@@ -16,6 +16,7 @@ from typing import NamedTuple, Optional
 
 from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer
+
 from vllm import LLM, EngineArgs, SamplingParams
 from vllm.assets.image import ImageAsset
 from vllm.assets.video import VideoAsset

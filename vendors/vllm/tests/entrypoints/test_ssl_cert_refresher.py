@@ -6,6 +6,7 @@ from pathlib import Path
 from ssl import SSLContext
 
 import pytest
+
 from vllm.entrypoints.ssl import SSLCertRefresher
 
 

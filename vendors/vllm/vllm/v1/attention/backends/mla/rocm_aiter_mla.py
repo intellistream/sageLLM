@@ -5,16 +5,19 @@ from dataclasses import dataclass
 from typing import ClassVar, Optional, Union
 
 import torch
+
 import vllm.envs as envs
 from vllm.attention.backends.abstract import AttentionLayer
 from vllm.attention.ops.rocm_aiter_mla import aiter_mla_decode_fwd
 from vllm.config import VllmConfig
 from vllm.utils import cdiv
-from vllm.v1.attention.backends.mla.common import (MLACommonBackend,
-                                                   MLACommonDecodeMetadata,
-                                                   MLACommonImpl,
-                                                   MLACommonMetadata,
-                                                   MLACommonMetadataBuilder)
+from vllm.v1.attention.backends.mla.common import (
+    MLACommonBackend,
+    MLACommonDecodeMetadata,
+    MLACommonImpl,
+    MLACommonMetadata,
+    MLACommonMetadataBuilder,
+)
 from vllm.v1.attention.backends.utils import AttentionCGSupport
 from vllm.v1.kv_cache_interface import AttentionSpec
 

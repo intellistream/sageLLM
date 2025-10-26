@@ -9,6 +9,7 @@ Run `pytest tests/quantization/test_auto_round.py`.
 """
 
 import pytest
+
 from vllm.platforms import current_platform
 
 MODELS = [

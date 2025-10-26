@@ -4,14 +4,16 @@
 from typing import Optional, Union
 
 import torch
-import vllm.envs as envs
 from torch.distributed import ProcessGroup
-from vllm.distributed.device_communicators.all_reduce_utils import \
-    should_nccl_symm_mem_allreduce
-from vllm.distributed.device_communicators.pynccl import \
-    register_nccl_symmetric_ops
-from vllm.distributed.device_communicators.pynccl_allocator import \
-    is_symmetric_memory_enabled
+
+import vllm.envs as envs
+from vllm.distributed.device_communicators.all_reduce_utils import (
+    should_nccl_symm_mem_allreduce,
+)
+from vllm.distributed.device_communicators.pynccl import register_nccl_symmetric_ops
+from vllm.distributed.device_communicators.pynccl_allocator import (
+    is_symmetric_memory_enabled,
+)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 
@@ -34,8 +36,7 @@ class CudaCommunicator(DeviceCommunicatorBase):
             use_custom_allreduce = False
             use_torch_symm_mem = False
         else:
-            from vllm.distributed.parallel_state import \
-                _ENABLE_CUSTOM_ALL_REDUCE
+            from vllm.distributed.parallel_state import _ENABLE_CUSTOM_ALL_REDUCE
 
             use_custom_allreduce = _ENABLE_CUSTOM_ALL_REDUCE
             use_torch_symm_mem = envs.VLLM_ALLREDUCE_USE_SYMM_MEM
@@ -44,14 +45,14 @@ class CudaCommunicator(DeviceCommunicatorBase):
         self.use_torch_symm_mem = use_torch_symm_mem
 
         # lazy import to avoid documentation build error
-        from vllm.distributed.device_communicators.custom_all_reduce import \
-            CustomAllreduce
-        from vllm.distributed.device_communicators.pynccl import \
-            PyNcclCommunicator
-        from vllm.distributed.device_communicators.quick_all_reduce import \
-            QuickAllReduce
-        from vllm.distributed.device_communicators.symm_mem import \
-            SymmMemCommunicator
+        from vllm.distributed.device_communicators.custom_all_reduce import (
+            CustomAllreduce,
+        )
+        from vllm.distributed.device_communicators.pynccl import PyNcclCommunicator
+        from vllm.distributed.device_communicators.quick_all_reduce import (
+            QuickAllReduce,
+        )
+        from vllm.distributed.device_communicators.symm_mem import SymmMemCommunicator
 
         self.pynccl_comm: Optional[PyNcclCommunicator] = None
         if self.world_size > 1:

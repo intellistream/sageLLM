@@ -5,11 +5,16 @@ from typing import Callable
 from unittest.mock import Mock
 
 import pytest
+
 from vllm.v1.core.sched.scheduler import Scheduler
 from vllm.v1.request import Request, RequestStatus
 
-from .utils import (create_model_runner_output, create_request,
-                    create_scheduler, create_vllm_config)
+from .utils import (
+    create_model_runner_output,
+    create_request,
+    create_scheduler,
+    create_vllm_config,
+)
 
 
 def _make_get_num_new_matched_tokens(

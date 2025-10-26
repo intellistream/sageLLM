@@ -4,17 +4,18 @@
 from typing import Optional
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm import envs
 from vllm.model_executor.layers.quantization.utils import replace_parameter
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    convert_to_channelwise
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    convert_to_channelwise,
+)
 from vllm.model_executor.layers.utils import check_cpu_sgl_kernel
 from vllm.platforms import current_platform
 from vllm.platforms.interface import CpuArchEnum
 
-from .ScaledMMLinearKernel import (ScaledMMLinearKernel,
-                                   ScaledMMLinearLayerConfig)
+from .ScaledMMLinearKernel import ScaledMMLinearKernel, ScaledMMLinearLayerConfig
 
 
 class CPUScaledMMLinearKernel(ScaledMMLinearKernel):

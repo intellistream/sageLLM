@@ -7,14 +7,21 @@ from math import prod
 from typing import Callable, Optional, Union, final
 
 import torch
+
 import vllm.envs as envs
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
 from vllm.model_executor.layers.fused_moe.utils import (
-    _resize_cache, count_expert_num_tokens)
+    _resize_cache,
+    count_expert_num_tokens,
+)
 from vllm.utils import cdiv
-from vllm.v1.worker.ubatching import (dbo_current_ubatch_id, dbo_enabled,
-                                      dbo_maybe_run_recv_hook,
-                                      dbo_register_recv_hook, dbo_yield)
+from vllm.v1.worker.ubatching import (
+    dbo_current_ubatch_id,
+    dbo_enabled,
+    dbo_maybe_run_recv_hook,
+    dbo_register_recv_hook,
+    dbo_yield,
+)
 
 #
 # This file defines a set of base classes used to make MoE kernels more modular.

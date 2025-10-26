@@ -5,21 +5,28 @@ import sys
 from typing import Union
 
 import pytest
+
 from tests.utils import create_new_process_for_each_test
-from tests.v1.logits_processors.utils import (DUMMY_LOGITPROC_ARG,
-                                              DUMMY_LOGITPROC_FQCN,
-                                              DUMMY_LOGITPROC_MODULE,
-                                              MAX_TOKENS, MODEL_NAME,
-                                              POOLING_MODEL_NAME, TEMP_GREEDY,
-                                              CustomLogitprocSource,
-                                              DummyLogitsProcessor,
-                                              WrappedPerReqLogitsProcessor,
-                                              dummy_module)
+from tests.v1.logits_processors.utils import (
+    DUMMY_LOGITPROC_ARG,
+    DUMMY_LOGITPROC_FQCN,
+    DUMMY_LOGITPROC_MODULE,
+    MAX_TOKENS,
+    MODEL_NAME,
+    POOLING_MODEL_NAME,
+    TEMP_GREEDY,
+    CustomLogitprocSource,
+    DummyLogitsProcessor,
+    WrappedPerReqLogitsProcessor,
+    dummy_module,
+    prompts,
+)
 from tests.v1.logits_processors.utils import entry_points as fake_entry_points
-from tests.v1.logits_processors.utils import prompts
 from vllm import LLM, SamplingParams
-from vllm.v1.sample.logits_processor import (STR_POOLING_REJECTS_LOGITSPROCS,
-                                             LogitsProcessor)
+from vllm.v1.sample.logits_processor import (
+    STR_POOLING_REJECTS_LOGITSPROCS,
+    LogitsProcessor,
+)
 
 # Create a mixture of requests which do and don't utilize the dummy logitproc
 sampling_params_list = [

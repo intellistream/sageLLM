@@ -5,6 +5,7 @@ import os
 from typing import TYPE_CHECKING, Optional
 
 import torch
+
 import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.utils import DEFAULT_MAX_NUM_BATCHED_TOKENS

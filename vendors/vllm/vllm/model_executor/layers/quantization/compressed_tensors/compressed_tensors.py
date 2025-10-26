@@ -5,38 +5,62 @@ from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Literal, Optional, cast
 
 import torch
-import vllm.envs as envs
-from compressed_tensors.config import (CompressionFormat,
-                                       SparsityCompressionConfig,
-                                       SparsityStructure)
-from compressed_tensors.quantization import (QuantizationArgs,
-                                             QuantizationStrategy,
-                                             QuantizationType)
+from compressed_tensors.config import (
+    CompressionFormat,
+    SparsityCompressionConfig,
+    SparsityStructure,
+)
+from compressed_tensors.quantization import (
+    QuantizationArgs,
+    QuantizationStrategy,
+    QuantizationType,
+)
 from compressed_tensors.transform import TransformConfig
+
+import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe import FusedMoE
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               UnquantizedLinearMethod)
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    UnquantizedLinearMethod,
+)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (  # noqa: E501
-    QuantizationConfig, QuantizeMethodBase)
-from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors_moe import \
-    CompressedTensorsMoEMethod  # noqa: E501
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
+from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors_moe import (
+    CompressedTensorsMoEMethod,  # noqa: E501
+)
 from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
-    W4A16SPARSE24_SUPPORTED_BITS, WNA16_SUPPORTED_BITS, CompressedTensors24,
-    CompressedTensorsScheme, CompressedTensorsW4A4Fp4,
-    CompressedTensorsW4A8Fp8, CompressedTensorsW4A8Int,
-    CompressedTensorsW4A16Fp4, CompressedTensorsW4A16Sparse24,
-    CompressedTensorsW8A8Fp8, CompressedTensorsW8A8Int8,
-    CompressedTensorsW8A16Fp8, CompressedTensorsWNA16)
+    W4A16SPARSE24_SUPPORTED_BITS,
+    WNA16_SUPPORTED_BITS,
+    CompressedTensors24,
+    CompressedTensorsScheme,
+    CompressedTensorsW4A4Fp4,
+    CompressedTensorsW4A8Fp8,
+    CompressedTensorsW4A8Int,
+    CompressedTensorsW4A16Fp4,
+    CompressedTensorsW4A16Sparse24,
+    CompressedTensorsW8A8Fp8,
+    CompressedTensorsW8A8Int8,
+    CompressedTensorsW8A16Fp8,
+    CompressedTensorsWNA16,
+)
 from vllm.model_executor.layers.quantization.compressed_tensors.transform.linear import (  # noqa: E501
-    CompressedTensorsLinearTransformMethod, get_linear_transform_schemes)
+    CompressedTensorsLinearTransformMethod,
+    get_linear_transform_schemes,
+)
 from vllm.model_executor.layers.quantization.compressed_tensors.utils import (
-    find_matched_target, is_activation_quantization_format,
-    should_ignore_layer)
+    find_matched_target,
+    is_activation_quantization_format,
+    should_ignore_layer,
+)
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    cutlass_fp4_supported
+from vllm.model_executor.layers.quantization.utils.quant_utils import (
+    cutlass_fp4_supported,
+)
 from vllm.platforms import current_platform
 
 if TYPE_CHECKING:

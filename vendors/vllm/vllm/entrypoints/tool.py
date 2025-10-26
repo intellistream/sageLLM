@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from openai_harmony import Author, Message, Role, TextContent
+
 from vllm.logger import init_logger
 
 if TYPE_CHECKING:

@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.config import CompilationLevel
 
 from ..utils import compare_two_settings

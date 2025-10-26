@@ -5,37 +5,51 @@ from collections.abc import Iterable, Mapping, Sequence
 from typing import Annotated, Any, Literal, Optional
 
 import torch
-import vllm.envs as envs
 from torch import nn
 from transformers import BatchFeature, Gemma3Config, Gemma3Processor
 from transformers.models.gemma3.processing_gemma3 import Gemma3ProcessorKwargs
+
+import vllm.envs as envs
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.logger import init_logger
 from vllm.model_executor.layers.layernorm import GemmaRMSNorm
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        MultiModalPromptUpdates,
-                                        MultiModalPromptUpdatesApplyResult,
-                                        PlaceholderFeaturesInfo,
-                                        PromptReplacement, PromptUpdate,
-                                        PromptUpdateDetails,
-                                        replace_token_matches)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    MultiModalPromptUpdates,
+    MultiModalPromptUpdatesApplyResult,
+    PlaceholderFeaturesInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+    replace_token_matches,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
-                         SupportsMultiModal, SupportsPP)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsPP,
+)
 from .siglip import SiglipVisionModel
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 logger = init_logger(__name__)
 

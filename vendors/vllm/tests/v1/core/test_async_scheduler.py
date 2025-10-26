@@ -3,6 +3,7 @@
 from collections import deque
 
 import pytest
+
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.outputs import ModelRunnerOutput
 from vllm.v1.request import RequestStatus

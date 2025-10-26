@@ -9,51 +9,65 @@ from typing import Callable, Literal, Optional, Union, get_args, overload
 
 import torch
 import torch.nn.functional as F
-import vllm.envs as envs
 from torch.nn.parameter import UninitializedParameter
+
+import vllm.envs as envs
 from vllm.config import get_current_vllm_config
 from vllm.config.parallel import ExpertPlacementStrategy
-from vllm.distributed import (get_dp_group, get_ep_group,
-                              get_tensor_model_parallel_world_size,
-                              tensor_model_parallel_all_reduce)
+from vllm.distributed import (
+    get_dp_group,
+    get_ep_group,
+    get_tensor_model_parallel_world_size,
+    tensor_model_parallel_all_reduce,
+)
 from vllm.distributed.eplb.eplb_state import EplbState
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.logger import init_logger
 from vllm.model_executor.custom_op import CustomOp
 from vllm.model_executor.layers.fused_moe.config import (
-    FUSED_MOE_UNQUANTIZED_CONFIG, FusedMoEConfig, FusedMoEParallelConfig,
-    FusedMoEQuantConfig, biased_moe_quant_config)
-from vllm.model_executor.layers.fused_moe.fused_moe import \
-    zero_experts_compute_triton
+    FUSED_MOE_UNQUANTIZED_CONFIG,
+    FusedMoEConfig,
+    FusedMoEParallelConfig,
+    FusedMoEQuantConfig,
+    biased_moe_quant_config,
+)
+from vllm.model_executor.layers.fused_moe.fused_moe import zero_experts_compute_triton
 from vllm.model_executor.layers.fused_moe.modular_kernel import (
-    FusedMoEActivationFormat, FusedMoEModularKernel,
-    FusedMoEPermuteExpertsUnpermute, FusedMoEPrepareAndFinalize)
-from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-    is_rocm_aiter_moe_enabled
-from vllm.model_executor.layers.fused_moe.routing_simulator import \
-    RoutingSimulator
+    FusedMoEActivationFormat,
+    FusedMoEModularKernel,
+    FusedMoEPermuteExpertsUnpermute,
+    FusedMoEPrepareAndFinalize,
+)
+from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+    is_rocm_aiter_moe_enabled,
+)
+from vllm.model_executor.layers.fused_moe.routing_simulator import RoutingSimulator
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig, QuantizeMethodBase)
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 from vllm.platforms.interface import CpuArchEnum
-from vllm.utils import (cdiv, direct_register_custom_op, has_deep_ep, has_pplx,
-                        round_up)
+from vllm.utils import cdiv, direct_register_custom_op, has_deep_ep, has_pplx, round_up
 from vllm.utils.flashinfer import has_flashinfer_cutlass_fused_moe
 from vllm.v1.worker.ubatching import dbo_current_ubatch_id
 
 if current_platform.is_cuda_alike():
     from .fused_batched_moe import BatchedTritonExperts
-    from .fused_moe import (TritonExperts, eplb_map_to_physical_and_record,
-                            fused_experts)
+    from .fused_moe import TritonExperts, eplb_map_to_physical_and_record, fused_experts
 
     if has_pplx():
-        from .pplx_prepare_finalize import (PplxPrepareAndFinalize,
-                                            pplx_hidden_dim_scale_bytes)
+        from .pplx_prepare_finalize import (
+            PplxPrepareAndFinalize,
+            pplx_hidden_dim_scale_bytes,
+        )
     if has_deep_ep():
         from .deepep_ht_prepare_finalize import DeepEPHTPrepareAndFinalize
-        from .deepep_ll_prepare_finalize import (DEEPEP_QUANT_BLOCK_SHAPE,
-                                                 DeepEPLLPrepareAndFinalize)
+        from .deepep_ll_prepare_finalize import (
+            DEEPEP_QUANT_BLOCK_SHAPE,
+            DeepEPLLPrepareAndFinalize,
+        )
 else:
     fused_experts = None  # type: ignore
     FusedMoEPermuteExpertsUnpermute = None  # type: ignore
@@ -72,8 +86,9 @@ else:
     eplb_map_to_physical_and_record = _eplb_map_to_physical_and_record
 
 if is_rocm_aiter_moe_enabled():
-    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-        rocm_aiter_grouped_topk as grouped_topk  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+        rocm_aiter_grouped_topk as grouped_topk,  # noqa: E501
+    )
 else:
     from vllm.model_executor.layers.fused_moe.fused_moe import grouped_topk
 if current_platform.is_tpu():
@@ -447,8 +462,9 @@ class UnquantizedFusedMoEMethod(FusedMoEMethodBase, CustomOp):
         layer.w13_weight.data = self._maybe_pad_weight(layer.w13_weight.data)
         layer.w2_weight.data = self._maybe_pad_weight(layer.w2_weight.data)
         # Lazy import to avoid importing triton.
-        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-            shuffle_weights
+        from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+            shuffle_weights,
+        )
 
         if self.rocm_aiter_moe_enabled:
             shuffled_w13, shuffled_w2 = shuffle_weights(
@@ -476,8 +492,7 @@ class UnquantizedFusedMoEMethod(FusedMoEMethodBase, CustomOp):
             from vllm.model_executor.layers.fused_moe import cpu_fused_moe
 
             if current_platform.get_cpu_architecture() == CpuArchEnum.X86:
-                from vllm.model_executor.layers.utils import \
-                    check_cpu_sgl_kernel
+                from vllm.model_executor.layers.utils import check_cpu_sgl_kernel
 
                 dtype_w13 = layer.w13_weight.dtype
                 _, n_w13, k_w13 = layer.w13_weight.size()
@@ -951,7 +966,9 @@ def maybe_roundup_hidden_size(
     # we are padding globally so EP buffer allocation works
     if quant_config and quant_config.get_name() == "mxfp4":
         from vllm.model_executor.layers.quantization.mxfp4 import (
-            Mxfp4Backend, get_mxfp4_backend)
+            Mxfp4Backend,
+            get_mxfp4_backend,
+        )
 
         current_mxfp4_backend = get_mxfp4_backend()
         if (
@@ -1186,8 +1203,7 @@ class FusedMoE(CustomOp):
         self.quant_method = quant_method
 
         if self.enable_eplb:
-            from vllm.model_executor.layers.quantization.fp8 import \
-                Fp8MoEMethod
+            from vllm.model_executor.layers.quantization.fp8 import Fp8MoEMethod
 
             if not isinstance(quant_method, (Fp8MoEMethod, UnquantizedFusedMoEMethod)):
                 # TODO: Add support for additional quantization methods.
@@ -1866,7 +1882,9 @@ class FusedMoE(CustomOp):
             plain MoE implementations without redundant experts.
         """
         from vllm.model_executor.layers.fused_moe.fused_moe import (
-            fused_topk, fused_topk_bias)
+            fused_topk,
+            fused_topk_bias,
+        )
 
         # Check if we should use a routing simulation strategy
         routing_strategy = envs.VLLM_MOE_ROUTING_SIMULATION_STRATEGY

@@ -12,16 +12,21 @@ from functools import reduce
 from typing import Optional, Union
 
 import jinja2
-from vllm_cutlass_library_extension import (DataType, EpilogueScheduleTag,
-                                            EpilogueScheduleType,
-                                            MixedInputKernelScheduleType,
-                                            TileSchedulerTag,
-                                            TileSchedulerType, VLLMDataType,
-                                            VLLMDataTypeNames,
-                                            VLLMDataTypeSize, VLLMDataTypeTag,
-                                            VLLMDataTypeTorchDataTypeTag,
-                                            VLLMDataTypeVLLMScalarTypeTag,
-                                            VLLMKernelScheduleTag)
+from vllm_cutlass_library_extension import (
+    DataType,
+    EpilogueScheduleTag,
+    EpilogueScheduleType,
+    MixedInputKernelScheduleType,
+    TileSchedulerTag,
+    TileSchedulerType,
+    VLLMDataType,
+    VLLMDataTypeNames,
+    VLLMDataTypeSize,
+    VLLMDataTypeTag,
+    VLLMDataTypeTorchDataTypeTag,
+    VLLMDataTypeVLLMScalarTypeTag,
+    VLLMKernelScheduleTag,
+)
 
 #
 #   Generator templating

@@ -5,6 +5,7 @@ import platform
 from typing import Callable, Optional
 
 import torch
+
 from vllm import envs
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
@@ -12,8 +13,7 @@ from vllm.model_executor.utils import set_random_seed
 from vllm.platforms import CpuArchEnum, current_platform
 from vllm.platforms.cpu import CpuPlatform, LogicalCPUInfo
 from vllm.v1.worker.cpu_model_runner import CPUModelRunner
-from vllm.v1.worker.gpu_worker import (Worker,
-                                       init_worker_distributed_environment)
+from vllm.v1.worker.gpu_worker import Worker, init_worker_distributed_environment
 
 logger = init_logger(__name__)
 

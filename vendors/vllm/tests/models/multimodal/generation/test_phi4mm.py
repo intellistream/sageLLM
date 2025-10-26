@@ -10,14 +10,20 @@ import pytest
 import regex as re
 from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer
+
 from vllm.assets.image import ImageAsset
 from vllm.logprobs import SampleLogprobs
 from vllm.lora.request import LoRARequest
 from vllm.multimodal.image import convert_image_mode, rescale_image_size
 from vllm.platforms import current_platform
 
-from ....conftest import (IMAGE_ASSETS, HfRunner, PromptAudioInput,
-                          PromptImageInput, VllmRunner)
+from ....conftest import (
+    IMAGE_ASSETS,
+    HfRunner,
+    PromptAudioInput,
+    PromptImageInput,
+    VllmRunner,
+)
 from ....utils import large_gpu_test
 from ...utils import check_logprobs_close
 

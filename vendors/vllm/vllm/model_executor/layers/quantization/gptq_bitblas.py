@@ -5,26 +5,41 @@ from typing import Any, Optional
 import torch
 from packaging import version
 from torch.nn.parameter import Parameter
+
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               set_weight_attrs)
-from vllm.model_executor.layers.quantization import (QuantizationConfig,
-                                                     QuantizationMethods)
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    set_weight_attrs,
+)
+from vllm.model_executor.layers.quantization import (
+    QuantizationConfig,
+    QuantizationMethods,
+)
 from vllm.model_executor.layers.quantization.kernels.mixed_precision import (
-    BitBLASLinearKernel, MPLinearLayerConfig)
-from vllm.model_executor.layers.quantization.utils.bitblas_utils import \
-    BITBLAS_SUPPORTED_NUM_BITS as GPTQ_BITBLAS_SUPPORTED_NUM_BITS
-from vllm.model_executor.layers.quantization.utils.bitblas_utils import \
-    BITBLAS_SUPPORTED_SYM as GPTQ_BITBLAS_SUPPORTED_SYM
+    BitBLASLinearKernel,
+    MPLinearLayerConfig,
+)
 from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
-    MINIMUM_BITBLAS_VERSION, bitblas_repeat_scales_on_all_ranks,
-    check_bitblas_supported, verify_bitblas_supported)
+    BITBLAS_SUPPORTED_NUM_BITS as GPTQ_BITBLAS_SUPPORTED_NUM_BITS,
+)
+from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
+    BITBLAS_SUPPORTED_SYM as GPTQ_BITBLAS_SUPPORTED_SYM,
+)
+from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
+    MINIMUM_BITBLAS_VERSION,
+    bitblas_repeat_scales_on_all_ranks,
+    check_bitblas_supported,
+    verify_bitblas_supported,
+)
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
-from vllm.model_executor.parameter import (ChannelQuantScaleParameter,
-                                           GroupQuantScaleParameter,
-                                           PackedColumnParameter,
-                                           PackedvLLMParameter,
-                                           RowvLLMParameter)
+from vllm.model_executor.parameter import (
+    ChannelQuantScaleParameter,
+    GroupQuantScaleParameter,
+    PackedColumnParameter,
+    PackedvLLMParameter,
+    RowvLLMParameter,
+)
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 

@@ -6,8 +6,8 @@ from typing import Optional, Union
 
 import pytest
 from transformers import PretrainedConfig
-from vllm.transformers_utils.config import (get_config_parser,
-                                            register_config_parser)
+
+from vllm.transformers_utils.config import get_config_parser, register_config_parser
 from vllm.transformers_utils.config_parser_base import ConfigParserBase
 
 

@@ -28,24 +28,34 @@ import pytest
 import requests
 import torch
 import torch.nn.functional as F
-import vllm.envs as envs
 from openai.types.completion import Completion
-from tests.models.utils import TextTextLogprobs
 from typing_extensions import ParamSpec
-from vllm.distributed import (ensure_model_parallel_initialized,
-                              init_distributed_environment)
+
+import vllm.envs as envs
+from tests.models.utils import TextTextLogprobs
+from vllm.distributed import (
+    ensure_model_parallel_initialized,
+    init_distributed_environment,
+)
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.entrypoints.cli.serve import ServeSubcommand
 from vllm.model_executor.model_loader import get_model_loader
 from vllm.platforms import current_platform
 from vllm.transformers_utils.tokenizer import get_tokenizer
-from vllm.utils import (FlexibleArgumentParser, GB_bytes,
-                        cuda_device_count_stateless, get_open_port)
+from vllm.utils import (
+    FlexibleArgumentParser,
+    GB_bytes,
+    cuda_device_count_stateless,
+    get_open_port,
+)
 
 if current_platform.is_rocm():
-    from amdsmi import (amdsmi_get_gpu_vram_usage,
-                        amdsmi_get_processor_handles, amdsmi_init,
-                        amdsmi_shut_down)
+    from amdsmi import (
+        amdsmi_get_gpu_vram_usage,
+        amdsmi_get_processor_handles,
+        amdsmi_init,
+        amdsmi_shut_down,
+    )
 
     @contextmanager
     def _nvml():
@@ -55,9 +65,12 @@ if current_platform.is_rocm():
         finally:
             amdsmi_shut_down()
 elif current_platform.is_cuda():
-    from vllm.third_party.pynvml import (nvmlDeviceGetHandleByIndex,
-                                         nvmlDeviceGetMemoryInfo, nvmlInit,
-                                         nvmlShutdown)
+    from vllm.third_party.pynvml import (
+        nvmlDeviceGetHandleByIndex,
+        nvmlDeviceGetMemoryInfo,
+        nvmlInit,
+        nvmlShutdown,
+    )
 
     @contextmanager
     def _nvml():

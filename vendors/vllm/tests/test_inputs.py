@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.config import ModelConfig
 from vllm.inputs import zip_enc_dec_prompts
 from vllm.inputs.parse import parse_raw_prompts

@@ -2,13 +2,15 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
+
 from tests.kernels.utils import DEFAULT_OPCHECK_TEST_UTILS, opcheck
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.quantization.utils.allspark_utils import (
-    ALLSPARK_AMPERE_K_ALIGN, ALLSPARK_AMPERE_M_CUBLAS_THRESHOLD,
-    ALLSPARK_AMPERE_N_ALIGN)
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    quantize_weights
+    ALLSPARK_AMPERE_K_ALIGN,
+    ALLSPARK_AMPERE_M_CUBLAS_THRESHOLD,
+    ALLSPARK_AMPERE_N_ALIGN,
+)
+from vllm.model_executor.layers.quantization.utils.quant_utils import quantize_weights
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 

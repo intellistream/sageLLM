@@ -11,39 +11,61 @@ import torch.nn.functional as F
 from einops import rearrange
 from torch import nn
 from transformers.activations import ACT2FN
+
 from vllm.attention import Attention, AttentionBackend, AttentionMetadata
 from vllm.compilation.decorators import support_torch_compile
-from vllm.config import (CacheConfig, ModelConfig, SpeculativeConfig,
-                         VllmConfig, get_current_vllm_config)
-from vllm.distributed import (divide, get_ep_group, get_pp_group,
-                              get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size,
-                              tensor_model_parallel_all_gather)
+from vllm.config import (
+    CacheConfig,
+    ModelConfig,
+    SpeculativeConfig,
+    VllmConfig,
+    get_current_vllm_config,
+)
+from vllm.distributed import (
+    divide,
+    get_ep_group,
+    get_pp_group,
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+    tensor_model_parallel_all_gather,
+)
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fla.ops import (
-    RMSNormGated, chunk_gated_delta_rule, fused_recurrent_gated_delta_rule)
+    RMSNormGated,
+    chunk_gated_delta_rule,
+    fused_recurrent_gated_delta_rule,
+)
 from vllm.model_executor.layers.fused_moe import FusedMoE
-from vllm.model_executor.layers.layernorm import \
-    GemmaRMSNorm as Qwen3NextRMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               ReplicatedLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.layernorm import GemmaRMSNorm as Qwen3NextRMSNorm
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    ReplicatedLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.mamba.abstract import MambaBase
-from vllm.model_executor.layers.mamba.mamba_mixer2 import \
-    mamba_v2_sharded_weight_loader
+from vllm.model_executor.layers.mamba.mamba_mixer2 import mamba_v2_sharded_weight_loader
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator, MambaStateShapeCalculator)
+    MambaStateDtypeCalculator,
+    MambaStateShapeCalculator,
+)
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn, causal_conv1d_update)
+    causal_conv1d_fn,
+    causal_conv1d_update,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    DEFAULT_VOCAB_PADDING_SIZE, ParallelLMHead, VocabParallelEmbedding)
+    DEFAULT_VOCAB_PADDING_SIZE,
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, sharded_weight_loader)
+    default_weight_loader,
+    sharded_weight_loader,
+)
 from vllm.model_executor.models.qwen2_moe import Qwen2MoeMLP as Qwen3NextMLP
 from vllm.model_executor.models.utils import sequence_parallel_chunk
 from vllm.model_executor.utils import set_weight_attrs
@@ -54,12 +76,22 @@ from vllm.triton_utils import tl, triton
 from vllm.utils import direct_register_custom_op
 from vllm.v1.attention.backends.gdn_attn import GDNAttentionMetadata
 
-from .interfaces import (HasInnerState, IsHybrid, MixtureOfExperts,
-                         SupportsLoRA, SupportsPP)
-from .utils import (AutoWeightsLoader, PPMissingLayer, extract_layer_index,
-                    is_pp_missing_parameter,
-                    make_empty_intermediate_tensors_factory, make_layers,
-                    maybe_prefix)
+from .interfaces import (
+    HasInnerState,
+    IsHybrid,
+    MixtureOfExperts,
+    SupportsLoRA,
+    SupportsPP,
+)
+from .utils import (
+    AutoWeightsLoader,
+    PPMissingLayer,
+    extract_layer_index,
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 
 logger = init_logger(__name__)
 

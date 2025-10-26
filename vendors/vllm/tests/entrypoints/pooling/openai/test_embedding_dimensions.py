@@ -8,9 +8,9 @@ from typing import Optional
 
 import openai
 import pytest
+
 from tests.conftest import HfRunner
-from tests.models.language.pooling.embed_utils import \
-    run_embedding_correctness_test
+from tests.models.language.pooling.embed_utils import run_embedding_correctness_test
 from tests.models.utils import EmbedModelInfo
 from tests.utils import RemoteOpenAIServer
 from vllm.entrypoints.openai.protocol import EmbeddingResponse

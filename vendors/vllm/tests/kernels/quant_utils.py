@@ -4,8 +4,8 @@
 from typing import Optional, Union
 
 import torch
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    group_broadcast
+
+from vllm.model_executor.layers.quantization.utils.quant_utils import group_broadcast
 from vllm.platforms import current_platform
 from vllm.utils import round_up
 

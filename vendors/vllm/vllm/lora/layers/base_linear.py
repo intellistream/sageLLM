@@ -5,11 +5,15 @@ from typing import Optional, cast
 
 import torch
 from transformers import PretrainedConfig
+
 from vllm.config.lora import LoRAConfig
 from vllm.distributed.utils import divide
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               LinearBase, ReplicatedLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    LinearBase,
+    ReplicatedLinear,
+    RowParallelLinear,
+)
 from vllm.platforms import current_platform
 
 from .base import BaseLayerWithLoRA

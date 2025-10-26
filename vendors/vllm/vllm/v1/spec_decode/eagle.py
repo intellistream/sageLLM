@@ -8,9 +8,9 @@ from typing import Optional
 import numpy as np
 import torch
 import torch.nn as nn
+
 from vllm.attention.layer import Attention
-from vllm.config import (CompilationLevel, VllmConfig,
-                         get_layers_from_vllm_config)
+from vllm.config import CompilationLevel, VllmConfig, get_layers_from_vllm_config
 from vllm.distributed.parallel_state import get_pp_group
 from vllm.forward_context import set_forward_context
 from vllm.logger import init_logger
@@ -22,11 +22,15 @@ from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.platforms import current_platform
 from vllm.utils import is_pin_memory_available
 from vllm.v1.attention.backends.flash_attn import FlashAttentionMetadata
-from vllm.v1.attention.backends.tree_attn import (TreeAttentionMetadata,
-                                                  TreeAttentionMetadataBuilder)
+from vllm.v1.attention.backends.tree_attn import (
+    TreeAttentionMetadata,
+    TreeAttentionMetadataBuilder,
+)
 from vllm.v1.attention.backends.triton_attn import TritonAttentionMetadata
-from vllm.v1.attention.backends.utils import (AttentionMetadataBuilder,
-                                              CommonAttentionMetadata)
+from vllm.v1.attention.backends.utils import (
+    AttentionMetadataBuilder,
+    CommonAttentionMetadata,
+)
 from vllm.v1.kv_cache_interface import KVCacheConfig
 from vllm.v1.sample.metadata import SamplingMetadata
 from vllm.v1.spec_decode.metadata import SpecDecodeMetadata
@@ -133,8 +137,9 @@ class EagleProposer:
             rocm_types = [TritonAttentionMetadata, FlashAttentionMetadata]
             # vllm.v1.attention.backends.rocm_aiter_fa is an optional backend
             if find_spec("vllm.v1.attention.backends.rocm_aiter_fa"):
-                from vllm.v1.attention.backends.rocm_aiter_fa import \
-                    AiterFlashAttentionMetadata
+                from vllm.v1.attention.backends.rocm_aiter_fa import (
+                    AiterFlashAttentionMetadata,
+                )
 
                 rocm_types.append(AiterFlashAttentionMetadata)
             self.allowed_attn_types = tuple(rocm_types)

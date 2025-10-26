@@ -5,6 +5,7 @@
 # Base tests: tests/basic_correctness/test_cpu_offload.py
 
 import pytest
+
 from tests.quantization.utils import is_quant_method_supported
 
 from ..utils import compare_two_settings

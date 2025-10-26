@@ -8,11 +8,16 @@ import msgspec
 import numpy as np
 import pytest
 import torch
-from vllm.multimodal.inputs import (MultiModalBatchedField,
-                                    MultiModalFieldElem, MultiModalFlatField,
-                                    MultiModalKwargsItem,
-                                    MultiModalKwargsItems,
-                                    MultiModalSharedField, NestedTensors)
+
+from vllm.multimodal.inputs import (
+    MultiModalBatchedField,
+    MultiModalFieldElem,
+    MultiModalFlatField,
+    MultiModalKwargsItem,
+    MultiModalKwargsItems,
+    MultiModalSharedField,
+    NestedTensors,
+)
 from vllm.v1.serial_utils import MsgpackDecoder, MsgpackEncoder
 
 pytestmark = pytest.mark.cpu_test

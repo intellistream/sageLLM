@@ -4,18 +4,36 @@
 from abc import ABC, abstractmethod
 from collections import UserDict
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from typing import (TYPE_CHECKING, Any, Generic, Literal, NamedTuple, Optional,
-                    TypeVar, Union)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Literal,
+    NamedTuple,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 import torch
 from typing_extensions import TypeAlias, TypeGuard, assert_never
+
 from vllm.utils import LazyLoader, is_list_of
 
 from .audio import AudioResampler
-from .inputs import (AudioItem, HfAudioItem, HfImageItem, HfVideoItem,
-                     ImageItem, ModalityData, MultiModalDataDict,
-                     MultiModalFieldConfig, MultiModalKwargsItems, VideoItem)
+from .inputs import (
+    AudioItem,
+    HfAudioItem,
+    HfImageItem,
+    HfVideoItem,
+    ImageItem,
+    ModalityData,
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    VideoItem,
+)
 
 _T = TypeVar("_T")
 _I = TypeVar("_I")

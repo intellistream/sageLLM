@@ -4,13 +4,17 @@ from typing import Callable, Optional, Union
 
 import pplx_kernels as pplx
 import torch
+
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
-    TopKWeightAndReduceDelegate
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
+    TopKWeightAndReduceDelegate,
+)
 from vllm.model_executor.layers.fused_moe.utils import (
-    _validate_scale_shape, moe_kernel_quantize_input)
+    _validate_scale_shape,
+    moe_kernel_quantize_input,
+)
 from vllm.utils import cdiv, round_up
 
 logger = init_logger(__name__)

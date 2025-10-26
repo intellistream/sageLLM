@@ -10,13 +10,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 import huggingface_hub
-from transformers import (AutoTokenizer, PreTrainedTokenizer,
-                          PreTrainedTokenizerFast)
+from transformers import AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast
 from typing_extensions import assert_never
+
 from vllm import envs
 from vllm.logger import init_logger
-from vllm.transformers_utils.config import \
-    get_sentence_transformer_tokenizer_config
+from vllm.transformers_utils.config import get_sentence_transformer_tokenizer_config
 from vllm.transformers_utils.tokenizers import MistralTokenizer
 from vllm.transformers_utils.utils import check_gguf_file
 
@@ -152,6 +151,7 @@ def get_tokenizer(
         # lazy import so that modelscope is not required for normal use.
         # pylint: disable=C.
         from modelscope.hub.snapshot_download import snapshot_download
+
         # avoid circuit import
         from vllm.model_executor.model_loader.weight_utils import get_lock
 

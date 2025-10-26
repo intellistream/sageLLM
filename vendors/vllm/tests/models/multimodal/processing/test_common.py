@@ -6,21 +6,27 @@ from typing import Optional, Union
 
 import numpy as np
 import pytest
-from mistral_common.protocol.instruct.messages import (ImageChunk, TextChunk,
-                                                       UserMessage)
+from mistral_common.protocol.instruct.messages import ImageChunk, TextChunk, UserMessage
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
 from PIL import Image
+
 from vllm.config import ModelConfig
-from vllm.config.multimodal import (AudioDummyOptions, BaseDummyOptions,
-                                    ImageDummyOptions, VideoDummyOptions)
+from vllm.config.multimodal import (
+    AudioDummyOptions,
+    BaseDummyOptions,
+    ImageDummyOptions,
+    VideoDummyOptions,
+)
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalDataDict
 from vllm.multimodal.cache import MultiModalProcessorOnlyCache
 from vllm.multimodal.inputs import MultiModalInputs
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        InputProcessingContext)
-from vllm.transformers_utils.tokenizer import (AnyTokenizer, MistralTokenizer,
-                                               cached_tokenizer_from_config,
-                                               encode_tokens)
+from vllm.multimodal.processing import BaseMultiModalProcessor, InputProcessingContext
+from vllm.transformers_utils.tokenizer import (
+    AnyTokenizer,
+    MistralTokenizer,
+    cached_tokenizer_from_config,
+    encode_tokens,
+)
 
 from ....multimodal.utils import random_audio, random_image, random_video
 from ...registry import HF_EXAMPLE_MODELS

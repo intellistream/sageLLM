@@ -3,9 +3,11 @@
 from typing import Optional
 
 import torch
+
 from vllm import _custom_ops as ops
-from vllm.model_executor.layers.fused_moe.moe_align_block_size import \
-    moe_align_block_size
+from vllm.model_executor.layers.fused_moe.moe_align_block_size import (
+    moe_align_block_size,
+)
 from vllm.model_executor.layers.fused_moe.utils import _fp8_perm
 
 

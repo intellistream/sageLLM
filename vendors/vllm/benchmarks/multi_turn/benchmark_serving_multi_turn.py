@@ -18,10 +18,17 @@ from typing import NamedTuple, Optional, Union
 import aiohttp  # type: ignore
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-from bench_dataset import (ConversationsMap, ConvId, GenConvArgs, MessagesList,
-                           ShareGptConversations, conversations_dict_to_list,
-                           conversations_list_to_dict, generate_conversations,
-                           parse_input_json_file)
+from bench_dataset import (
+    ConversationsMap,
+    ConvId,
+    GenConvArgs,
+    MessagesList,
+    ShareGptConversations,
+    conversations_dict_to_list,
+    conversations_list_to_dict,
+    generate_conversations,
+    parse_input_json_file,
+)
 from bench_utils import TEXT_SEPARATOR, Color, logger
 from transformers import AutoTokenizer  # type: ignore
 

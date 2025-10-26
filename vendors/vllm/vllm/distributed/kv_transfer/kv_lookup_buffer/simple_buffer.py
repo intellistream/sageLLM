@@ -16,8 +16,8 @@ from collections import deque
 from typing import Optional, Union
 
 import torch
-from vllm.distributed.kv_transfer.kv_lookup_buffer.base import \
-    KVLookupBufferBase
+
+from vllm.distributed.kv_transfer.kv_lookup_buffer.base import KVLookupBufferBase
 from vllm.distributed.kv_transfer.kv_pipe.base import KVPipeBase
 from vllm.logger import init_logger
 

@@ -7,22 +7,27 @@ from typing import Optional, Union
 import torch
 from torch import nn
 from transformers import BertConfig
+
 from vllm.attention.layers.encoder_only_attention import EncoderOnlyAttention
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import CacheConfig, PoolerConfig, VllmConfig
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
-from vllm.model_executor.layers.pooler import (ClassifierPooler,
-                                               DispatchPooler, Pooler,
-                                               PoolingMethod,
-                                               PoolingParamsUpdate,
-                                               PoolingType)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
+from vllm.model_executor.layers.pooler import (
+    ClassifierPooler,
+    DispatchPooler,
+    Pooler,
+    PoolingMethod,
+    PoolingParamsUpdate,
+    PoolingType,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.vocab_parallel_embedding import \
-    VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 from vllm.sequence import IntermediateTensors
 from vllm.tasks import PoolingTask
 from vllm.v1.pool.metadata import PoolingMetadata

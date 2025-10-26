@@ -6,9 +6,11 @@ from collections.abc import Sequence
 from functools import cached_property
 from typing import Callable, Optional, Union
 
-from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
-                                              DeltaMessage,
-                                              ExtractedToolCallInformation)
+from vllm.entrypoints.openai.protocol import (
+    ChatCompletionRequest,
+    DeltaMessage,
+    ExtractedToolCallInformation,
+)
 from vllm.logger import init_logger
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 from vllm.utils import import_from_path, is_list_of

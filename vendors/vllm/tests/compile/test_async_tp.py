@@ -5,20 +5,33 @@ import json
 
 import pytest
 import torch
+
 import vllm.envs as envs
 from vllm.compilation.collective_fusion import AsyncTPPass
-from vllm.config import (CompilationConfig, DeviceConfig, ModelConfig,
-                         PassConfig, VllmConfig)
-from vllm.distributed import (tensor_model_parallel_all_gather,
-                              tensor_model_parallel_reduce_scatter)
-from vllm.distributed.parallel_state import (init_distributed_environment,
-                                             initialize_model_parallel)
+from vllm.config import (
+    CompilationConfig,
+    DeviceConfig,
+    ModelConfig,
+    PassConfig,
+    VllmConfig,
+)
+from vllm.distributed import (
+    tensor_model_parallel_all_gather,
+    tensor_model_parallel_reduce_scatter,
+)
+from vllm.distributed.parallel_state import (
+    init_distributed_environment,
+    initialize_model_parallel,
+)
 from vllm.platforms import current_platform
 from vllm.utils import update_environment_variables
 
 from ..models.registry import HF_EXAMPLE_MODELS
-from ..utils import (compare_two_settings, create_new_process_for_each_test,
-                     multi_gpu_test)
+from ..utils import (
+    compare_two_settings,
+    create_new_process_for_each_test,
+    multi_gpu_test,
+)
 from .backend import TestBackend
 
 FP8_DTYPE = current_platform.fp8_dtype()

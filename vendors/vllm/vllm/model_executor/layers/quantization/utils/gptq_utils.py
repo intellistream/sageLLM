@@ -8,10 +8,12 @@ from typing import TYPE_CHECKING, Optional, Union
 
 import regex as re
 import torch
-from vllm.model_executor.layers.linear import (LinearBase,
-                                               UnquantizedLinearMethod)
+
+from vllm.model_executor.layers.linear import LinearBase, UnquantizedLinearMethod
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, UnquantizedEmbeddingMethod)
+    ParallelLMHead,
+    UnquantizedEmbeddingMethod,
+)
 
 if TYPE_CHECKING:
     from ..gptq import GPTQConfig

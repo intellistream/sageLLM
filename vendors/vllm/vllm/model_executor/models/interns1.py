@@ -14,33 +14,54 @@ import torch
 import torch.nn as nn
 from transformers import BatchFeature, InternVLProcessor, PretrainedConfig
 from transformers.activations import ACT2FN
-from transformers.models.got_ocr2.image_processing_got_ocr2_fast import \
-    GotOcr2ImageProcessorFast
-from transformers.models.internvl.video_processing_internvl import \
-    InternVLVideoProcessor
+from transformers.models.got_ocr2.image_processing_got_ocr2_fast import (
+    GotOcr2ImageProcessorFast,
+)
+from transformers.models.internvl.video_processing_internvl import (
+    InternVLVideoProcessor,
+)
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.models.interns1_vit import InternS1VisionModel
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
-from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
-                                   ImageSize, MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate, PromptUpdateDetails)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
+from vllm.multimodal.parse import (
+    ImageEmbeddingItems,
+    ImageProcessorItems,
+    ImageSize,
+    MultiModalDataItems,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
-from vllm.transformers_utils.processor import \
-    cached_video_processor_from_config
+from vllm.transformers_utils.processor import cached_video_processor_from_config
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
-                         SupportsMultiModal, SupportsPP)
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsPP,
+)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 
 class InternS1MultiModalProjector(nn.Module):

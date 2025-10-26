@@ -9,8 +9,8 @@ from typing import Optional
 from unittest.mock import patch
 
 import pytest
-from vllm.v1.utils import (APIServerProcessManager,
-                           wait_for_completion_or_failure)
+
+from vllm.v1.utils import APIServerProcessManager, wait_for_completion_or_failure
 
 # Global variables to control worker behavior
 WORKER_RUNTIME_SECONDS = 0.5

@@ -5,6 +5,7 @@
 import json
 
 import pytest
+
 from vllm.entrypoints.openai.protocol import FunctionCall, ToolCall
 from vllm.entrypoints.openai.tool_parsers import Glm4MoeModelToolParser
 from vllm.transformers_utils.tokenizer import get_tokenizer

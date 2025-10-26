@@ -3,8 +3,8 @@
 
 import pytest
 import torch
-from vllm.model_executor.layers.lightning_attn import \
-    linear_decode_forward_triton
+
+from vllm.model_executor.layers.lightning_attn import linear_decode_forward_triton
 from vllm.platforms import current_platform
 
 NUM_HEADS = [4, 8]

@@ -6,32 +6,40 @@ from typing import TYPE_CHECKING, Optional, Union
 
 import huggingface_hub
 import regex as re
-from huggingface_hub.utils import (EntryNotFoundError, HfHubHTTPError,
-                                   HFValidationError, RepositoryNotFoundError)
+from huggingface_hub.utils import (
+    EntryNotFoundError,
+    HfHubHTTPError,
+    HFValidationError,
+    RepositoryNotFoundError,
+)
 from torch import nn
 from transformers import PretrainedConfig
+
 from vllm.config.lora import LoRAConfig
 from vllm.logger import init_logger
+
 # being imported for _all_lora_classes below
-from vllm.lora.layers import (BaseLayerWithLoRA, ColumnParallelLinearWithLoRA,
-                              ColumnParallelLinearWithShardedLoRA,
-                              LogitsProcessorWithLoRA,
-                              MergedColumnParallelLinearWithLoRA,
-                              MergedColumnParallelLinearWithShardedLoRA,
-                              MergedQKVParallelLinearWithLoRA,
-                              MergedQKVParallelLinearWithShardedLoRA,
-                              QKVParallelLinearWithLoRA,
-                              QKVParallelLinearWithShardedLoRA,
-                              ReplicatedLinearWithLoRA,
-                              RowParallelLinearWithLoRA,
-                              RowParallelLinearWithShardedLoRA,
-                              VocabParallelEmbeddingWithLoRA)
+from vllm.lora.layers import (
+    BaseLayerWithLoRA,
+    ColumnParallelLinearWithLoRA,
+    ColumnParallelLinearWithShardedLoRA,
+    LogitsProcessorWithLoRA,
+    MergedColumnParallelLinearWithLoRA,
+    MergedColumnParallelLinearWithShardedLoRA,
+    MergedQKVParallelLinearWithLoRA,
+    MergedQKVParallelLinearWithShardedLoRA,
+    QKVParallelLinearWithLoRA,
+    QKVParallelLinearWithShardedLoRA,
+    ReplicatedLinearWithLoRA,
+    RowParallelLinearWithLoRA,
+    RowParallelLinearWithShardedLoRA,
+    VocabParallelEmbeddingWithLoRA,
+)
 from vllm.model_executor.layers.linear import LinearBase
 
 if TYPE_CHECKING:
     from vllm.model_executor.layers.logits_processor import LogitsProcessor
-    from vllm.model_executor.layers.vocab_parallel_embedding import \
-        ParallelLMHead
+    from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
     from vllm.model_executor.models.utils import WeightsMapper
 
 logger = init_logger(__name__)

@@ -7,28 +7,49 @@ Run `pytest tests/kernels/quantization/test_marlin_gemm.py`.
 
 import pytest
 import torch
+
 from tests.kernels.utils import DEFAULT_OPCHECK_TEST_UTILS, opcheck
 from tests.quantization.utils import is_quant_method_supported
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.quantization.gptq_marlin_24 import (
-    GPTQ_MARLIN_24_MAX_PARALLEL, GPTQ_MARLIN_24_MIN_THREAD_N,
-    GPTQ_MARLIN_24_SUPPORTED_GROUP_SIZES, GPTQ_MARLIN_24_SUPPORTED_QUANT_TYPES)
+    GPTQ_MARLIN_24_MAX_PARALLEL,
+    GPTQ_MARLIN_24_MIN_THREAD_N,
+    GPTQ_MARLIN_24_SUPPORTED_GROUP_SIZES,
+    GPTQ_MARLIN_24_SUPPORTED_QUANT_TYPES,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    MARLIN_SUPPORTED_GROUP_SIZES, marlin_make_empty_g_idx,
-    marlin_make_workspace_new, marlin_permute_bias, marlin_permute_scales,
-    query_marlin_supported_quant_types)
+    MARLIN_SUPPORTED_GROUP_SIZES,
+    marlin_make_empty_g_idx,
+    marlin_make_workspace_new,
+    marlin_permute_bias,
+    marlin_permute_scales,
+    query_marlin_supported_quant_types,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    FP4_MARLIN_SUPPORTED_GROUP_SIZES, rand_marlin_weight_mxfp4_like,
-    rand_marlin_weight_nvfp4_like)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import \
-    marlin_quant_fp8_torch
+    FP4_MARLIN_SUPPORTED_GROUP_SIZES,
+    rand_marlin_weight_mxfp4_like,
+    rand_marlin_weight_nvfp4_like,
+)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
+    marlin_quant_fp8_torch,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_test import (
-    MarlinWorkspace, awq_marlin_quantize, get_weight_perm, marlin_quantize,
-    marlin_weights)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_test_24 import \
-    marlin_24_quantize
+    MarlinWorkspace,
+    awq_marlin_quantize,
+    get_weight_perm,
+    marlin_quantize,
+    marlin_weights,
+)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_test_24 import (
+    marlin_24_quantize,
+)
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    awq_pack, gptq_pack, gptq_quantize_weights, quantize_weights, sort_weights)
+    awq_pack,
+    gptq_pack,
+    gptq_quantize_weights,
+    quantize_weights,
+    sort_weights,
+)
 from vllm.scalar_type import scalar_types
 
 ACT_ORDER_OPTS = [False, True]

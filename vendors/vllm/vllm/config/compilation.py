@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Optional, Union
 
 from pydantic import TypeAdapter, field_validator
 from pydantic.dataclasses import dataclass
+
 from vllm.compilation.inductor_pass import CallableInductorPass, InductorPass
 from vllm.config.utils import config
 from vllm.logger import init_logger

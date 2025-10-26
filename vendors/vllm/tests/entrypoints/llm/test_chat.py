@@ -3,6 +3,7 @@
 import weakref
 
 import pytest
+
 from vllm import LLM
 from vllm.distributed import cleanup_dist_env_and_memory
 

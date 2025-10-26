@@ -10,49 +10,66 @@ from typing import Annotated, Literal, Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mistral_common.protocol.instruct.messages import (ImageChunk, TextChunk,
-                                                       UserMessage)
+from mistral_common.protocol.instruct.messages import ImageChunk, TextChunk, UserMessage
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
 from mistral_common.tokens.tokenizers.multimodal import ImageEncoder
 from PIL import Image
 from transformers import BatchFeature, PixtralVisionConfig, TensorType
 from transformers.image_utils import ImageInput
-from transformers.models.pixtral.image_processing_pixtral import \
-    _num_image_tokens as _get_pixtral_hf_num_image_tokens
+from transformers.models.pixtral.image_processing_pixtral import (
+    _num_image_tokens as _get_pixtral_hf_num_image_tokens,
+)
 from transformers.models.pixtral.modeling_pixtral import (
-    PixtralRotaryEmbedding, apply_rotary_pos_emb, position_ids_in_meshgrid)
+    PixtralRotaryEmbedding,
+    apply_rotary_pos_emb,
+    position_ids_in_meshgrid,
+)
 from transformers.tokenization_utils_base import TextInput
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import divide, get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.activation import get_act_and_mul_fn
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalKwargsItems
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalUUIDDict, NestedTensors)
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        MultiModalProcessingInfo,
-                                        PromptReplacement, PromptUpdate,
-                                        PromptUpdateDetails)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalUUIDDict,
+    NestedTensors,
+)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    MultiModalProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder, ProcessorInputs
 from vllm.platforms import current_platform
 from vllm.sequence import IntermediateTensors
-from vllm.transformers_utils.tokenizer import (MistralTokenizer,
-                                               cached_tokenizer_from_config)
+from vllm.transformers_utils.tokenizer import (
+    MistralTokenizer,
+    cached_tokenizer_from_config,
+)
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .utils import flatten_bn, init_vllm_registered_model, maybe_prefix
-from .vision import (VisionEncoderInfo, VisionFeatureSelectStrategy,
-                     resolve_visual_encoder_outputs)
+from .vision import (
+    VisionEncoderInfo,
+    VisionFeatureSelectStrategy,
+    resolve_visual_encoder_outputs,
+)
 
 try:
     from xformers import ops as xops
@@ -802,8 +819,9 @@ class VisionTransformer(nn.Module):
                 [p.shape[-2] * p.shape[-1] for p in patch_embeds_list],
             )
         else:
-            from transformers.models.pixtral.modeling_pixtral import \
-                generate_block_attention_mask
+            from transformers.models.pixtral.modeling_pixtral import (
+                generate_block_attention_mask,
+            )
 
             mask = generate_block_attention_mask(
                 [p.shape[-2] * p.shape[-1] for p in patch_embeds_list], patch_embeds
@@ -1267,8 +1285,9 @@ class PixtralHFVisionModel(nn.Module):
                 [p.shape[-2] * p.shape[-1] for p in patch_embeds_list],
             )
         else:
-            from transformers.models.pixtral.modeling_pixtral import \
-                generate_block_attention_mask
+            from transformers.models.pixtral.modeling_pixtral import (
+                generate_block_attention_mask,
+            )
 
             attention_mask = generate_block_attention_mask(
                 [p.shape[-2] * p.shape[-1] for p in patch_embeds_list], patch_embeds

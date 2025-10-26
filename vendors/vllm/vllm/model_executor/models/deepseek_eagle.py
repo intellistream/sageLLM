@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
 from vllm.distributed.parallel_state import get_pp_group
@@ -13,11 +14,17 @@ from vllm.model_executor.layers.fused_moe import FusedMoE
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, maybe_remap_kv_scale_name)
-from vllm.model_executor.models.deepseek_v2 import (DeepseekV2DecoderLayer,
-                                                    DeepseekV3ForCausalLM)
+    default_weight_loader,
+    maybe_remap_kv_scale_name,
+)
+from vllm.model_executor.models.deepseek_v2 import (
+    DeepseekV2DecoderLayer,
+    DeepseekV3ForCausalLM,
+)
 
 from .utils import AutoWeightsLoader, maybe_prefix
 

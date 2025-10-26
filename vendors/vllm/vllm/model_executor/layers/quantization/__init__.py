@@ -3,8 +3,7 @@
 
 from typing import Literal, get_args
 
-from vllm.model_executor.layers.quantization.base_config import \
-    QuantizationConfig
+from vllm.model_executor.layers.quantization.base_config import QuantizationConfig
 
 QuantizationMethods = Literal[
     "awq",
@@ -96,8 +95,9 @@ def get_quantization_config(quantization: str) -> type[QuantizationConfig]:
     from .awq_marlin import AWQMarlinConfig
     from .bitblas import BitBLASConfig
     from .bitsandbytes import BitsAndBytesConfig
-    from .compressed_tensors.compressed_tensors import \
-        CompressedTensorsConfig  # noqa: E501
+    from .compressed_tensors.compressed_tensors import (
+        CompressedTensorsConfig,  # noqa: E501
+    )
     from .deepspeedfp import DeepSpeedFPConfig
     from .experts_int8 import ExpertsInt8Config
     from .fbgemm_fp8 import FBGEMMFp8Config

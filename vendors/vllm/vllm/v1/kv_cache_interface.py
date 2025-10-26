@@ -8,6 +8,7 @@ from typing import Optional
 
 import torch
 from typing_extensions import Self
+
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.utils import cdiv, get_dtype_size

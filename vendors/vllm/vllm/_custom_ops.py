@@ -4,6 +4,7 @@
 from typing import TYPE_CHECKING, Optional, Union
 
 import torch
+
 import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
@@ -433,8 +434,9 @@ def awq_dequantize(
     thy: int,
 ) -> torch.Tensor:
     if envs.VLLM_USE_TRITON_AWQ:
-        from vllm.model_executor.layers.quantization.awq_triton import \
-            awq_dequantize_triton
+        from vllm.model_executor.layers.quantization.awq_triton import (
+            awq_dequantize_triton,
+        )
 
         return awq_dequantize_triton(qweight, scales, zeros)
     return torch.ops._C.awq_dequantize(qweight, scales, zeros, split_k_iters, thx, thy)
@@ -448,8 +450,7 @@ def awq_gemm(
     split_k_iters: int,
 ) -> torch.Tensor:
     if envs.VLLM_USE_TRITON_AWQ:
-        from vllm.model_executor.layers.quantization.awq_triton import \
-            awq_gemm_triton
+        from vllm.model_executor.layers.quantization.awq_triton import awq_gemm_triton
 
         return awq_gemm_triton(input, qweight, qzeros, scales, split_k_iters)
     return torch.ops._C.awq_gemm(input, qweight, qzeros, scales, split_k_iters)

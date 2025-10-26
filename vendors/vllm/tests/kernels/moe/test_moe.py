@@ -10,33 +10,44 @@ from typing import Callable, Optional, Union
 
 import pytest
 import torch
-import vllm.model_executor.layers.fused_moe  # noqa
-from tests.kernels.moe.utils import fused_moe
-from tests.kernels.utils import opcheck, stack_and_dev, torch_moe
 from torch.nn import Parameter
 from torch.nn import functional as F
 from transformers import MixtralConfig
 from transformers.models.mixtral.modeling_mixtral import MixtralSparseMoeBlock
+
+import vllm.model_executor.layers.fused_moe  # noqa
+from tests.kernels.moe.utils import fused_moe
+from tests.kernels.utils import opcheck, stack_and_dev, torch_moe
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.distributed.parallel_state import init_distributed_environment
 from vllm.forward_context import set_forward_context
 from vllm.model_executor.layers.fused_moe.config import (
-    FUSED_MOE_UNQUANTIZED_CONFIG, int4_w4a16_moe_quant_config,
-    int8_w8a16_moe_quant_config)
+    FUSED_MOE_UNQUANTIZED_CONFIG,
+    int4_w4a16_moe_quant_config,
+    int8_w8a16_moe_quant_config,
+)
 from vllm.model_executor.layers.fused_moe.fused_moe import (
-    fused_topk, modular_triton_fused_moe)
-from vllm.model_executor.layers.fused_moe.moe_torch_iterative import \
-    fused_moe as iterative_moe
-from vllm.model_executor.layers.quantization.utils.marlin_utils import \
-    marlin_permute_bias
+    fused_topk,
+    modular_triton_fused_moe,
+)
+from vllm.model_executor.layers.fused_moe.moe_torch_iterative import (
+    fused_moe as iterative_moe,
+)
+from vllm.model_executor.layers.quantization.utils.marlin_utils import (
+    marlin_permute_bias,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    rand_marlin_weight_mxfp4_like, rand_marlin_weight_nvfp4_like)
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import \
-    marlin_quant_fp8_torch
+    rand_marlin_weight_mxfp4_like,
+    rand_marlin_weight_nvfp4_like,
+)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
+    marlin_quant_fp8_torch,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_test import (
-    awq_marlin_quantize, marlin_quantize)
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    quantize_weights
+    awq_marlin_quantize,
+    marlin_quantize,
+)
+from vllm.model_executor.layers.quantization.utils.quant_utils import quantize_weights
 from vllm.model_executor.models.mixtral import MixtralMoE
 from vllm.platforms import current_platform
 from vllm.scalar_type import ScalarType, scalar_types
@@ -398,8 +409,9 @@ def test_mixtral_moe(
     huggingface."""
 
     # clear the cache before every test
-    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-        is_rocm_aiter_moe_enabled
+    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+        is_rocm_aiter_moe_enabled,
+    )
 
     is_rocm_aiter_moe_enabled.cache_clear()
     if use_rocm_aiter:

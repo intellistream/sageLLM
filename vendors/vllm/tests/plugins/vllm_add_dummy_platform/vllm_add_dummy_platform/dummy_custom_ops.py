@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import torch
+
 from vllm.model_executor.layers.rotary_embedding import RotaryEmbedding
 
 

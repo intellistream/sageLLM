@@ -7,16 +7,22 @@ from typing import Optional, Union, cast
 import numpy as np
 from fastapi import Request
 from typing_extensions import override
+
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (ClassificationData,
-                                              ClassificationRequest,
-                                              ClassificationResponse,
-                                              ErrorResponse, UsageInfo)
-from vllm.entrypoints.openai.serving_engine import (ClassificationServeContext,
-                                                    OpenAIServing,
-                                                    ServeContext)
+from vllm.entrypoints.openai.protocol import (
+    ClassificationData,
+    ClassificationRequest,
+    ClassificationResponse,
+    ErrorResponse,
+    UsageInfo,
+)
+from vllm.entrypoints.openai.serving_engine import (
+    ClassificationServeContext,
+    OpenAIServing,
+    ServeContext,
+)
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.renderer import RenderConfig
 from vllm.logger import init_logger

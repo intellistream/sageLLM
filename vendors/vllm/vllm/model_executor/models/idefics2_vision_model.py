@@ -24,13 +24,18 @@ from typing import Optional
 import torch
 from torch import nn
 from transformers.models.idefics2.configuration_idefics2 import (
-    Idefics2Config, Idefics2VisionConfig)
+    Idefics2Config,
+    Idefics2VisionConfig,
+)
+
 from vllm.attention.layer import MultiHeadAttention
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 

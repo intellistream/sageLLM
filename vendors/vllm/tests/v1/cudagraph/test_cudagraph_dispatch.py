@@ -5,11 +5,18 @@ from unittest.mock import MagicMock, patch
 import pytest
 import torch
 import torch.nn as nn
+
 from tests.utils import create_new_process_for_each_test
 from vllm.compilation.cuda_graph import CUDAGraphWrapper
 from vllm.compilation.monitor import set_cudagraph_capturing_enabled
-from vllm.config import (CompilationConfig, CompilationLevel, CUDAGraphMode,
-                         ParallelConfig, SchedulerConfig, VllmConfig)
+from vllm.config import (
+    CompilationConfig,
+    CompilationLevel,
+    CUDAGraphMode,
+    ParallelConfig,
+    SchedulerConfig,
+    VllmConfig,
+)
 from vllm.forward_context import BatchDescriptor, set_forward_context
 from vllm.platforms import current_platform
 from vllm.v1.cudagraph_dispatcher import CudagraphDispatcher

@@ -11,13 +11,21 @@ import torch
 from pytest import MarkDecorator
 from transformers import AutoModelForCausalLM
 from transformers.models.auto.auto_factory import _BaseAutoModelClass
+
 from vllm.config import RunnerOption
 from vllm.logprobs import SampleLogprobs
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
-from .....conftest import (AUDIO_ASSETS, IMAGE_ASSETS, HfRunner, ImageAsset,
-                           ImageTestAssets, PromptAudioInput, PromptImageInput,
-                           PromptVideoInput)
+from .....conftest import (
+    AUDIO_ASSETS,
+    IMAGE_ASSETS,
+    HfRunner,
+    ImageAsset,
+    ImageTestAssets,
+    PromptAudioInput,
+    PromptImageInput,
+    PromptVideoInput,
+)
 from ....utils import check_logprobs_close
 
 # meta image tag; will be replaced by the appropriate tag for the model

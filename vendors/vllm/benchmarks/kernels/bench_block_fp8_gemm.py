@@ -2,10 +2,13 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import torch
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    apply_w8a8_block_fp8_linear
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    CUTLASS_BLOCK_FP8_SUPPORTED
+
+from vllm.model_executor.layers.quantization.utils.fp8_utils import (
+    apply_w8a8_block_fp8_linear,
+)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    CUTLASS_BLOCK_FP8_SUPPORTED,
+)
 from vllm.platforms import current_platform
 from vllm.triton_utils import triton as vllm_triton
 

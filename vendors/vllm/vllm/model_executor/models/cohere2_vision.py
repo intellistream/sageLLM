@@ -10,34 +10,45 @@ import torch
 from torch import nn
 from transformers import BatchFeature, PretrainedConfig
 from transformers.models.cohere2_vision import Cohere2VisionConfig
-from transformers.models.cohere2_vision.image_processing_cohere2_vision_fast import \
-    get_optimal_tiled_canvas  # noqa: E501
-from transformers.models.cohere2_vision.processing_cohere2_vision import \
-    Cohere2VisionProcessor
+from transformers.models.cohere2_vision.image_processing_cohere2_vision_fast import (
+    get_optimal_tiled_canvas,  # noqa: E501
+)
+from transformers.models.cohere2_vision.processing_cohere2_vision import (
+    Cohere2VisionProcessor,
+)
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import MulAndSilu
-from vllm.model_executor.layers.linear import (MergedColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    MergedColumnParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.quantization.awq import AWQConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalDataDict, MultiModalKwargsItems
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        MultiModalFieldConfig,
-                                        PromptReplacement, PromptUpdate,
-                                        PromptUpdateDetails)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    MultiModalFieldConfig,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .siglip import SiglipVisionModel
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 
 class Cohere2VisionImagePixelInputs(TensorSchema):

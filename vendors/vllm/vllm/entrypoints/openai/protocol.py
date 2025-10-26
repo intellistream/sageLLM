@@ -6,43 +6,47 @@
 import json
 import time
 from http import HTTPStatus
-from typing import (Annotated, Any, ClassVar, Generic, Literal, Optional,
-                    TypeVar, Union)
+from typing import Annotated, Any, ClassVar, Generic, Literal, Optional, TypeVar, Union
 
 import regex as re
 import torch
 from fastapi import HTTPException, UploadFile
-from openai.types.chat.chat_completion_audio import \
-    ChatCompletionAudio as OpenAIChatCompletionAudio
-from openai.types.chat.chat_completion_message import \
-    Annotation as OpenAIAnnotation
+from openai.types.chat.chat_completion_audio import (
+    ChatCompletionAudio as OpenAIChatCompletionAudio,
+)
+from openai.types.chat.chat_completion_message import Annotation as OpenAIAnnotation
 from openai.types.responses import (
     ResponseCodeInterpreterCallCodeDeltaEvent,
     ResponseCodeInterpreterCallCodeDoneEvent,
     ResponseCodeInterpreterCallCompletedEvent,
     ResponseCodeInterpreterCallInProgressEvent,
-    ResponseCodeInterpreterCallInterpretingEvent)
-from openai.types.responses import \
-    ResponseCompletedEvent as OpenAIResponseCompletedEvent
-from openai.types.responses import (ResponseContentPartAddedEvent,
-                                    ResponseContentPartDoneEvent)
-from openai.types.responses import \
-    ResponseCreatedEvent as OpenAIResponseCreatedEvent
-from openai.types.responses import ResponseFunctionToolCall
-from openai.types.responses import \
-    ResponseInProgressEvent as OpenAIResponseInProgressEvent
-from openai.types.responses import (ResponseInputItemParam, ResponseOutputItem,
-                                    ResponseOutputItemAddedEvent,
-                                    ResponseOutputItemDoneEvent,
-                                    ResponsePrompt, ResponseReasoningItem,
-                                    ResponseReasoningTextDeltaEvent,
-                                    ResponseReasoningTextDoneEvent,
-                                    ResponseStatus,
-                                    ResponseWebSearchCallCompletedEvent,
-                                    ResponseWebSearchCallInProgressEvent,
-                                    ResponseWebSearchCallSearchingEvent)
-from openai.types.responses.response_reasoning_item import \
-    Content as ResponseReasoningTextContent
+    ResponseCodeInterpreterCallInterpretingEvent,
+    ResponseContentPartAddedEvent,
+    ResponseContentPartDoneEvent,
+    ResponseFunctionToolCall,
+    ResponseInputItemParam,
+    ResponseOutputItem,
+    ResponseOutputItemAddedEvent,
+    ResponseOutputItemDoneEvent,
+    ResponsePrompt,
+    ResponseReasoningItem,
+    ResponseReasoningTextDeltaEvent,
+    ResponseReasoningTextDoneEvent,
+    ResponseStatus,
+    ResponseWebSearchCallCompletedEvent,
+    ResponseWebSearchCallInProgressEvent,
+    ResponseWebSearchCallSearchingEvent,
+)
+from openai.types.responses import (
+    ResponseCompletedEvent as OpenAIResponseCompletedEvent,
+)
+from openai.types.responses import ResponseCreatedEvent as OpenAIResponseCreatedEvent
+from openai.types.responses import (
+    ResponseInProgressEvent as OpenAIResponseInProgressEvent,
+)
+from openai.types.responses.response_reasoning_item import (
+    Content as ResponseReasoningTextContent,
+)
 
 # Backward compatibility for OpenAI client versions
 try:  # For older openai versions (< 1.100.0)
@@ -53,19 +57,29 @@ except ImportError:  # For newer openai versions (>= 1.100.0)
 from openai.types.responses.response import IncompleteDetails, ToolChoice
 from openai.types.responses.tool import Tool
 from openai.types.shared import Metadata, Reasoning
-from pydantic import (BaseModel, ConfigDict, Field, TypeAdapter,
-                      ValidationInfo, field_validator, model_validator)
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    TypeAdapter,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from typing_extensions import TypeAlias
+
 from vllm import envs
-from vllm.entrypoints.chat_utils import (ChatCompletionMessageParam,
-                                         make_tool_call_id)
-from vllm.entrypoints.score_utils import (ScoreContentPartParam,
-                                          ScoreMultiModalParam)
+from vllm.entrypoints.chat_utils import ChatCompletionMessageParam, make_tool_call_id
+from vllm.entrypoints.score_utils import ScoreContentPartParam, ScoreMultiModalParam
 from vllm.logger import init_logger
 from vllm.logprobs import Logprob
 from vllm.pooling_params import PoolingParams
-from vllm.sampling_params import (BeamSearchParams, RequestOutputKind,
-                                  SamplingParams, StructuredOutputsParams)
+from vllm.sampling_params import (
+    BeamSearchParams,
+    RequestOutputKind,
+    SamplingParams,
+    StructuredOutputsParams,
+)
 from vllm.utils import random_uuid, resolve_obj_by_qualname
 
 logger = init_logger(__name__)

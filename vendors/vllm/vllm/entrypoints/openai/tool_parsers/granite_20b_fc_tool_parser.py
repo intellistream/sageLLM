@@ -9,18 +9,27 @@ from typing import Union
 import partial_json_parser
 import regex as re
 from partial_json_parser.core.options import Allow
+
 from vllm.entrypoints.chat_utils import make_tool_call_id
-from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
-                                              DeltaFunctionCall, DeltaMessage,
-                                              DeltaToolCall,
-                                              ExtractedToolCallInformation,
-                                              FunctionCall, ToolCall)
+from vllm.entrypoints.openai.protocol import (
+    ChatCompletionRequest,
+    DeltaFunctionCall,
+    DeltaMessage,
+    DeltaToolCall,
+    ExtractedToolCallInformation,
+    FunctionCall,
+    ToolCall,
+)
 from vllm.entrypoints.openai.tool_parsers.abstract_tool_parser import (
-    ToolParser, ToolParserManager)
-from vllm.entrypoints.openai.tool_parsers.utils import (consume_space,
-                                                        find_common_prefix,
-                                                        is_complete_json,
-                                                        partial_json_loads)
+    ToolParser,
+    ToolParserManager,
+)
+from vllm.entrypoints.openai.tool_parsers.utils import (
+    consume_space,
+    find_common_prefix,
+    is_complete_json,
+    partial_json_loads,
+)
 from vllm.logger import init_logger
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 

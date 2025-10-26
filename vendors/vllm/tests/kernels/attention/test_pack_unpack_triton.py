@@ -3,6 +3,7 @@
 
 import torch
 from torch.testing import assert_close
+
 from vllm.attention.ops.common import pack_seq_triton, unpack_seq_triton
 
 

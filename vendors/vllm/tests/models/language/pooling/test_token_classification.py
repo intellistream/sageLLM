@@ -2,8 +2,9 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
-from tests.models.utils import softmax
 from transformers import AutoModelForTokenClassification
+
+from tests.models.utils import softmax
 
 
 @pytest.mark.parametrize("model", ["boltuix/NeuroBERT-NER"])

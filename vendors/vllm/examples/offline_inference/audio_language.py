@@ -14,6 +14,7 @@ from typing import Any, NamedTuple, Optional
 
 from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer
+
 from vllm import LLM, EngineArgs, SamplingParams
 from vllm.assets.audio import AudioAsset
 from vllm.lora.request import LoRARequest
@@ -44,9 +45,12 @@ class ModelRequestData(NamedTuple):
 # Voxtral
 def run_voxtral(question: str, audio_count: int) -> ModelRequestData:
     from mistral_common.audio import Audio
-    from mistral_common.protocol.instruct.messages import (AudioChunk,
-                                                           RawAudio, TextChunk,
-                                                           UserMessage)
+    from mistral_common.protocol.instruct.messages import (
+        AudioChunk,
+        RawAudio,
+        TextChunk,
+        UserMessage,
+    )
     from mistral_common.protocol.instruct.request import ChatCompletionRequest
     from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 

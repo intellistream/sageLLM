@@ -5,11 +5,12 @@ import pytest
 import torch
 import torch.nn.functional as F
 from einops import rearrange, repeat
-from vllm.model_executor.layers.mamba.ops.ssd_combined import \
-    mamba_chunk_scan_combined_varlen
+
+from vllm.model_executor.layers.mamba.ops.ssd_combined import (
+    mamba_chunk_scan_combined_varlen,
+)
 from vllm.platforms import current_platform
-from vllm.v1.attention.backends.mamba2_attn import \
-    compute_varlen_chunk_metadata
+from vllm.v1.attention.backends.mamba2_attn import compute_varlen_chunk_metadata
 
 # Added by the IBM Team, 2024
 

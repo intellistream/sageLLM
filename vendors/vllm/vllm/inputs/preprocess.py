@@ -5,20 +5,36 @@ from collections.abc import Mapping
 from typing import Any, Optional, Union, cast
 
 from typing_extensions import assert_never
+
 from vllm.config import ModelConfig
 from vllm.logger import init_logger
 from vllm.multimodal import MULTIMODAL_REGISTRY, MultiModalRegistry
 from vllm.multimodal.cache import BaseMultiModalProcessorCache
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalEncDecInputs,
-                                    MultiModalInputs, MultiModalUUIDDict)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalEncDecInputs,
+    MultiModalInputs,
+    MultiModalUUIDDict,
+)
 from vllm.multimodal.processing import BaseMultiModalProcessor
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
-from .data import (DecoderOnlyInputs, EmbedsInputs, EmbedsPrompt,
-                   EncoderDecoderInputs, ExplicitEncoderDecoderPrompt,
-                   ProcessorInputs, PromptType, SingletonInputs,
-                   SingletonPrompt, TextPrompt, TokenInputs, TokensPrompt,
-                   embeds_inputs, token_inputs)
+from .data import (
+    DecoderOnlyInputs,
+    EmbedsInputs,
+    EmbedsPrompt,
+    EncoderDecoderInputs,
+    ExplicitEncoderDecoderPrompt,
+    ProcessorInputs,
+    PromptType,
+    SingletonInputs,
+    SingletonPrompt,
+    TextPrompt,
+    TokenInputs,
+    TokensPrompt,
+    embeds_inputs,
+    token_inputs,
+)
 from .parse import is_explicit_encoder_decoder_prompt, parse_singleton_prompt
 
 logger = init_logger(__name__)

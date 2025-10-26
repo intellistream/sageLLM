@@ -33,22 +33,47 @@ import types
 import uuid
 import warnings
 import weakref
-from argparse import (Action, ArgumentDefaultsHelpFormatter, ArgumentParser,
-                      ArgumentTypeError, RawDescriptionHelpFormatter,
-                      _ArgumentGroup)
+from argparse import (
+    Action,
+    ArgumentDefaultsHelpFormatter,
+    ArgumentParser,
+    ArgumentTypeError,
+    RawDescriptionHelpFormatter,
+    _ArgumentGroup,
+)
 from asyncio import FIRST_COMPLETED, AbstractEventLoop, Task
 from collections import UserDict, defaultdict
-from collections.abc import (AsyncGenerator, Awaitable, Collection, Generator,
-                             Hashable, Iterable, Iterator, KeysView, Mapping,
-                             Sequence)
+from collections.abc import (
+    AsyncGenerator,
+    Awaitable,
+    Collection,
+    Generator,
+    Hashable,
+    Iterable,
+    Iterator,
+    KeysView,
+    Mapping,
+    Sequence,
+)
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures.process import ProcessPoolExecutor
 from dataclasses import dataclass, field
 from functools import cache, lru_cache, partial, wraps
 from pathlib import Path
 from types import MappingProxyType
-from typing import (TYPE_CHECKING, Any, Callable, Generic, Literal, NamedTuple,
-                    TextIO, TypeVar, Union, cast, overload)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Generic,
+    Literal,
+    NamedTuple,
+    TextIO,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 from urllib.parse import urlparse
 from uuid import uuid4
 
@@ -62,7 +87,6 @@ import regex as re
 import setproctitle
 import torch
 import torch.types
-import vllm.envs as envs
 import yaml
 import zmq
 import zmq.asyncio
@@ -71,6 +95,8 @@ from packaging.version import Version
 from torch.library import Library
 from transformers.tokenization_utils_base import BatchEncoding
 from typing_extensions import Never, ParamSpec, TypeIs, assert_never
+
+import vllm.envs as envs
 from vllm.logger import enable_trace_function_call, init_logger
 from vllm.ray.lazy_utils import is_in_ray_actor
 
@@ -1579,6 +1605,7 @@ def _cuda_device_count_stateless(cuda_visible_devices: str | None = None) -> int
     # torch/cuda/__init__.py#L831C1-L831C17
     import torch.cuda
     import torch.version
+
     from vllm.platforms import current_platform
 
     if not torch.cuda._is_compiled():

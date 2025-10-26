@@ -34,9 +34,11 @@ class All2AllManagerBase:
         self.cpu_group = cpu_group
 
         # compute some common properties
-        from vllm.distributed.parallel_state import (get_dp_group,
-                                                     get_tp_group,
-                                                     in_the_same_node_as)
+        from vllm.distributed.parallel_state import (
+            get_dp_group,
+            get_tp_group,
+            in_the_same_node_as,
+        )
 
         # all2all lives in ep group, which is merged from dp and tp group
         self.dp_group = get_dp_group()

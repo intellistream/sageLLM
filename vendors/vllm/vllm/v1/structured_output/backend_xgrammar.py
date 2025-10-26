@@ -8,17 +8,22 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import torch
+
 import vllm.envs
 from vllm.logger import init_logger
 from vllm.sampling_params import SamplingParams
 from vllm.transformers_utils.tokenizers.mistral import MistralTokenizer
 from vllm.utils import LazyLoader
-from vllm.v1.structured_output.backend_types import (StructuredOutputBackend,
-                                                     StructuredOutputGrammar,
-                                                     StructuredOutputOptions)
-from vllm.v1.structured_output.utils import (choice_as_grammar,
-                                             convert_lark_to_ebnf,
-                                             grammar_is_likely_lark)
+from vllm.v1.structured_output.backend_types import (
+    StructuredOutputBackend,
+    StructuredOutputGrammar,
+    StructuredOutputOptions,
+)
+from vllm.v1.structured_output.utils import (
+    choice_as_grammar,
+    convert_lark_to_ebnf,
+    grammar_is_likely_lark,
+)
 
 if TYPE_CHECKING:
     import xgrammar as xgr

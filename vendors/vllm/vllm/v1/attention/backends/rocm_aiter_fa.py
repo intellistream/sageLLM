@@ -6,20 +6,28 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
-from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
-                                              AttentionMetadata, AttentionType)
+
+from vllm.attention.backends.abstract import (
+    AttentionBackend,
+    AttentionImpl,
+    AttentionMetadata,
+    AttentionType,
+)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
-from vllm.v1.attention.backends.utils import (AttentionCGSupport,
-                                              AttentionMetadataBuilder,
-                                              CommonAttentionMetadata)
+from vllm.v1.attention.backends.utils import (
+    AttentionCGSupport,
+    AttentionMetadataBuilder,
+    CommonAttentionMetadata,
+)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 _PARTITION_SIZE_ROCM = 256
 
 if current_platform.is_rocm():
     import aiter
+
     from vllm.triton_utils import tl, triton
     from vllm.utils import direct_register_custom_op
 

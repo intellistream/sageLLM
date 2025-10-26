@@ -9,6 +9,7 @@ import pytest
 import torch
 from packaging.version import Version
 from transformers import __version__ as TRANSFORMERS_VERSION
+
 from vllm.config import ModelDType, TokenizerMode
 
 

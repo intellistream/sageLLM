@@ -9,18 +9,26 @@ from typing import TYPE_CHECKING, Generic, Optional, TypeVar, Union, cast
 
 import torch
 from typing_extensions import TypeAlias, override
+
 from vllm.distributed.device_communicators.shm_object_storage import (
-    MsgpackSerde, SingleWriterShmObjectStorage, SingleWriterShmRingBuffer)
+    MsgpackSerde,
+    SingleWriterShmObjectStorage,
+    SingleWriterShmRingBuffer,
+)
 from vllm.envs import VLLM_OBJECT_STORAGE_SHM_BUFFER_NAME
 from vllm.logger import init_logger
 from vllm.utils import GiB_bytes, LRUCache, MiB_bytes
-from vllm.utils.jsontree import (json_count_leaves, json_map_leaves,
-                                 json_reduce_leaves)
+from vllm.utils.jsontree import json_count_leaves, json_map_leaves, json_reduce_leaves
 
-from .inputs import (MultiModalBatchedField, MultiModalFeatureSpec,
-                     MultiModalFieldElem, MultiModalKwargs,
-                     MultiModalKwargsItem, MultiModalKwargsItems,
-                     NestedTensors)
+from .inputs import (
+    MultiModalBatchedField,
+    MultiModalFeatureSpec,
+    MultiModalFieldElem,
+    MultiModalKwargs,
+    MultiModalKwargsItem,
+    MultiModalKwargsItems,
+    NestedTensors,
+)
 
 if TYPE_CHECKING:
     from vllm.config import ModelConfig, VllmConfig

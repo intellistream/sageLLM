@@ -5,18 +5,21 @@ from collections.abc import Hashable
 from typing import Callable
 
 import torch
-import vllm._custom_ops as ops
-from compressed_tensors.transform import (TransformArgs, TransformLocation,
-                                          TransformScheme)
+from compressed_tensors.transform import (
+    TransformArgs,
+    TransformLocation,
+    TransformScheme,
+)
 from torch import Tensor
-from vllm.distributed.parallel_state import \
-    get_tensor_model_parallel_world_size
+
+import vllm._custom_ops as ops
+from vllm.distributed.parallel_state import get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.linear import LinearBase
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import \
-    TransformTuple  # noqa: E501
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (
+    TransformTuple,  # noqa: E501
+)
 from vllm.model_executor.layers.utils import dispatch_unquantized_gemm
-from vllm.model_executor.layers.vocab_parallel_embedding import \
-    VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 from vllm.model_executor.parameter import SharedWeightParameter
 
 

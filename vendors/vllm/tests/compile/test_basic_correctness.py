@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 
 import pytest
+
 from vllm.config import CompilationLevel
 from vllm.utils import cuda_device_count_stateless
 

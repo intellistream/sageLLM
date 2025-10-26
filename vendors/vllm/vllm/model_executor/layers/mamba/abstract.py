@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 import torch
+
 from vllm.model_executor.layers.attention_layer_base import AttentionLayerBase
 
 if TYPE_CHECKING:

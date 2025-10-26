@@ -7,8 +7,11 @@ from unittest.mock import MagicMock
 import pytest
 import regex as re
 from pydantic import TypeAdapter
-from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
-                                              ChatCompletionToolsParam)
+
+from vllm.entrypoints.openai.protocol import (
+    ChatCompletionRequest,
+    ChatCompletionToolsParam,
+)
 from vllm.entrypoints.openai.serving_chat import OpenAIServingChat
 
 pytestmark = pytest.mark.cpu_test

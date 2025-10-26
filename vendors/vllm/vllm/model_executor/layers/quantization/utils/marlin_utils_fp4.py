@@ -4,11 +4,16 @@
 from typing import Optional
 
 import torch
+
 import vllm._custom_ops as ops
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    USE_FP32_REDUCE_DEFAULT, marlin_make_workspace_new, marlin_permute_bias,
-    marlin_permute_scales, should_use_atomic_add_reduce)
+    USE_FP32_REDUCE_DEFAULT,
+    marlin_make_workspace_new,
+    marlin_permute_bias,
+    marlin_permute_scales,
+    should_use_atomic_add_reduce,
+)
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 

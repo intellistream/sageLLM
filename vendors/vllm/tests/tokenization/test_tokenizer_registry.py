@@ -4,8 +4,7 @@
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 from vllm.transformers_utils.tokenizer import get_tokenizer
-from vllm.transformers_utils.tokenizer_base import (TokenizerBase,
-                                                    TokenizerRegistry)
+from vllm.transformers_utils.tokenizer_base import TokenizerBase, TokenizerRegistry
 
 if TYPE_CHECKING:
     from vllm.entrypoints.chat_utils import ChatCompletionMessageParam

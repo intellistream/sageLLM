@@ -7,6 +7,7 @@ from importlib.util import find_spec
 from typing import Callable, Optional
 
 import torch
+
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op

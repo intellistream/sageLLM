@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Callable, Union
 
 import torch
+
 from vllm.transformers_utils.tokenizer import AnyTokenizer
 
 LogitsProcessor = Union[

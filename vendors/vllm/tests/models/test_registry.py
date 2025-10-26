@@ -5,16 +5,23 @@ import warnings
 
 import pytest
 import torch.cuda
-from vllm.model_executor.models import (is_pooling_model,
-                                        is_text_generation_model,
-                                        supports_multimodal)
-from vllm.model_executor.models.adapters import (as_embedding_model,
-                                                 as_reward_model,
-                                                 as_seq_cls_model)
-from vllm.model_executor.models.registry import (_MULTIMODAL_MODELS,
-                                                 _SPECULATIVE_DECODING_MODELS,
-                                                 _TEXT_GENERATION_MODELS,
-                                                 ModelRegistry)
+
+from vllm.model_executor.models import (
+    is_pooling_model,
+    is_text_generation_model,
+    supports_multimodal,
+)
+from vllm.model_executor.models.adapters import (
+    as_embedding_model,
+    as_reward_model,
+    as_seq_cls_model,
+)
+from vllm.model_executor.models.registry import (
+    _MULTIMODAL_MODELS,
+    _SPECULATIVE_DECODING_MODELS,
+    _TEXT_GENERATION_MODELS,
+    ModelRegistry,
+)
 from vllm.platforms import current_platform
 
 from ..utils import create_new_process_for_each_test

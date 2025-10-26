@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from huggingface_hub import snapshot_download
 from transformers import AutoConfig, AutoModel, CLIPImageProcessor
+
 from vllm.distributed import cleanup_dist_env_and_memory
 from vllm.model_executor.models.radio import RadioModel
 from vllm.transformers_utils.configs.radio import RadioConfig

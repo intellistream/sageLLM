@@ -9,11 +9,15 @@ from typing import Optional, Union
 
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.openai.protocol import (ErrorInfo, ErrorResponse,
-                                              LoadLoRAAdapterRequest,
-                                              ModelCard, ModelList,
-                                              ModelPermission,
-                                              UnloadLoRAAdapterRequest)
+from vllm.entrypoints.openai.protocol import (
+    ErrorInfo,
+    ErrorResponse,
+    LoadLoRAAdapterRequest,
+    ModelCard,
+    ModelList,
+    ModelPermission,
+    UnloadLoRAAdapterRequest,
+)
 from vllm.logger import init_logger
 from vllm.lora.request import LoRARequest
 from vllm.lora.resolver import LoRAResolver, LoRAResolverRegistry

@@ -6,20 +6,29 @@ from itertools import count
 from typing import Any, Callable, Optional
 
 import torch
+
 from vllm import SamplingParams
-from vllm.config import (CacheConfig, DeviceConfig, KVTransferConfig,
-                         ModelConfig, SchedulerConfig, VllmConfig)
-from vllm.distributed.kv_transfer.kv_connector.factory import \
-    KVConnectorFactory
-from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import \
-    SharedStorageConnector  # noqa
+from vllm.config import (
+    CacheConfig,
+    DeviceConfig,
+    KVTransferConfig,
+    ModelConfig,
+    SchedulerConfig,
+    VllmConfig,
+)
+from vllm.distributed.kv_transfer.kv_connector.factory import KVConnectorFactory
+from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import (
+    SharedStorageConnector,  # noqa
+)
 from vllm.utils import sha256
 from vllm.v1.core.kv_cache_manager import KVCacheBlocks
-from vllm.v1.core.kv_cache_utils import (get_request_block_hasher,
-                                         init_none_hash)
+from vllm.v1.core.kv_cache_utils import get_request_block_hasher, init_none_hash
 from vllm.v1.core.sched.scheduler import Scheduler
-from vllm.v1.kv_cache_interface import (FullAttentionSpec, KVCacheConfig,
-                                        KVCacheGroupSpec)
+from vllm.v1.kv_cache_interface import (
+    FullAttentionSpec,
+    KVCacheConfig,
+    KVCacheGroupSpec,
+)
 from vllm.v1.outputs import KVConnectorOutput, ModelRunnerOutput
 from vllm.v1.request import Request
 from vllm.v1.structured_output import StructuredOutputManager

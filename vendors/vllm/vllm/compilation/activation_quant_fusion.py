@@ -5,13 +5,21 @@ from abc import ABC, abstractmethod
 
 import torch
 from torch._higher_order_ops.auto_functionalize import auto_functionalized
-from torch._inductor.pattern_matcher import (PatternMatcherPass, fwd_only,
-                                             register_replacement)
+from torch._inductor.pattern_matcher import (
+    PatternMatcherPass,
+    fwd_only,
+    register_replacement,
+)
 from torch._ops import OpOverload
+
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey, kFp8StaticTensorSym, kNvfp4Quant, kStaticTensorScale)
+    QuantKey,
+    kFp8StaticTensorSym,
+    kNvfp4Quant,
+    kStaticTensorScale,
+)
 from vllm.platforms import current_platform
 
 from .fusion import QUANT_OPS, empty_bf16, empty_fp32, empty_i32

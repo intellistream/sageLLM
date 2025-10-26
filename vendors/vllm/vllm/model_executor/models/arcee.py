@@ -15,22 +15,32 @@ from typing import Any, Optional, Union
 import torch
 from torch import nn
 from transformers import LlamaConfig
+
 from vllm.compilation.decorators import support_torch_compile
 from vllm.distributed import get_pp_group
 from vllm.model_executor.layers.activation import ReLUSquaredActivation
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    DEFAULT_VOCAB_PADDING_SIZE, ParallelLMHead, VocabParallelEmbedding)
+    DEFAULT_VOCAB_PADDING_SIZE,
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, maybe_remap_kv_scale_name)
+    default_weight_loader,
+    maybe_remap_kv_scale_name,
+)
 from vllm.sequence import IntermediateTensors
 
 from .interfaces import SupportsLoRA, SupportsPP
-from .utils import (AutoWeightsLoader, PPMissingLayer, is_pp_missing_parameter,
-                    make_empty_intermediate_tensors_factory, make_layers)
+from .utils import (
+    AutoWeightsLoader,
+    PPMissingLayer,
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+)
 
 
 class ArceeMLP(nn.Module):
@@ -113,8 +123,9 @@ class ArceeDecoderLayer(nn.Module):
             attention_bias = config.qkv_bias
 
         # Self-Attention (using LLaMA's attention structure)
-        from vllm.model_executor.models.llama import \
-            LlamaAttention  # import here to avoid circular import
+        from vllm.model_executor.models.llama import (
+            LlamaAttention,  # import here to avoid circular import
+        )
 
         self.self_attn = LlamaAttention(
             config=config,

@@ -7,6 +7,7 @@ from typing import Optional, Union, cast
 
 import numpy as np
 import prometheus_client
+
 from vllm.config import SupportsMetricsInfo, VllmConfig
 from vllm.engine.metrics_types import StatLoggerBase, Stats
 from vllm.executor.ray_utils import ray

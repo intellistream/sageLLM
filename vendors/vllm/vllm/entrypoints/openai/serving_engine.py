@@ -14,6 +14,7 @@ from fastapi import Request
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.datastructures import Headers
 from typing_extensions import TypeIs
+
 from vllm.entrypoints.utils import _validate_truncation_size
 from vllm.transformers_utils.tokenizer import init_tokenizer_from_configs
 from vllm.v1.engine import EngineCoreRequest
@@ -27,41 +28,47 @@ else:
 import vllm.envs as envs
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
-from vllm.entrypoints.chat_utils import (ChatCompletionMessageParam,
-                                         ChatTemplateContentFormatOption,
-                                         ConversationMessage,
-                                         apply_hf_chat_template,
-                                         apply_mistral_chat_template,
-                                         parse_chat_messages_futures,
-                                         resolve_chat_template_content_format)
+from vllm.entrypoints.chat_utils import (
+    ChatCompletionMessageParam,
+    ChatTemplateContentFormatOption,
+    ConversationMessage,
+    apply_hf_chat_template,
+    apply_mistral_chat_template,
+    parse_chat_messages_futures,
+    resolve_chat_template_content_format,
+)
 from vllm.entrypoints.context import ConversationContext
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
-                                              ChatCompletionResponse,
-                                              ClassificationRequest,
-                                              ClassificationResponse,
-                                              CompletionRequest,
-                                              CompletionResponse,
-                                              DetokenizeRequest,
-                                              EmbeddingChatRequest,
-                                              EmbeddingCompletionRequest,
-                                              EmbeddingRequest,
-                                              EmbeddingResponse, ErrorInfo,
-                                              ErrorResponse,
-                                              IOProcessorRequest,
-                                              PoolingResponse, RerankRequest,
-                                              ResponsesRequest, ScoreRequest,
-                                              ScoreResponse,
-                                              TokenizeChatRequest,
-                                              TokenizeCompletionRequest,
-                                              TokenizeResponse,
-                                              TranscriptionRequest,
-                                              TranscriptionResponse,
-                                              TranslationRequest)
+from vllm.entrypoints.openai.protocol import (
+    ChatCompletionRequest,
+    ChatCompletionResponse,
+    ClassificationRequest,
+    ClassificationResponse,
+    CompletionRequest,
+    CompletionResponse,
+    DetokenizeRequest,
+    EmbeddingChatRequest,
+    EmbeddingCompletionRequest,
+    EmbeddingRequest,
+    EmbeddingResponse,
+    ErrorInfo,
+    ErrorResponse,
+    IOProcessorRequest,
+    PoolingResponse,
+    RerankRequest,
+    ResponsesRequest,
+    ScoreRequest,
+    ScoreResponse,
+    TokenizeChatRequest,
+    TokenizeCompletionRequest,
+    TokenizeResponse,
+    TranscriptionRequest,
+    TranscriptionResponse,
+    TranslationRequest,
+)
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.openai.tool_parsers import ToolParser
-from vllm.entrypoints.renderer import (BaseRenderer, CompletionRenderer,
-                                       RenderConfig)
+from vllm.entrypoints.renderer import BaseRenderer, CompletionRenderer, RenderConfig
 from vllm.inputs.data import PromptType
 from vllm.inputs.data import TokensPrompt as EngineTokensPrompt
 from vllm.inputs.parse import PromptComponents, get_prompt_components
@@ -69,15 +76,25 @@ from vllm.logger import init_logger
 from vllm.logprobs import Logprob, PromptLogprobs
 from vllm.lora.request import LoRARequest
 from vllm.multimodal import (  # noqa: F401 - Required to resolve Pydantic error in RequestProcessingMixin
-    MultiModalDataDict, MultiModalUUIDDict)
+    MultiModalDataDict,
+    MultiModalUUIDDict,
+)
 from vllm.outputs import PoolingRequestOutput, RequestOutput
 from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import BeamSearchParams, SamplingParams
-from vllm.tracing import (contains_trace_headers, extract_trace_headers,
-                          log_tracing_disabled_warning)
+from vllm.tracing import (
+    contains_trace_headers,
+    extract_trace_headers,
+    log_tracing_disabled_warning,
+)
 from vllm.transformers_utils.tokenizer import AnyTokenizer, MistralTokenizer
-from vllm.utils import (AsyncMicrobatchTokenizer, is_list_of, make_async,
-                        merge_async_iterators, random_uuid)
+from vllm.utils import (
+    AsyncMicrobatchTokenizer,
+    is_list_of,
+    make_async,
+    merge_async_iterators,
+    random_uuid,
+)
 
 logger = init_logger(__name__)
 

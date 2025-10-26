@@ -9,12 +9,12 @@ from typing import Any, Union
 
 import pytest
 import torch
+
 from tests.quantization.utils import is_quant_method_supported
 from vllm import LLM, SamplingParams
 from vllm.attention.backends.registry import _Backend
 from vllm.attention.selector import global_force_attn_backend_context_manager
-from vllm.config import (CompilationConfig, CompilationLevel, CUDAGraphMode,
-                         PassConfig)
+from vllm.config import CompilationConfig, CompilationLevel, CUDAGraphMode, PassConfig
 from vllm.platforms import current_platform
 from vllm.utils import is_torch_equal_or_newer
 

@@ -8,30 +8,43 @@ if TYPE_CHECKING:
 
 import torch
 from torch import nn
+
 from vllm.attention.backends.abstract import AttentionMetadata
 from vllm.config import CacheConfig, ModelConfig, get_current_vllm_config
-from vllm.distributed import (divide, get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size,
-                              tensor_model_parallel_all_gather,
-                              tensor_model_parallel_all_reduce)
+from vllm.distributed import (
+    divide,
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+    tensor_model_parallel_all_gather,
+    tensor_model_parallel_all_reduce,
+)
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.model_executor.custom_op import CustomOp
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator, MambaStateShapeCalculator)
+    MambaStateDtypeCalculator,
+    MambaStateShapeCalculator,
+)
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn, causal_conv1d_update)
+    causal_conv1d_fn,
+    causal_conv1d_update,
+)
 from vllm.model_executor.layers.mamba.ops.layernorm_gated import rms_norm_gated
-from vllm.model_executor.layers.mamba.ops.mamba_ssm import \
-    selective_state_update
-from vllm.model_executor.layers.mamba.ops.ssd_combined import \
-    mamba_chunk_scan_combined_varlen
+from vllm.model_executor.layers.mamba.ops.mamba_ssm import selective_state_update
+from vllm.model_executor.layers.mamba.ops.ssd_combined import (
+    mamba_chunk_scan_combined_varlen,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import (
-    LoaderFunction, composed_weight_loader, sharded_weight_loader)
+    LoaderFunction,
+    composed_weight_loader,
+    sharded_weight_loader,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.utils import direct_register_custom_op
 from vllm.v1.attention.backends.mamba2_attn import Mamba2AttentionMetadata
@@ -843,8 +856,7 @@ class MambaMixer2(MambaBase, CustomOp):
         return "mamba2"
 
     def get_attn_backend(self) -> type["AttentionBackend"]:
-        from vllm.v1.attention.backends.mamba2_attn import \
-            Mamba2AttentionBackend
+        from vllm.v1.attention.backends.mamba2_attn import Mamba2AttentionBackend
 
         return Mamba2AttentionBackend
 

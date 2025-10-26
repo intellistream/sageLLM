@@ -4,34 +4,51 @@
 from typing import Any, Callable, Optional, Union
 
 import torch
-import vllm.model_executor.layers.fused_moe  # noqa
 from torch.nn import Parameter
+
+import vllm.model_executor.layers.fused_moe  # noqa
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
-from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
-                                                         FusedMoEQuantConfig)
+from vllm.model_executor.layers.fused_moe.config import (
+    FusedMoEConfig,
+    FusedMoEQuantConfig,
+)
 from vllm.model_executor.layers.fused_moe.layer import (
-    FusedMoE, FusedMoEMethodBase, FusedMoeWeightScaleSupported,
-    UnquantizedFusedMoEMethod)
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               UnquantizedLinearMethod,
-                                               set_weight_attrs)
+    FusedMoE,
+    FusedMoEMethodBase,
+    FusedMoeWeightScaleSupported,
+    UnquantizedFusedMoEMethod,
+)
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    UnquantizedLinearMethod,
+    set_weight_attrs,
+)
 from vllm.model_executor.layers.quantization import QuantizationMethods
-from vllm.model_executor.layers.quantization.awq import (AWQConfig,
-                                                         is_layer_skipped_awq)
+from vllm.model_executor.layers.quantization.awq import AWQConfig, is_layer_skipped_awq
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig, QuantizeMethodBase)
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.model_executor.layers.quantization.utils.marlin_utils import (
-    apply_awq_marlin_linear, awq_to_marlin_zero_points, check_marlin_supported,
-    check_marlin_supports_layer, check_moe_marlin_supports_layer,
-    marlin_make_empty_g_idx, marlin_make_workspace_new,
-    marlin_moe_permute_scales, marlin_permute_bias, marlin_permute_scales,
-    moe_awq_to_marlin_zero_points, verify_marlin_supported,
-    verify_marlin_supports_shape)
+    apply_awq_marlin_linear,
+    awq_to_marlin_zero_points,
+    check_marlin_supported,
+    check_marlin_supports_layer,
+    check_moe_marlin_supports_layer,
+    marlin_make_empty_g_idx,
+    marlin_make_workspace_new,
+    marlin_moe_permute_scales,
+    marlin_permute_bias,
+    marlin_permute_scales,
+    moe_awq_to_marlin_zero_points,
+    verify_marlin_supported,
+    verify_marlin_supports_shape,
+)
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
-from vllm.model_executor.parameter import (GroupQuantScaleParameter,
-                                           PackedvLLMParameter)
+from vllm.model_executor.parameter import GroupQuantScaleParameter, PackedvLLMParameter
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 
@@ -165,8 +182,7 @@ class AWQMarlinConfig(QuantizationConfig):
                 )
             return AWQMarlinLinearMethod(self)
         elif isinstance(layer, FusedMoE):
-            from vllm.model_executor.layers.quantization.moe_wna16 import \
-                MoeWNA16Config
+            from vllm.model_executor.layers.quantization.moe_wna16 import MoeWNA16Config
 
             if is_layer_skipped_awq(
                 prefix, getattr(self, "modules_to_not_convert", [])

@@ -9,12 +9,17 @@ import pytest
 import torch
 import torch.nn as nn
 from huggingface_hub import snapshot_download
-from vllm.distributed import (cleanup_dist_env_and_memory,
-                              init_distributed_environment,
-                              initialize_model_parallel)
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               RowParallelLinear)
+
+from vllm.distributed import (
+    cleanup_dist_env_and_memory,
+    init_distributed_environment,
+    initialize_model_parallel,
+)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import ParallelLMHead
 from vllm.model_executor.models.interfaces import SupportsLoRA

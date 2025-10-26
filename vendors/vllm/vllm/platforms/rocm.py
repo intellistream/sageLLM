@@ -7,9 +7,10 @@ from functools import cache, lru_cache, wraps
 from typing import TYPE_CHECKING, Optional
 
 import torch
-import vllm.envs as envs
 from torch.distributed import PrefixStore, ProcessGroup
 from torch.distributed.distributed_c10d import is_nccl_available
+
+import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.utils import cuda_device_count_stateless
 
@@ -24,9 +25,14 @@ else:
 logger = init_logger(__name__)
 
 try:
-    from amdsmi import (AmdSmiException, amdsmi_get_gpu_asic_info,
-                        amdsmi_get_processor_handles, amdsmi_init,
-                        amdsmi_shut_down, amdsmi_topo_get_link_type)
+    from amdsmi import (
+        AmdSmiException,
+        amdsmi_get_gpu_asic_info,
+        amdsmi_get_processor_handles,
+        amdsmi_init,
+        amdsmi_shut_down,
+        amdsmi_topo_get_link_type,
+    )
 except ImportError as e:
     logger.warning("Failed to import from amdsmi with %r", e)
 
@@ -234,8 +240,9 @@ class RocmPlatform(Platform):
                     "Set VLLM_USE_V1=1 to enable them."
                 )
 
-            from vllm.v1.attention.backends.mla.rocm_aiter_mla import \
-                is_aiter_mla_enabled
+            from vllm.v1.attention.backends.mla.rocm_aiter_mla import (
+                is_aiter_mla_enabled,
+            )
 
             if selected_backend is None:
                 selected_backend = (

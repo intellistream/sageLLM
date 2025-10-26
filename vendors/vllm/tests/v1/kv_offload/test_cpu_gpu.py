@@ -5,6 +5,7 @@ import time
 
 import pytest
 import torch
+
 from vllm.platforms import current_platform
 from vllm.v1.attention.backends.flash_attn import FlashAttentionBackend
 from vllm.v1.attention.backends.flashinfer import FlashInferBackend

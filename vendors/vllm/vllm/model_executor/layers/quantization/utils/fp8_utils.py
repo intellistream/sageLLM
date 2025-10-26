@@ -9,23 +9,32 @@ from collections.abc import Sequence
 from typing import Any, Callable, Optional, Union
 
 import torch
+
 import vllm.envs as envs
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.input_quant_fp8 import QuantFP8
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape, group_broadcast)
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    CUTLASS_BLOCK_FP8_SUPPORTED
-from vllm.model_executor.parameter import (BlockQuantScaleParameter,
-                                           ChannelQuantScaleParameter,
-                                           PerTensorScaleParameter)
+    GroupShape,
+    group_broadcast,
+)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    CUTLASS_BLOCK_FP8_SUPPORTED,
+)
+from vllm.model_executor.parameter import (
+    BlockQuantScaleParameter,
+    ChannelQuantScaleParameter,
+    PerTensorScaleParameter,
+)
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton
 from vllm.utils import direct_register_custom_op
-from vllm.utils.deep_gemm import (fp8_gemm_nt, is_deep_gemm_e8m0_used,
-                                  is_deep_gemm_supported,
-                                  should_use_deepgemm_for_fp8_linear)
+from vllm.utils.deep_gemm import (
+    fp8_gemm_nt,
+    is_deep_gemm_e8m0_used,
+    is_deep_gemm_supported,
+    should_use_deepgemm_for_fp8_linear,
+)
 
 logger = init_logger(__name__)
 
@@ -1082,7 +1091,9 @@ def process_fp8_weight_tensor_strategy(
 ) -> tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
     """Process weights for tensor-wise quantization strategy."""
     from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-        normalize_e4m3fn_to_e4m3fnuz, requantize_with_max_scale)
+        normalize_e4m3fn_to_e4m3fnuz,
+        requantize_with_max_scale,
+    )
 
     if current_platform.is_fp8_fnuz():
         weight, weight_scale, input_scale = normalize_e4m3fn_to_e4m3fnuz(
@@ -1106,8 +1117,9 @@ def process_fp8_weight_channel_strategy(
     input_scale: Optional[torch.Tensor] = None,
 ) -> tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
     """Process weights for channel-wise quantization strategy."""
-    from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-        normalize_e4m3fn_to_e4m3fnuz
+    from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+        normalize_e4m3fn_to_e4m3fnuz,
+    )
 
     if current_platform.is_fp8_fnuz():
         weight, weight_scale, input_scale = normalize_e4m3fn_to_e4m3fnuz(
@@ -1122,8 +1134,9 @@ def process_fp8_weight_block_strategy(
     weight_scale: torch.Tensor,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Process weights for block-wise quantization strategy."""
-    from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-        normalize_e4m3fn_to_e4m3fnuz
+    from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+        normalize_e4m3fn_to_e4m3fnuz,
+    )
 
     if current_platform.is_fp8_fnuz():
         weight, weight_scale, _ = normalize_e4m3fn_to_e4m3fnuz(
@@ -1139,8 +1152,10 @@ def maybe_post_process_fp8_weight_block(
 ):
     assert layer.weight_block_size is not None
 
-    from vllm.utils.deep_gemm import (is_deep_gemm_e8m0_used,
-                                      should_use_deepgemm_for_fp8_linear)
+    from vllm.utils.deep_gemm import (
+        is_deep_gemm_e8m0_used,
+        should_use_deepgemm_for_fp8_linear,
+    )
 
     # On Blackwell or Hopper, if E8M0 for DeepGemm is used, we need to
     # requantize the weight and input to the specific scale

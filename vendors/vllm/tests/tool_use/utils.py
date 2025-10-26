@@ -4,10 +4,10 @@
 from copy import deepcopy
 from typing import Any, Optional
 
-from openai.types.chat import (ChatCompletionMessageParam,
-                               ChatCompletionToolParam)
-from tests.utils import VLLM_PATH
+from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 from typing_extensions import TypedDict
+
+from tests.utils import VLLM_PATH
 
 
 class ServerConfig(TypedDict, total=False):

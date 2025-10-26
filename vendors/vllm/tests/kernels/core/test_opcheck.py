@@ -5,6 +5,7 @@ Tests for miscellaneous utilities
 """
 
 import torch
+
 from tests.kernels.utils import opcheck
 
 

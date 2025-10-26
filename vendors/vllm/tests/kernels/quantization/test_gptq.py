@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import torch
+
 from tests.kernels.utils import opcheck
 from vllm import _custom_ops as ops  # noqa: F401
 

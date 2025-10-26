@@ -4,6 +4,7 @@
 from typing import Optional
 
 import torch
+
 from vllm.model_executor.custom_op import CustomOp
 
 from .common import rotate_gptj, rotate_neox

@@ -3,6 +3,7 @@
 from typing import Callable
 
 import pytest
+
 from vllm import LLM, EngineArgs
 from vllm.distributed import cleanup_dist_env_and_memory
 from vllm.model_executor.model_loader import tensorizer as tensorizer_mod

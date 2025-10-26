@@ -4,25 +4,34 @@
 from typing import Any, Callable, Optional, Union
 
 import torch
+
 import vllm.envs as envs
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
-from vllm.model_executor.layers.fused_moe import (FusedMoE, FusedMoEConfig,
-                                                  FusedMoEMethodBase,
-                                                  FusedMoeWeightScaleSupported)
+from vllm.model_executor.layers.fused_moe import (
+    FusedMoE,
+    FusedMoEConfig,
+    FusedMoEMethodBase,
+    FusedMoeWeightScaleSupported,
+)
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig, fp8_w8a8_moe_quant_config,
-    mxfp4_w4a4_moe_quant_config)
-from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-    is_rocm_aiter_moe_enabled
-from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import \
-    prepare_moe_fp8_layer_for_marlin
-from vllm.model_executor.layers.quantization.utils.mxfp4_utils import \
-    OCP_MX_BLOCK_SIZE
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    GroupShape
+    FusedMoEQuantConfig,
+    fp8_w8a8_moe_quant_config,
+    mxfp4_w4a4_moe_quant_config,
+)
+from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+    is_rocm_aiter_moe_enabled,
+)
+from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
+    prepare_moe_fp8_layer_for_marlin,
+)
+from vllm.model_executor.layers.quantization.utils.mxfp4_utils import OCP_MX_BLOCK_SIZE
+from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    all_close_1d, normalize_e4m3fn_to_e4m3fnuz, per_tensor_dequantize)
+    all_close_1d,
+    normalize_e4m3fn_to_e4m3fnuz,
+    per_tensor_dequantize,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types

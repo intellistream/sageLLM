@@ -9,6 +9,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 import numpy as np
 import pytest
 from PIL import Image, ImageChops
+
 from vllm.multimodal.image import convert_image_mode
 from vllm.multimodal.inputs import PlaceholderRange
 from vllm.multimodal.utils import MediaConnector, argsort_mm_positions

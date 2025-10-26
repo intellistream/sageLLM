@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.engine.arg_utils import EngineArgs
 from vllm.sampling_params import SamplingParams
 from vllm.v1.core.sched.scheduler import Scheduler

@@ -7,16 +7,24 @@ from typing import Union
 
 import torch
 from torch import nn
+
 from vllm.config import ModelConfig, ParallelConfig, VllmConfig
 from vllm.config.load import LoadConfig
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader.base_loader import BaseModelLoader
 from vllm.model_executor.model_loader.tensorizer import (
-    TensorizerConfig, deserialize_tensorizer_model, init_tensorizer_model,
-    is_vllm_tensorized, serialize_vllm_model, tensorizer_weights_iterator)
-from vllm.model_executor.model_loader.utils import (get_model_architecture,
-                                                    initialize_model,
-                                                    set_default_torch_dtype)
+    TensorizerConfig,
+    deserialize_tensorizer_model,
+    init_tensorizer_model,
+    is_vllm_tensorized,
+    serialize_vllm_model,
+    tensorizer_weights_iterator,
+)
+from vllm.model_executor.model_loader.utils import (
+    get_model_architecture,
+    initialize_model,
+    set_default_torch_dtype,
+)
 
 logger = init_logger(__name__)
 

@@ -3,9 +3,9 @@
 from unittest.mock import ANY, patch
 
 import torch
+
 from vllm.attention.backends.abstract import AttentionType
-from vllm.v1.attention.backends.pallas import (PallasAttentionBackendImpl,
-                                               PallasMetadata)
+from vllm.v1.attention.backends.pallas import PallasAttentionBackendImpl, PallasMetadata
 
 
 def test_ragged_paged_attention():

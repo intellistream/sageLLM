@@ -3,38 +3,56 @@
 import time
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import (Callable, Generator, ItemsView, Iterable, Mapping,
-                             Sequence)
+from collections.abc import Callable, Generator, ItemsView, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from functools import lru_cache
-from typing import (TYPE_CHECKING, Any, Generic, NamedTuple, Optional,
-                    Protocol, Union, cast, overload)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    NamedTuple,
+    Optional,
+    Protocol,
+    Union,
+    cast,
+    overload,
+)
 
 import regex as re
 import torch
 from typing_extensions import TypeVar, assert_never
+
 from vllm.logger import init_logger
 from vllm.transformers_utils.processor import cached_processor_from_config
-from vllm.transformers_utils.tokenizer import (AnyTokenizer, decode_tokens,
-                                               encode_tokens)
-from vllm.utils import (flatten_2d_lists, full_groupby,
-                        get_allowed_kwarg_only_overrides)
+from vllm.transformers_utils.tokenizer import AnyTokenizer, decode_tokens, encode_tokens
+from vllm.utils import flatten_2d_lists, full_groupby, get_allowed_kwarg_only_overrides
 from vllm.utils.jsontree import JSONTree, json_map_leaves
 
 from .hasher import MultiModalHasher
-from .inputs import (MultiModalDataDict, MultiModalEncDecInputs,
-                     MultiModalFieldConfig, MultiModalInputs,
-                     MultiModalKwargsItem, MultiModalKwargsItems,
-                     MultiModalKwargsOptionalItems, MultiModalUUIDDict,
-                     PlaceholderRange)
-from .parse import (DictEmbeddingItems, EmbeddingItems, MultiModalDataItems,
-                    MultiModalDataParser)
+from .inputs import (
+    MultiModalDataDict,
+    MultiModalEncDecInputs,
+    MultiModalFieldConfig,
+    MultiModalInputs,
+    MultiModalKwargsItem,
+    MultiModalKwargsItems,
+    MultiModalKwargsOptionalItems,
+    MultiModalUUIDDict,
+    PlaceholderRange,
+)
+from .parse import (
+    DictEmbeddingItems,
+    EmbeddingItems,
+    MultiModalDataItems,
+    MultiModalDataParser,
+)
 
 if TYPE_CHECKING:
     from transformers.configuration_utils import PretrainedConfig
     from transformers.feature_extraction_utils import BatchFeature
     from transformers.processing_utils import ProcessorMixin
+
     from vllm.config import ModelConfig
 
     from .cache import BaseMultiModalProcessorCache

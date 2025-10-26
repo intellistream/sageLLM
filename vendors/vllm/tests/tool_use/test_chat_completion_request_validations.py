@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.entrypoints.openai.protocol import ChatCompletionRequest
 
 

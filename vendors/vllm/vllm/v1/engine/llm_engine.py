@@ -7,8 +7,9 @@ from copy import copy
 from typing import Any, Callable, Optional, Union
 
 import torch.nn as nn
-import vllm.envs as envs
 from typing_extensions import TypeVar
+
+import vllm.envs as envs
 from vllm.config import ParallelConfig, VllmConfig
 from vllm.distributed import stateless_destroy_torch_distributed_process_group
 from vllm.distributed.parallel_state import get_dp_group
@@ -22,8 +23,7 @@ from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import SamplingParams
 from vllm.tasks import SupportedTask
 from vllm.tracing import init_tracer
-from vllm.transformers_utils.tokenizer import (AnyTokenizer,
-                                               init_tokenizer_from_configs)
+from vllm.transformers_utils.tokenizer import AnyTokenizer, init_tokenizer_from_configs
 from vllm.usage.usage_lib import UsageContext
 from vllm.utils import Device
 from vllm.v1.engine import EngineCoreRequest

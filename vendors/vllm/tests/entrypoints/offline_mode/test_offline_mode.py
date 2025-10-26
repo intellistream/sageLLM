@@ -8,6 +8,7 @@ import sys
 
 import pytest
 import urllib3
+
 from vllm import LLM
 from vllm.distributed import cleanup_dist_env_and_memory
 from vllm.engine.arg_utils import EngineArgs

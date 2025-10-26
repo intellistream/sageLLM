@@ -3,22 +3,31 @@
 from typing import Optional
 
 import torch
+from tqdm import tqdm
+
 import vllm.envs as env
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
-from tqdm import tqdm
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig, fp8_w8a8_moe_quant_config)
+    FusedMoEQuantConfig,
+    fp8_w8a8_moe_quant_config,
+)
 from vllm.model_executor.layers.fused_moe.deep_gemm_utils import (
-    compute_aligned_M, deep_gemm_block_shape, deepgemm_moe_permute,
-    deepgemm_unpermute_and_reduce)
-from vllm.model_executor.layers.fused_moe.prepare_finalize import \
-    MoEPrepareAndFinalizeNoEP
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
-    TopKWeightAndReduceNoOP
+    compute_aligned_M,
+    deep_gemm_block_shape,
+    deepgemm_moe_permute,
+    deepgemm_unpermute_and_reduce,
+)
+from vllm.model_executor.layers.fused_moe.prepare_finalize import (
+    MoEPrepareAndFinalizeNoEP,
+)
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
+    TopKWeightAndReduceNoOP,
+)
 from vllm.model_executor.layers.fused_moe.utils import _resize_cache
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    per_token_group_quant_fp8
+from vllm.model_executor.layers.quantization.utils.fp8_utils import (
+    per_token_group_quant_fp8,
+)
 from vllm.utils import has_deep_gemm, run_once
 from vllm.utils.deep_gemm import m_grouped_fp8_gemm_nt_contiguous
 

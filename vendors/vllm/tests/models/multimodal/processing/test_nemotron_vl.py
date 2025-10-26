@@ -8,6 +8,7 @@ from typing import Optional
 import pytest
 from PIL import Image
 from transformers import PretrainedConfig
+
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.image import rescale_image_size
 from vllm.multimodal.processing import BaseMultiModalProcessor
@@ -24,7 +25,9 @@ def _get_expected_num_patches(
     max_num: int,
 ):
     from vllm.model_executor.models.nemotron_vl import (
-        calculate_nemotron_vl_targets, get_nemotron_vl_target_ratios)
+        calculate_nemotron_vl_targets,
+        get_nemotron_vl_target_ratios,
+    )
 
     width, height = image.size
 

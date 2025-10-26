@@ -19,30 +19,50 @@ import torch.nn as nn
 import torchvision.transforms as T
 from PIL import Image
 from transformers import BatchFeature, PretrainedConfig, TensorType
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import ReLUSquaredActivation
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
-from vllm.model_executor.models.interfaces import (HasInnerState, IsHybrid,
-                                                   MultiModalEmbeddings,
-                                                   SupportsMultiModal)
-from vllm.model_executor.models.internvl import (calculate_internvl_targets,
-                                                 get_internvl_target_ratios)
+from vllm.model_executor.models.interfaces import (
+    HasInnerState,
+    IsHybrid,
+    MultiModalEmbeddings,
+    SupportsMultiModal,
+)
+from vllm.model_executor.models.internvl import (
+    calculate_internvl_targets,
+    get_internvl_target_ratios,
+)
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.model_executor.models.nemotron_h import NemotronHForCausalLM
 from vllm.model_executor.models.radio import RadioModel
-from vllm.model_executor.models.utils import (flatten_bn,
-                                              init_vllm_registered_model,
-                                              maybe_prefix)
+from vllm.model_executor.models.utils import (
+    flatten_bn,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargs, MultiModalKwargsItems)
-from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
-                                   ImageSize, MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate, PromptUpdateDetails)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargs,
+    MultiModalKwargsItems,
+)
+from vllm.multimodal.parse import (
+    ImageEmbeddingItems,
+    ImageProcessorItems,
+    ImageSize,
+    MultiModalDataItems,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs.radio import RadioConfig

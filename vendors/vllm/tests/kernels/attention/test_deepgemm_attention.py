@@ -4,11 +4,17 @@ import random
 
 import pytest
 import torch
+
 from vllm.platforms import current_platform
 from vllm.utils import cdiv, has_deep_gemm
-from vllm.utils.deep_gemm import (_ceil_to_ue8m0, calc_diff, fp8_mqa_logits,
-                                  fp8_paged_mqa_logits, get_num_sms,
-                                  get_paged_mqa_logits_metadata)
+from vllm.utils.deep_gemm import (
+    _ceil_to_ue8m0,
+    calc_diff,
+    fp8_mqa_logits,
+    fp8_paged_mqa_logits,
+    get_num_sms,
+    get_paged_mqa_logits_metadata,
+)
 
 
 def kv_cache_cast_to_fp8(x: torch.Tensor) -> torch.Tensor:

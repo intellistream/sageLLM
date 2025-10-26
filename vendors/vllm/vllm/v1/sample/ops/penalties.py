@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import torch
+
 from vllm.model_executor.layers.utils import apply_penalties
 from vllm.utils import is_pin_memory_available, make_tensor_with_pad
 

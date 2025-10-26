@@ -13,12 +13,14 @@ import pytest
 import torch.distributed
 from torch.distributed import ProcessGroup
 from typing_extensions import ParamSpec
+
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig, fp8_w8a8_moe_quant_config)
+    FusedMoEQuantConfig,
+    fp8_w8a8_moe_quant_config,
+)
 from vllm.model_executor.layers.fused_moe.fused_moe import fused_experts
-from vllm.model_executor.layers.fused_moe.modular_kernel import \
-    FusedMoEModularKernel
+from vllm.model_executor.layers.fused_moe.modular_kernel import FusedMoEModularKernel
 from vllm.platforms import current_platform
 from vllm.utils import has_deep_ep, has_deep_gemm
 from vllm.utils.deep_gemm import is_deep_gemm_e8m0_used, is_deep_gemm_supported
@@ -28,18 +30,20 @@ from .parallel_utils import ProcessGroupInfo, parallel_launch
 from .utils import make_test_weights
 
 if has_deep_ep():
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import \
-        DeepEPHTPrepareAndFinalize  # noqa: E501
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import \
-        DeepEPLLPrepareAndFinalize  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (
+        DeepEPHTPrepareAndFinalize,  # noqa: E501
+    )
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (
+        DeepEPLLPrepareAndFinalize,  # noqa: E501
+    )
 
     from .parallel_utils import DeepEPHTArgs, DeepEPLLArgs, make_deepep_a2a
 
 if has_deep_gemm():
-    from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import \
-        BatchedDeepGemmExperts
-    from vllm.model_executor.layers.fused_moe.deep_gemm_moe import \
-        DeepGemmExperts
+    from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import (
+        BatchedDeepGemmExperts,
+    )
+    from vllm.model_executor.layers.fused_moe.deep_gemm_moe import DeepGemmExperts
 
 requires_deep_ep = pytest.mark.skipif(
     not has_deep_ep(),

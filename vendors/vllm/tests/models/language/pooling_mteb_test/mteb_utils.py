@@ -9,10 +9,10 @@ import mteb
 import numpy as np
 import pytest
 import requests
-import tests.ci_envs as ci_envs
 import torch
-from tests.models.utils import (EmbedModelInfo, RerankModelInfo,
-                                check_embeddings_close)
+
+import tests.ci_envs as ci_envs
+from tests.models.utils import EmbedModelInfo, RerankModelInfo, check_embeddings_close
 
 # Most embedding models on the STS12 task (See #17175):
 # - Model implementation and minor changes in tensor dtype

@@ -7,26 +7,47 @@ from typing import Annotated, Any, Literal, Optional, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from transformers import (BatchFeature, PretrainedConfig, ProcessorMixin,
-                          SequenceFeatureExtractor, SiglipVisionConfig)
+from transformers import (
+    BatchFeature,
+    PretrainedConfig,
+    ProcessorMixin,
+    SequenceFeatureExtractor,
+    SiglipVisionConfig,
+)
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import get_pp_group
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    DEFAULT_VOCAB_PADDING_SIZE, ParallelLMHead)
+    DEFAULT_VOCAB_PADDING_SIZE,
+    ParallelLMHead,
+)
 from vllm.model_executor.models.llama import LlamaModel
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems, NestedTensors)
-from vllm.multimodal.parse import (AudioProcessorItems, ImageEmbeddingItems,
-                                   ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems, MultiModalDataParser)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate, ResolvedPromptUpdate)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    NestedTensors,
+)
+from vllm.multimodal.parse import (
+    AudioProcessorItems,
+    ImageEmbeddingItems,
+    ImageProcessorItems,
+    ImageSize,
+    MultiModalDataItems,
+    MultiModalDataParser,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    ResolvedPromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils import is_list_of

@@ -8,11 +8,11 @@ from typing import Optional
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+
 from vllm.config.multimodal import MultiModalConfig
 from vllm.entrypoints.openai.protocol import CompletionRequest, ErrorResponse
 from vllm.entrypoints.openai.serving_completion import OpenAIServingCompletion
-from vllm.entrypoints.openai.serving_models import (BaseModelPath,
-                                                    OpenAIServingModels)
+from vllm.entrypoints.openai.serving_models import BaseModelPath, OpenAIServingModels
 from vllm.lora.request import LoRARequest
 from vllm.lora.resolver import LoRAResolver, LoRAResolverRegistry
 from vllm.transformers_utils.tokenizer import get_tokenizer

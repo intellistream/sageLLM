@@ -7,22 +7,28 @@ if TYPE_CHECKING:
     from vllm.attention.backends.abstract import AttentionBackend
 
 import torch
+
 from vllm.attention.backends.abstract import AttentionMetadata
 from vllm.config import CacheConfig, ModelConfig, get_current_vllm_config
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.model_executor.custom_op import CustomOp
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator, MambaStateShapeCalculator)
+    MambaStateDtypeCalculator,
+    MambaStateShapeCalculator,
+)
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn, causal_conv1d_update)
+    causal_conv1d_fn,
+    causal_conv1d_update,
+)
 from vllm.utils import direct_register_custom_op
-from vllm.v1.attention.backends.short_conv_attn import \
-    ShortConvAttentionMetadata
+from vllm.v1.attention.backends.short_conv_attn import ShortConvAttentionMetadata
 
 
 @CustomOp.register("short_conv")
@@ -227,8 +233,7 @@ class ShortConv(MambaBase, CustomOp):
         return "short_conv"
 
     def get_attn_backend(self) -> type["AttentionBackend"]:
-        from vllm.v1.attention.backends.short_conv_attn import \
-            ShortConvAttentionBackend
+        from vllm.v1.attention.backends.short_conv_attn import ShortConvAttentionBackend
 
         return ShortConvAttentionBackend
 

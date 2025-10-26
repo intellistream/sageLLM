@@ -13,6 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange, repeat
 from transformers import BatchFeature
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import get_tensor_model_parallel_world_size
@@ -20,28 +21,44 @@ from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.utils import set_default_torch_dtype
 from vllm.model_executor.models.transformers import replace_linear_class
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems, MultiModalUUIDDict)
-from vllm.multimodal.parse import (ImageEmbeddingItems, ImageProcessorItems,
-                                   ImageSize, MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        MultiModalProcessingInfo,
-                                        PromptReplacement, PromptUpdate)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    MultiModalUUIDDict,
+)
+from vllm.multimodal.parse import (
+    ImageEmbeddingItems,
+    ImageProcessorItems,
+    ImageSize,
+    MultiModalDataItems,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    MultiModalProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
-from vllm.transformers_utils.configs.deepseek_vl2 import (DeepseekVLV2Config,
-                                                          MlpProjectorConfig,
-                                                          VisionEncoderConfig)
-from vllm.transformers_utils.processors.deepseek_vl2 import \
-    DeepseekVLV2Processor
+from vllm.transformers_utils.configs.deepseek_vl2 import (
+    DeepseekVLV2Config,
+    MlpProjectorConfig,
+    VisionEncoderConfig,
+)
+from vllm.transformers_utils.processors.deepseek_vl2 import DeepseekVLV2Processor
 from vllm.transformers_utils.tokenizer import cached_tokenizer_from_config
 from vllm.utils import is_list_of
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 # The image token id may be various
 _IMAGE_TOKEN = "<image>"

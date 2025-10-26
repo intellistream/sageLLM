@@ -5,6 +5,7 @@
 from typing import Callable, Optional
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm import envs
 from vllm.platforms import CpuArchEnum, current_platform

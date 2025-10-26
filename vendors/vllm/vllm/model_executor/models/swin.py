@@ -7,14 +7,16 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers import SwinConfig
-from transformers.models.swin.modeling_swin import SwinEmbeddings
+from transformers.models.swin.modeling_swin import SwinEmbeddings, SwinPatchMerging
 from transformers.models.swin.modeling_swin import SwinLayer as HFSwinLayer
-from transformers.models.swin.modeling_swin import SwinPatchMerging
 from transformers.pytorch_utils import meshgrid
+
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 

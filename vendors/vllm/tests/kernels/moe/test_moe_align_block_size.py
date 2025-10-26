@@ -9,8 +9,10 @@ from typing import Optional
 
 import pytest
 import torch
-from vllm.model_executor.layers.fused_moe.moe_align_block_size import \
-    moe_align_block_size
+
+from vllm.model_executor.layers.fused_moe.moe_align_block_size import (
+    moe_align_block_size,
+)
 from vllm.platforms import current_platform
 from vllm.utils import round_up
 

@@ -4,15 +4,20 @@ from enum import Enum
 from typing import Optional
 
 import torch
+
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm import envs
 from vllm.logger import init_logger
-from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
-                                                         FusedMoEQuantConfig)
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
-    FlashInferExperts
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import \
-    create_flashinfer_prepare_finalize  # noqa: E501
+from vllm.model_executor.layers.fused_moe.config import (
+    FusedMoEConfig,
+    FusedMoEQuantConfig,
+)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
+    FlashInferExperts,
+)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (
+    create_flashinfer_prepare_finalize,  # noqa: E501
+)
 
 logger = init_logger(__name__)
 
@@ -103,8 +108,9 @@ def apply_flashinfer_per_tensor_scale_fp8(
     global_num_experts: int,
     apply_router_weight_on_input: bool,
 ) -> torch.Tensor:
-    import vllm.model_executor.layers.fused_moe.flashinfer_trtllm_moe  # noqa: E501, F401
     from flashinfer.fused_moe import RoutingMethodType
+
+    import vllm.model_executor.layers.fused_moe.flashinfer_trtllm_moe  # noqa: E501, F401
 
     assert layer.output1_scales_scalar is not None, (
         "Expected output1_scales_scalar to be initialized"

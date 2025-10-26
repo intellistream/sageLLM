@@ -5,8 +5,9 @@ from concurrent.futures import Future
 from typing import Optional, Union
 
 from vllm.distributed.kv_transfer.kv_connector.utils import KVOutputAggregator
-from vllm.executor.ray_distributed_executor import \
-    RayDistributedExecutor as RayDistributedExecutorV0  # noqa
+from vllm.executor.ray_distributed_executor import (
+    RayDistributedExecutor as RayDistributedExecutorV0,  # noqa
+)
 from vllm.logger import init_logger
 from vllm.v1.core.sched.output import SchedulerOutput
 from vllm.v1.engine import ReconfigureDistributedRequest, ReconfigureRankType

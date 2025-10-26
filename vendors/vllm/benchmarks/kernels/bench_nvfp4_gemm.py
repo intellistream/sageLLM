@@ -6,11 +6,12 @@ import itertools
 import os
 
 import torch
+from weight_shapes import WEIGHT_SHAPES
+
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 from vllm.triton_utils import triton
-from weight_shapes import WEIGHT_SHAPES
 
 if not current_platform.has_device_capability(100):
     raise RuntimeError("NVFP4 requires compute capability of 10.0 (Blackwell)")
@@ -32,8 +33,9 @@ _needs_fbgemm = any(
 )
 if _needs_fbgemm:
     try:
-        from fbgemm_gpu.experimental.gemm.triton_gemm.fp4_quantize import \
-            triton_scale_nvfp4_quant
+        from fbgemm_gpu.experimental.gemm.triton_gemm.fp4_quantize import (
+            triton_scale_nvfp4_quant,
+        )
     except ImportError:
         print(
             "WARNING: FBGEMM providers are enabled but fbgemm_gpu is not installed. "

@@ -5,14 +5,16 @@ from collections.abc import Generator
 from typing import Any, Optional
 
 import pytest
-from transformers import (AutoTokenizer, PreTrainedTokenizer,
-                          PreTrainedTokenizerFast)
+from transformers import AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast
+
 from vllm.sampling_params import SamplingParams
 from vllm.transformers_utils.tokenizers.mistral import MistralTokenizer
 from vllm.v1.engine import EngineCoreRequest
-from vllm.v1.engine.detokenizer import (FastIncrementalDetokenizer,
-                                        IncrementalDetokenizer,
-                                        SlowIncrementalDetokenizer)
+from vllm.v1.engine.detokenizer import (
+    FastIncrementalDetokenizer,
+    IncrementalDetokenizer,
+    SlowIncrementalDetokenizer,
+)
 
 SPECIAL_TOKS_TRUTH = [
     "Some text with adjacent special tokens                <|padding|><|padding|><fim_prefix><fim_middle><fim_suffix>other text<fim_pad>",  # noqa

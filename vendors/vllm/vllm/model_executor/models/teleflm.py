@@ -25,10 +25,14 @@
 
 import torch
 import torch.nn as nn
+
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
-from vllm.model_executor.models.llama import (LlamaDecoderLayer,
-                                              LlamaForCausalLM, LlamaModel)
+from vllm.model_executor.models.llama import (
+    LlamaDecoderLayer,
+    LlamaForCausalLM,
+    LlamaModel,
+)
 
 
 class TeleFLMModel(LlamaModel):

@@ -4,21 +4,32 @@
 import numpy as np
 import pytest
 import torch
+
 from vllm.attention import Attention
-from vllm.config import (CacheConfig, ModelConfig, ParallelConfig,
-                         SchedulerConfig, VllmConfig, set_current_vllm_config)
-from vllm.distributed.parallel_state import (init_distributed_environment,
-                                             initialize_model_parallel)
+from vllm.config import (
+    CacheConfig,
+    ModelConfig,
+    ParallelConfig,
+    SchedulerConfig,
+    VllmConfig,
+    set_current_vllm_config,
+)
+from vllm.distributed.parallel_state import (
+    init_distributed_environment,
+    initialize_model_parallel,
+)
 from vllm.model_executor.layers.mamba.mamba_mixer2 import MambaMixer2
 from vllm.platforms import current_platform
 from vllm.sampling_params import SamplingParams
 from vllm.utils import GiB_bytes, update_environment_variables
-from vllm.v1.core.kv_cache_utils import (estimate_max_model_len,
-                                         get_kv_cache_configs)
-from vllm.v1.core.sched.output import (CachedRequestData, NewRequestData,
-                                       SchedulerOutput)
-from vllm.v1.kv_cache_interface import (FullAttentionSpec, KVCacheConfig,
-                                        KVCacheGroupSpec, KVCacheTensor)
+from vllm.v1.core.kv_cache_utils import estimate_max_model_len, get_kv_cache_configs
+from vllm.v1.core.sched.output import CachedRequestData, NewRequestData, SchedulerOutput
+from vllm.v1.kv_cache_interface import (
+    FullAttentionSpec,
+    KVCacheConfig,
+    KVCacheGroupSpec,
+    KVCacheTensor,
+)
 from vllm.v1.sample.metadata import SamplingMetadata
 from vllm.v1.worker.gpu_input_batch import InputBatch
 from vllm.v1.worker.gpu_model_runner import GPUModelRunner

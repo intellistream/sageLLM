@@ -6,6 +6,7 @@ import base64
 import numpy as np
 import pytest
 import requests
+
 from tests.models.utils import check_embeddings_close
 from tests.utils import RemoteOpenAIServer
 from vllm.entrypoints.openai.protocol import PoolingResponse

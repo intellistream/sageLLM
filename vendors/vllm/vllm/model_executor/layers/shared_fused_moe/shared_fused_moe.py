@@ -3,6 +3,7 @@
 from typing import Optional
 
 import torch
+
 from vllm.distributed import tensor_model_parallel_all_reduce
 from vllm.model_executor.layers.fused_moe.layer import FusedMoE
 

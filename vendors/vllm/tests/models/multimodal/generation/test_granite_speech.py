@@ -6,11 +6,11 @@ from typing import Optional
 
 import pytest
 from transformers import AutoModelForSpeechSeq2Seq
+
 from vllm.logprobs import SampleLogprobs
 from vllm.lora.request import LoRARequest
 
-from ....conftest import (AudioTestAssets, HfRunner, PromptAudioInput,
-                          VllmRunner)
+from ....conftest import AudioTestAssets, HfRunner, PromptAudioInput, VllmRunner
 from ...registry import HF_EXAMPLE_MODELS
 from ...utils import check_logprobs_close
 

@@ -5,17 +5,23 @@ from typing import Optional
 import numpy as np
 import pytest
 import torch
+
 from vllm.config import ModelConfig, ParallelConfig, VllmConfig
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.cache import (MultiModalCache,
-                                   MultiModalProcessorCacheItem,
-                                   MultiModalProcessorCacheItemMetadata,
-                                   engine_receiver_cache_from_config,
-                                   processor_cache_from_config)
+from vllm.multimodal.cache import (
+    MultiModalCache,
+    MultiModalProcessorCacheItem,
+    MultiModalProcessorCacheItemMetadata,
+    engine_receiver_cache_from_config,
+    processor_cache_from_config,
+)
 from vllm.multimodal.hasher import MultiModalHasher
-from vllm.multimodal.inputs import (MultiModalFieldElem, MultiModalKwargsItem,
-                                    MultiModalKwargsItems,
-                                    MultiModalSharedField)
+from vllm.multimodal.inputs import (
+    MultiModalFieldElem,
+    MultiModalKwargsItem,
+    MultiModalKwargsItems,
+    MultiModalSharedField,
+)
 from vllm.multimodal.processing import PromptInsertion
 
 pytestmark = pytest.mark.cpu_test

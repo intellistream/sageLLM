@@ -5,14 +5,21 @@ from typing import Optional
 
 import torch
 from packaging import version
+
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.model_executor.layers.quantization.utils.bitblas_utils import (
-    BITBLAS_OPTIMIZE_FEATURES, BITBLAS_SUPPORTED_GROUP_SIZES,
-    MINIMUM_BITBLAS_VERSION, bitblas_make_empty_g_idx, bitblas_sort_g_idx,
-    check_bitblas_supports_shape, query_bitblas_supported_quant_types,
-    unpack_gptq_qweight, unpack_gptq_qzeros)
+    BITBLAS_OPTIMIZE_FEATURES,
+    BITBLAS_SUPPORTED_GROUP_SIZES,
+    MINIMUM_BITBLAS_VERSION,
+    bitblas_make_empty_g_idx,
+    bitblas_sort_g_idx,
+    check_bitblas_supports_shape,
+    query_bitblas_supported_quant_types,
+    unpack_gptq_qweight,
+    unpack_gptq_qzeros,
+)
 
 from .MPLinearKernel import MPLinearKernel, MPLinearLayerConfig
 

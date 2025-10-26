@@ -4,10 +4,13 @@
 from typing import Optional
 
 import torch
-from vllm.model_executor.models.llava import (LlavaDummyInputsBuilder,
-                                              LlavaForConditionalGeneration,
-                                              LlavaMultiModalProcessor,
-                                              LlavaProcessingInfo)
+
+from vllm.model_executor.models.llava import (
+    LlavaDummyInputsBuilder,
+    LlavaForConditionalGeneration,
+    LlavaMultiModalProcessor,
+    LlavaProcessingInfo,
+)
 from vllm.multimodal import MULTIMODAL_REGISTRY
 
 

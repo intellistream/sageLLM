@@ -5,6 +5,7 @@ import os
 from unittest.mock import patch
 
 import pytest
+
 from vllm.envs import get_vllm_port
 
 

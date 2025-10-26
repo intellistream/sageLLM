@@ -9,6 +9,7 @@ import pytest_asyncio
 import regex as re
 import requests
 from openai import BadRequestError
+
 from tests.utils import RemoteOpenAIServer
 from vllm.transformers_utils.tokenizer import get_tokenizer
 

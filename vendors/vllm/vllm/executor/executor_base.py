@@ -8,8 +8,9 @@ from collections.abc import Awaitable
 from functools import cached_property
 from typing import Any, Callable, Optional, Union
 
-import vllm.platforms
 from typing_extensions import TypeVar
+
+import vllm.platforms
 from vllm.config import VllmConfig
 from vllm.distributed.kv_transfer.kv_connector.utils import KVOutputAggregator
 from vllm.logger import init_logger

@@ -6,14 +6,17 @@ from typing import Optional
 import torch
 import torch._inductor.pattern_matcher as pm
 import torch.fx as fx
-import vllm.envs as envs
 from torch._higher_order_ops.auto_functionalize import auto_functionalized
 from torch._inductor.pattern_matcher import PatternMatcherPass
 from torch.distributed._symmetric_memory import enable_symm_mem_for_group
+
+import vllm.envs as envs
 from vllm.config import VllmConfig
 from vllm.distributed import get_tp_group, tensor_model_parallel_all_reduce
 from vllm.distributed.parallel_state import (
-    get_tensor_model_parallel_rank, get_tensor_model_parallel_world_size)
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+)
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op

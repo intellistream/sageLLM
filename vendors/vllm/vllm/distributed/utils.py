@@ -18,12 +18,16 @@ from datetime import timedelta
 from typing import Any, Optional
 
 import torch
-import vllm.envs as envs
 from torch.distributed import ProcessGroup, TCPStore
-from torch.distributed.distributed_c10d import (Backend, PrefixStore,
-                                                _get_default_timeout,
-                                                _unregister_process_group)
+from torch.distributed.distributed_c10d import (
+    Backend,
+    PrefixStore,
+    _get_default_timeout,
+    _unregister_process_group,
+)
 from torch.distributed.rendezvous import rendezvous
+
+import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.utils import get_tcp_uri, is_torch_equal_or_newer
 

@@ -24,20 +24,26 @@ from typing import Annotated, Literal, Optional
 
 import torch
 import torch.nn as nn
-from transformers import (BatchFeature, FuyuConfig, FuyuImageProcessor,
-                          FuyuProcessor)
+from transformers import BatchFeature, FuyuConfig, FuyuImageProcessor, FuyuProcessor
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.linear import ColumnParallelLinear
 from vllm.model_executor.models.persimmon import PersimmonForCausalLM
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate, PromptUpdateDetails)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape

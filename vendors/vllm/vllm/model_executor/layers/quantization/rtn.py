@@ -8,17 +8,28 @@ from typing import Any, Callable, Optional, Union
 import torch
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
+
 from vllm.logger import init_logger
-from vllm.model_executor.layers.fused_moe import (FusedMoE, FusedMoEConfig,
-                                                  FusedMoEMethodBase)
+from vllm.model_executor.layers.fused_moe import (
+    FusedMoE,
+    FusedMoEConfig,
+    FusedMoEMethodBase,
+)
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig, int4_w4a16_moe_quant_config,
-    int8_w8a16_moe_quant_config)
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               set_weight_attrs)
+    FusedMoEQuantConfig,
+    int4_w4a16_moe_quant_config,
+    int8_w8a16_moe_quant_config,
+)
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    set_weight_attrs,
+)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig, QuantizeMethodBase)
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
 
 logger = init_logger(__name__)
 """By default, use 8 bit as target precision, but it can be 

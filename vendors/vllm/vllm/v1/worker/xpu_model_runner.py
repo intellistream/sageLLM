@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 import torch
+
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.v1.worker.gpu_model_runner import GPUModelRunner

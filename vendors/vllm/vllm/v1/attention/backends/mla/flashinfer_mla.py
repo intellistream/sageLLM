@@ -5,11 +5,14 @@ from typing import Optional, Union
 
 import torch
 from flashinfer.decode import trtllm_batch_decode_with_kv_cache_mla
+
 from vllm.attention.backends.abstract import AttentionLayer, AttentionType
 from vllm.logger import init_logger
-from vllm.v1.attention.backends.mla.common import (MLACommonBackend,
-                                                   MLACommonImpl,
-                                                   MLACommonMetadata)
+from vllm.v1.attention.backends.mla.common import (
+    MLACommonBackend,
+    MLACommonImpl,
+    MLACommonMetadata,
+)
 
 logger = init_logger(__name__)
 

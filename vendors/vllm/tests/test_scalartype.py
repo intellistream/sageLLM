@@ -3,6 +3,7 @@
 
 import pytest
 import torch
+
 from vllm.scalar_type import scalar_types
 
 

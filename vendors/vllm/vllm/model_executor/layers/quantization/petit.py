@@ -7,20 +7,26 @@ from typing import Any, Optional
 import regex as re
 import torch
 from torch.nn.parameter import Parameter
+
 from vllm.logger import init_logger
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               UnquantizedLinearMethod)
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    UnquantizedLinearMethod,
+)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig, QuantizeMethodBase)
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
 from vllm.model_executor.layers.quantization.utils.petit_utils import (
-    apply_petit_nvfp4_linear, prepare_nvfp4_layer_for_petit,
-    verify_petit_nvfp4_supported)
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    is_layer_skipped
-from vllm.model_executor.parameter import (ModelWeightParameter,
-                                           PerTensorScaleParameter)
+    apply_petit_nvfp4_linear,
+    prepare_nvfp4_layer_for_petit,
+    verify_petit_nvfp4_supported,
+)
+from vllm.model_executor.layers.quantization.utils.quant_utils import is_layer_skipped
+from vllm.model_executor.parameter import ModelWeightParameter, PerTensorScaleParameter
 from vllm.platforms import current_platform
 
 # Initialize logger for the module

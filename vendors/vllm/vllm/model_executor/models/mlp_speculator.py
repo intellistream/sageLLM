@@ -6,10 +6,13 @@ from collections.abc import Iterable
 
 import torch
 import torch.nn as nn
+
 from vllm.config import VllmConfig
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 
 from .utils import maybe_prefix

@@ -4,23 +4,34 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 import torch
+
 import vllm._custom_ops as ops
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from tests.kernels.moe.utils import make_test_weights, per_token_cast_to_fp8
-from tests.kernels.quantization.nvfp4_utils import (FLOAT4_E2M1_MAX,
-                                                    FLOAT8_E4M3_MAX,
-                                                    dequantize_nvfp4_to_dtype)
+from tests.kernels.quantization.nvfp4_utils import (
+    FLOAT4_E2M1_MAX,
+    FLOAT8_E4M3_MAX,
+    dequantize_nvfp4_to_dtype,
+)
 from tests.kernels.utils import torch_experts
 from vllm.config import VllmConfig
 from vllm.distributed import get_dp_group, get_tensor_model_parallel_world_size
 from vllm.forward_context import set_forward_context
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEConfig, FusedMoEParallelConfig, FusedMoEQuantConfig)
+    FusedMoEConfig,
+    FusedMoEParallelConfig,
+    FusedMoEQuantConfig,
+)
 from vllm.model_executor.layers.fused_moe.fused_moe import fused_topk
 from vllm.utils import has_deep_ep, has_deep_gemm, has_pplx
 
-from .mk_objects import (TestMoEQuantConfig, expert_info, make_fused_experts,
-                         make_prepare_finalize, prepare_finalize_info)
+from .mk_objects import (
+    TestMoEQuantConfig,
+    expert_info,
+    make_fused_experts,
+    make_prepare_finalize,
+    prepare_finalize_info,
+)
 from .parallel_utils import ProcessGroupInfo
 
 

@@ -16,13 +16,15 @@ _is_otel_imported = False
 otel_import_error_traceback: Optional[str] = None
 try:
     from opentelemetry.context.context import Context
-    from opentelemetry.sdk.environment_variables import \
-        OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+    from opentelemetry.sdk.environment_variables import (
+        OTEL_EXPORTER_OTLP_TRACES_PROTOCOL,
+    )
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
     from opentelemetry.trace import SpanKind, Tracer, set_tracer_provider
-    from opentelemetry.trace.propagation.tracecontext import \
-        TraceContextTextMapPropagator
+    from opentelemetry.trace.propagation.tracecontext import (
+        TraceContextTextMapPropagator,
+    )
 
     _is_otel_imported = True
 except ImportError:
@@ -73,11 +75,13 @@ def init_tracer(
 def get_span_exporter(endpoint):
     protocol = os.environ.get(OTEL_EXPORTER_OTLP_TRACES_PROTOCOL, "grpc")
     if protocol == "grpc":
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
-            OTLPSpanExporter
+        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+            OTLPSpanExporter,
+        )
     elif protocol == "http/protobuf":
-        from opentelemetry.exporter.otlp.proto.http.trace_exporter import \
-            OTLPSpanExporter  # type: ignore
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
+            OTLPSpanExporter,  # type: ignore
+        )
     else:
         raise ValueError(f"Unsupported OTLP protocol '{protocol}' is configured")
 

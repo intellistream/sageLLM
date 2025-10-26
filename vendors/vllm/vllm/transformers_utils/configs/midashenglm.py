@@ -24,8 +24,9 @@
 from typing import Optional, Union
 
 from transformers import PretrainedConfig
-from transformers.models.qwen2_5_omni.configuration_qwen2_5_omni import \
-    Qwen2_5OmniTextConfig
+from transformers.models.qwen2_5_omni.configuration_qwen2_5_omni import (
+    Qwen2_5OmniTextConfig,
+)
 
 
 class DashengConfig(PretrainedConfig):

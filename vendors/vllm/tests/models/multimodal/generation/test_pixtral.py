@@ -11,6 +11,7 @@ from mistral_common.protocol.instruct.request import ChatCompletionRequest
 from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 from mistral_common.tokens.tokenizers.multimodal import image_from_chunk
 from transformers import AutoProcessor
+
 from vllm import SamplingParams, TextPrompt, TokensPrompt
 from vllm.logprobs import Logprob, SampleLogprobs
 from vllm.multimodal import MultiModalDataBuiltins

@@ -8,10 +8,11 @@ Run `pytest tests/kernels/moe/test_moe_pallas.py`.
 import pytest
 import torch
 import torch_xla
-from vllm.model_executor.layers.fused_moe.moe_pallas import \
-    fused_moe as pallas_moe
-from vllm.model_executor.layers.fused_moe.moe_torch_iterative import \
-    fused_moe as torch_moe
+
+from vllm.model_executor.layers.fused_moe.moe_pallas import fused_moe as pallas_moe
+from vllm.model_executor.layers.fused_moe.moe_torch_iterative import (
+    fused_moe as torch_moe,
+)
 from vllm.platforms import current_platform
 
 if not current_platform.is_tpu():

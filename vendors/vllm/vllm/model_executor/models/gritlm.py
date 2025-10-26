@@ -6,13 +6,18 @@ from typing import Optional, Union
 import numpy as np
 import torch
 import torch.nn as nn
+
 from vllm.config import ModelConfig, VllmConfig
 from vllm.logger import init_logger
-from vllm.model_executor.layers.pooler import (DispatchPooler, Pooler,
-                                               PoolerHead, PoolerNormalize,
-                                               PoolingParamsUpdate,
-                                               get_prompt_lens,
-                                               get_prompt_token_ids)
+from vllm.model_executor.layers.pooler import (
+    DispatchPooler,
+    Pooler,
+    PoolerHead,
+    PoolerNormalize,
+    PoolingParamsUpdate,
+    get_prompt_lens,
+    get_prompt_token_ids,
+)
 from vllm.model_executor.models.llama import LlamaForCausalLM
 from vllm.tasks import PoolingTask
 from vllm.transformers_utils.tokenizer import cached_tokenizer_from_config

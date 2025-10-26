@@ -4,11 +4,11 @@
 from typing import Optional, cast
 
 import pytest
-import tests.ci_envs as ci_envs
 import torch
 from datasets import load_dataset
-from tests.models.utils import (GenerateModelInfo,
-                                TokensTextLogprobsPromptLogprobs)
+
+import tests.ci_envs as ci_envs
+from tests.models.utils import GenerateModelInfo, TokensTextLogprobsPromptLogprobs
 from vllm.logprobs import Logprob
 
 # See #24485

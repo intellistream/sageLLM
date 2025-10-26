@@ -31,45 +31,77 @@ import torch
 import torch.nn as nn
 from transformers.feature_extraction_utils import BatchFeature
 from transformers.models.qwen2_5_omni.configuration_qwen2_5_omni import (
-    Qwen2_5OmniConfig, Qwen2_5OmniThinkerConfig)
-from transformers.models.qwen2_5_omni.modeling_qwen2_5_omni import \
-    Qwen2_5OmniAudioEncoder
-from transformers.models.qwen2_5_omni.processing_qwen2_5_omni import \
-    Qwen2_5OmniProcessor
+    Qwen2_5OmniConfig,
+    Qwen2_5OmniThinkerConfig,
+)
+from transformers.models.qwen2_5_omni.modeling_qwen2_5_omni import (
+    Qwen2_5OmniAudioEncoder,
+)
+from transformers.models.qwen2_5_omni.processing_qwen2_5_omni import (
+    Qwen2_5OmniProcessor,
+)
 from transformers.models.whisper import WhisperFeatureExtractor
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.logger import init_logger
 from vllm.model_executor.layers.rotary_embedding import MRotaryEmbedding
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.model_executor.models.qwen2_5_vl import (
-    Qwen2_5_VisionTransformer, Qwen2_5_VLImageEmbeddingInputs,
-    Qwen2_5_VLImageInputs, Qwen2_5_VLImagePixelInputs,
-    Qwen2_5_VLProcessingInfo, Qwen2_5_VLVideoEmbeddingInputs,
-    Qwen2_5_VLVideoInputs, Qwen2_5_VLVideoPixelInputs)
+    Qwen2_5_VisionTransformer,
+    Qwen2_5_VLImageEmbeddingInputs,
+    Qwen2_5_VLImageInputs,
+    Qwen2_5_VLImagePixelInputs,
+    Qwen2_5_VLProcessingInfo,
+    Qwen2_5_VLVideoEmbeddingInputs,
+    Qwen2_5_VLVideoInputs,
+    Qwen2_5_VLVideoPixelInputs,
+)
 from vllm.model_executor.models.qwen2_audio import (
-    Qwen2AudioProcessingInfo, _get_feat_extract_output_lengths)
+    Qwen2AudioProcessingInfo,
+    _get_feat_extract_output_lengths,
+)
 from vllm.model_executor.models.qwen2_vl import Qwen2VLMultiModalDataParser
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (ImageItem, ModalityData,
-                                    MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems, NestedTensors)
-from vllm.multimodal.parse import (AudioProcessorItems, DictEmbeddingItems,
-                                   ModalityDataItems, MultiModalDataItems,
-                                   MultiModalDataParser)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        MultiModalPromptUpdates,
-                                        PlaceholderFeaturesInfo,
-                                        PromptReplacement, PromptUpdate)
+from vllm.multimodal.inputs import (
+    ImageItem,
+    ModalityData,
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    NestedTensors,
+)
+from vllm.multimodal.parse import (
+    AudioProcessorItems,
+    DictEmbeddingItems,
+    ModalityDataItems,
+    MultiModalDataItems,
+    MultiModalDataParser,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    MultiModalPromptUpdates,
+    PlaceholderFeaturesInfo,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.tokenizer import encode_tokens
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
-                         SupportsMultiModal, SupportsPP)
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsPP,
+)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 try:
     import flash_attn

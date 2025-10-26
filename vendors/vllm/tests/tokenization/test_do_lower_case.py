@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.transformers_utils.tokenizer import get_tokenizer
 
 TOKENIZER_NAMES = ["BAAI/bge-base-en"]

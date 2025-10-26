@@ -4,6 +4,7 @@ from typing import Optional
 
 import torch
 from packaging import version
+
 from vllm.platforms import current_platform
 from vllm.scalar_type import ScalarType, scalar_types
 

@@ -7,11 +7,15 @@ import torch
 import torch._inductor.pattern_matcher as pm
 from torch._higher_order_ops.auto_functionalize import auto_functionalized
 from torch._inductor.pattern_matcher import PatternMatcherPass
+
 from vllm.attention import Attention
 from vllm.config import VllmConfig, get_layers_from_vllm_config
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey, kNvfp4Quant, kStaticTensorScale)
+    QuantKey,
+    kNvfp4Quant,
+    kStaticTensorScale,
+)
 from vllm.platforms import current_platform
 from vllm.utils import round_up
 

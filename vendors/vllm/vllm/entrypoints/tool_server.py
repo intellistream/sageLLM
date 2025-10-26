@@ -5,6 +5,7 @@ from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import TYPE_CHECKING, Any, Optional
 
 from openai_harmony import ToolDescription, ToolNamespaceConfig
+
 from vllm.entrypoints.tool import HarmonyBrowserTool, HarmonyPythonTool, Tool
 from vllm.logger import init_logger
 

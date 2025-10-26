@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional, Union
 import torch
 import torch.nn as nn
 from transformers import PretrainedConfig
+
 from vllm.config.lora import LoRAConfig
 
 if TYPE_CHECKING:

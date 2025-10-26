@@ -8,11 +8,13 @@ import random
 import pytest
 import torch
 import torch.distributed
-from vllm.distributed.eplb.rebalance_execute import \
-    rearrange_expert_weights_inplace
-from vllm.distributed.parallel_state import (ensure_model_parallel_initialized,
-                                             get_tp_group,
-                                             init_distributed_environment)
+
+from vllm.distributed.eplb.rebalance_execute import rearrange_expert_weights_inplace
+from vllm.distributed.parallel_state import (
+    ensure_model_parallel_initialized,
+    get_tp_group,
+    init_distributed_environment,
+)
 from vllm.utils import update_environment_variables
 
 

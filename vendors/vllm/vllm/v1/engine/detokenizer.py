@@ -8,9 +8,13 @@ from packaging import version
 from tokenizers import Tokenizer
 from tokenizers.decoders import DecodeStream
 from transformers import PreTrainedTokenizerFast
+
 from vllm.logger import init_logger
 from vllm.transformers_utils.detokenizer_utils import (
-    AnyTokenizer, convert_prompt_ids_to_tokens, detokenize_incrementally)
+    AnyTokenizer,
+    convert_prompt_ids_to_tokens,
+    detokenize_incrementally,
+)
 from vllm.utils import length_from_prompt_token_ids_or_embeds
 from vllm.v1.engine import EngineCoreRequest
 

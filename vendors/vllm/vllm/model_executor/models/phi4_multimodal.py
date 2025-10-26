@@ -8,34 +8,60 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import (BatchFeature, Phi4MultimodalAudioConfig,
-                          Phi4MultimodalConfig, Phi4MultimodalFeatureExtractor,
-                          Phi4MultimodalImageProcessorFast)
+from transformers import (
+    BatchFeature,
+    Phi4MultimodalAudioConfig,
+    Phi4MultimodalConfig,
+    Phi4MultimodalFeatureExtractor,
+    Phi4MultimodalImageProcessorFast,
+)
 from transformers import Phi4MultimodalProcessor as Phi4MMProcessor
 from transformers.models.phi4_multimodal.modeling_phi4_multimodal import (
-    Phi4MultimodalAudioConvModule, Phi4MultimodalAudioNemoConvSubsampling,
-    Phi4MultimodalAudioRelativeAttentionBias, adaptive_enc_mask, unfold_tensor)
+    Phi4MultimodalAudioConvModule,
+    Phi4MultimodalAudioNemoConvSubsampling,
+    Phi4MultimodalAudioRelativeAttentionBias,
+    adaptive_enc_mask,
+    unfold_tensor,
+)
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
-from vllm.distributed import (divide, get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size)
+from vllm.distributed import (
+    divide,
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+)
 from vllm.model_executor.layers.activation import MulAndSilu, get_act_fn
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems, NestedTensors)
-from vllm.multimodal.parse import (AudioProcessorItems, ImageEmbeddingItems,
-                                   ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems, MultiModalDataParser)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+    NestedTensors,
+)
+from vllm.multimodal.parse import (
+    AudioProcessorItems,
+    ImageEmbeddingItems,
+    ImageProcessorItems,
+    ImageSize,
+    MultiModalDataItems,
+    MultiModalDataParser,
+)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils import is_list_of
@@ -43,8 +69,13 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .idefics2_vision_model import Idefics2VisionTransformer
 from .interfaces import MultiModalEmbeddings, SupportsLoRA, SupportsMultiModal
-from .utils import (AutoWeightsLoader, WeightsMapper, flatten_bn,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    flatten_bn,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 _AUDIO_MAX_SOUNDFILE_SIZE = 241_000
 

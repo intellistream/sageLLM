@@ -14,8 +14,9 @@ from urllib.request import url2pathname
 import numpy as np
 import numpy.typing as npt
 import torch
-import vllm.envs as envs
 from PIL import Image, UnidentifiedImageError
+
+import vllm.envs as envs
 from vllm.connections import HTTPConnection, global_http_connection
 from vllm.utils.jsontree import json_map_leaves
 
@@ -27,8 +28,12 @@ from .video import VideoMediaIO
 _M = TypeVar("_M")
 
 if TYPE_CHECKING:
-    from .inputs import (BatchedTensorInputs, MultiModalKwargsItem,
-                         MultiModalKwargsItems, MultiModalPlaceholderDict)
+    from .inputs import (
+        BatchedTensorInputs,
+        MultiModalKwargsItem,
+        MultiModalKwargsItems,
+        MultiModalPlaceholderDict,
+    )
 else:
     BatchedTensorInputs = Any
     MultiModalKwargsItem = Any

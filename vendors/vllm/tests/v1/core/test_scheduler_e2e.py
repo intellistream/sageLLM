@@ -3,6 +3,7 @@
 import os
 
 import pytest
+
 from vllm import LLM
 
 if os.getenv("VLLM_USE_V1", "0") != "1":

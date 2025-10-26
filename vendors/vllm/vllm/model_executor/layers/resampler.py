@@ -41,6 +41,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
+
 from vllm.model_executor.layers.linear import ReplicatedLinear
 from vllm.model_executor.layers.quantization import QuantizationConfig
 

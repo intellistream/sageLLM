@@ -32,50 +32,66 @@ from typing import Any, Optional, Union
 import torch
 from torch import nn
 from transformers import DeepseekV2Config, DeepseekV3Config
+
 from vllm.attention import Attention
 from vllm.attention.backends.abstract import AttentionBackend
 from vllm.attention.ops.common import pack_seq_triton, unpack_seq_triton
 from vllm.compilation.decorators import support_torch_compile
-from vllm.config import (CacheConfig, ParallelConfig, VllmConfig,
-                         get_current_vllm_config)
-from vllm.distributed import (get_ep_group, get_pp_group,
-                              get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size,
-                              tensor_model_parallel_all_gather)
+from vllm.config import CacheConfig, ParallelConfig, VllmConfig, get_current_vllm_config
+from vllm.distributed import (
+    get_ep_group,
+    get_pp_group,
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+    tensor_model_parallel_all_gather,
+)
 from vllm.forward_context import get_forward_context
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.attention_layer_base import AttentionLayerBase
 from vllm.model_executor.layers.fused_moe import FusedMoE
 from vllm.model_executor.layers.layernorm import LayerNorm, RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               ReplicatedLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    ReplicatedLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.mla import MLAModules, MultiHeadLatentAttention
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.quantization.utils.fp8_utils import \
-    per_token_group_quant_fp8
+from vllm.model_executor.layers.quantization.utils.fp8_utils import (
+    per_token_group_quant_fp8,
+)
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.shared_fused_moe import SharedFusedMoE
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, maybe_remap_kv_scale_name)
+    default_weight_loader,
+    maybe_remap_kv_scale_name,
+)
 from vllm.model_executor.models.utils import sequence_parallel_chunk
 from vllm.platforms import current_platform
 from vllm.sequence import IntermediateTensors
 from vllm.utils import cdiv, direct_register_custom_op
 from vllm.utils.deep_gemm import fp8_mqa_logits, fp8_paged_mqa_logits
-from vllm.v1.attention.backends.mla.indexer import (DeepseekV32IndexerBackend,
-                                                    DeepseekV32IndexerMetadata)
+from vllm.v1.attention.backends.mla.indexer import (
+    DeepseekV32IndexerBackend,
+    DeepseekV32IndexerMetadata,
+)
 from vllm.v1.kv_cache_interface import KVCacheSpec, MLAAttentionSpec
 
 from .interfaces import MixtureOfExperts, SupportsLoRA, SupportsPP
-from .utils import (PPMissingLayer, is_pp_missing_parameter,
-                    make_empty_intermediate_tensors_factory, make_layers,
-                    maybe_prefix)
+from .utils import (
+    PPMissingLayer,
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 
 if current_platform.is_cuda_alike():
     from vllm import _custom_ops as ops
@@ -805,8 +821,7 @@ class Indexer(nn.Module):
         )
         self.max_model_len = vllm_config.model_config.max_model_len
         self.prefix = prefix
-        from vllm.v1.attention.backends.mla.indexer import \
-            get_max_prefill_buffer_size
+        from vllm.v1.attention.backends.mla.indexer import get_max_prefill_buffer_size
 
         self.max_total_seq_len = get_max_prefill_buffer_size(vllm_config)
 

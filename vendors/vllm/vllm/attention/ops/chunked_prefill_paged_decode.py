@@ -8,6 +8,7 @@
 #  - Thomas Parnell <tpa@zurich.ibm.com>
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton

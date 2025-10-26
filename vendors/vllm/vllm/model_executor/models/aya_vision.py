@@ -10,29 +10,36 @@ from transformers import BatchFeature, GotOcr2ImageProcessor
 from transformers.activations import ACT2FN
 from transformers.image_processing_utils import get_size_dict
 from transformers.models.aya_vision import AyaVisionConfig
-from transformers.models.aya_vision.processing_aya_vision import \
-    AyaVisionProcessor
-from transformers.models.got_ocr2.image_processing_got_ocr2 import \
-    get_optimal_tiled_canvas
+from transformers.models.aya_vision.processing_aya_vision import AyaVisionProcessor
+from transformers.models.got_ocr2.image_processing_got_ocr2 import (
+    get_optimal_tiled_canvas,
+)
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalDataDict, MultiModalKwargsItems
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        MultiModalFieldConfig,
-                                        PromptReplacement, PromptUpdate,
-                                        PromptUpdateDetails)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    MultiModalFieldConfig,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal, SupportsPP
 from .siglip import SiglipVisionModel
-from .utils import (AutoWeightsLoader, WeightsMapper,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 
 
 class AyaVisionImagePixelInputs(TensorSchema):

@@ -11,8 +11,14 @@ from collections.abc import Iterable
 
 import pytest
 
-from .types import (EMBEDDING_SIZE_FACTORS, ExpandableVLMTestArgs,
-                    ImageSizeWrapper, SizeType, VLMTestInfo, VLMTestType)
+from .types import (
+    EMBEDDING_SIZE_FACTORS,
+    ExpandableVLMTestArgs,
+    ImageSizeWrapper,
+    SizeType,
+    VLMTestInfo,
+    VLMTestType,
+)
 
 
 def get_filtered_test_settings(

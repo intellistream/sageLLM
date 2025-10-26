@@ -7,6 +7,7 @@ Run `pytest tests/kernels/test_shuffle_rows.py`.
 
 import pytest
 import torch
+
 from vllm._custom_ops import shuffle_rows
 from vllm.platforms import current_platform
 

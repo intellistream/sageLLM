@@ -2,8 +2,17 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 from collections.abc import Iterable, Mapping, MutableSequence
-from typing import (TYPE_CHECKING, Callable, ClassVar, Literal, Optional,
-                    Protocol, Union, overload, runtime_checkable)
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    ClassVar,
+    Literal,
+    Optional,
+    Protocol,
+    Union,
+    overload,
+    runtime_checkable,
+)
 
 import numpy as np
 import torch
@@ -11,6 +20,7 @@ from torch import Tensor
 from transformers import PretrainedConfig
 from transformers.models.whisper.tokenization_whisper import LANGUAGES
 from typing_extensions import Self, TypeIs
+
 from vllm.config import ModelConfig, SpeechToTextConfig
 from vllm.inputs import TokensPrompt
 from vllm.inputs.data import PromptType

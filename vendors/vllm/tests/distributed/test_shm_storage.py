@@ -9,11 +9,18 @@ import unittest
 from multiprocessing import Lock
 
 import torch
+
 # Assuming these are imported from your module
 from vllm.distributed.device_communicators.shm_object_storage import (
-    MsgpackSerde, SingleWriterShmObjectStorage, SingleWriterShmRingBuffer)
-from vllm.multimodal.inputs import (MultiModalFieldElem, MultiModalKwargsItem,
-                                    MultiModalSharedField)
+    MsgpackSerde,
+    SingleWriterShmObjectStorage,
+    SingleWriterShmRingBuffer,
+)
+from vllm.multimodal.inputs import (
+    MultiModalFieldElem,
+    MultiModalKwargsItem,
+    MultiModalSharedField,
+)
 
 
 def _dummy_elem(modality: str, key: str, size: int):

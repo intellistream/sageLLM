@@ -5,6 +5,7 @@ from typing import Any
 
 import pytest
 import requests
+
 from tests.utils import RemoteOpenAIServer
 
 MODEL_NAME = "Qwen/Qwen3-0.6B"

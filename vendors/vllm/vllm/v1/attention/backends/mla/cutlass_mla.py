@@ -5,14 +5,20 @@ import os
 from typing import ClassVar, Optional, Union
 
 import torch
+
 import vllm._custom_ops as ops
-from vllm.attention.backends.abstract import (AttentionLayer, AttentionType,
-                                              is_quantized_kv_cache)
+from vllm.attention.backends.abstract import (
+    AttentionLayer,
+    AttentionType,
+    is_quantized_kv_cache,
+)
 from vllm.logger import init_logger
-from vllm.v1.attention.backends.mla.common import (MLACommonBackend,
-                                                   MLACommonImpl,
-                                                   MLACommonMetadata,
-                                                   MLACommonMetadataBuilder)
+from vllm.v1.attention.backends.mla.common import (
+    MLACommonBackend,
+    MLACommonImpl,
+    MLACommonMetadata,
+    MLACommonMetadataBuilder,
+)
 from vllm.v1.attention.backends.utils import AttentionCGSupport
 
 logger = init_logger(__name__)

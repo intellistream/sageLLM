@@ -5,11 +5,11 @@ import types
 
 import torch
 from torch import nn
+
 from vllm.config import ModelConfig
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader.default_loader import DefaultModelLoader
-from vllm.model_executor.model_loader.utils import \
-    process_weights_after_loading
+from vllm.model_executor.model_loader.utils import process_weights_after_loading
 
 logger = init_logger(__name__)
 

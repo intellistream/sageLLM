@@ -21,6 +21,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
 from vllm.distributed.parallel_state import get_pp_group
@@ -29,11 +30,9 @@ from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.quantization.torchao import TorchAOConfig
-from vllm.model_executor.layers.vocab_parallel_embedding import \
-    VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
-from vllm.model_executor.models.llama4 import (Llama4DecoderLayer,
-                                               Llama4ForCausalLM)
+from vllm.model_executor.models.llama4 import Llama4DecoderLayer, Llama4ForCausalLM
 from vllm.model_executor.models.utils import extract_layer_index
 
 from .interfaces import SupportsMultiModal

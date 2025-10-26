@@ -4,13 +4,19 @@ from typing import Callable, Optional
 
 import torch
 from torch.nn.parameter import Parameter
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
-    CompressedTensorsScheme
+
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
+    CompressedTensorsScheme,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp4 import (
-    apply_fp4_marlin_linear, prepare_fp4_layer_for_marlin)
-from vllm.model_executor.parameter import (GroupQuantScaleParameter,
-                                           ModelWeightParameter,
-                                           PerTensorScaleParameter)
+    apply_fp4_marlin_linear,
+    prepare_fp4_layer_for_marlin,
+)
+from vllm.model_executor.parameter import (
+    GroupQuantScaleParameter,
+    ModelWeightParameter,
+    PerTensorScaleParameter,
+)
 
 __all__ = ["CompressedTensorsW4A16Fp4"]
 

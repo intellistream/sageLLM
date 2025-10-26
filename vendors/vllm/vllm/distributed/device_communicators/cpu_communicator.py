@@ -6,6 +6,7 @@ from typing import Any, Optional, Union
 
 import torch
 from torch.distributed import ProcessGroup
+
 from vllm.distributed.utils import pickle
 from vllm.platforms import current_platform
 from vllm.platforms.interface import CpuArchEnum

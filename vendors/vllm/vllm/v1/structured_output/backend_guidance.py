@@ -10,12 +10,15 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Union
 
 import torch
+
 from vllm.logger import init_logger
 from vllm.sampling_params import SamplingParams
 from vllm.utils import LazyLoader
-from vllm.v1.structured_output.backend_types import (StructuredOutputBackend,
-                                                     StructuredOutputGrammar,
-                                                     StructuredOutputOptions)
+from vllm.v1.structured_output.backend_types import (
+    StructuredOutputBackend,
+    StructuredOutputGrammar,
+    StructuredOutputOptions,
+)
 from vllm.v1.structured_output.request import get_structured_output_key
 
 if TYPE_CHECKING:

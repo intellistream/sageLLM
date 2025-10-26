@@ -3,6 +3,7 @@
 
 import pytest
 import torch
+
 from vllm.multimodal.inputs import MultiModalKwargs, NestedTensors
 
 pytestmark = pytest.mark.cpu_test

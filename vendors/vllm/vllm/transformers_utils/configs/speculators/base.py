@@ -4,8 +4,10 @@ import os
 from typing import Any, Union
 
 from transformers import PretrainedConfig
-from vllm.transformers_utils.configs.speculators.algos import \
-    SUPPORTED_SPECULATORS_TYPES
+
+from vllm.transformers_utils.configs.speculators.algos import (
+    SUPPORTED_SPECULATORS_TYPES,
+)
 
 __all__ = ["SpeculatorsConfig"]
 

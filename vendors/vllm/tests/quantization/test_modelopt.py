@@ -9,6 +9,7 @@ import os
 
 import pytest
 import torch
+
 from tests.quantization.utils import is_quant_method_supported
 
 
@@ -48,8 +49,9 @@ def test_modelopt_fp8_checkpoint_setup(vllm_runner):
             down_proj = layer.mlp.down_proj
 
             # Check that ModelOpt quantization method is properly applied
-            from vllm.model_executor.layers.quantization.modelopt import \
-                ModelOptFp8LinearMethod
+            from vllm.model_executor.layers.quantization.modelopt import (
+                ModelOptFp8LinearMethod,
+            )
 
             assert isinstance(qkv_proj.quant_method, ModelOptFp8LinearMethod)
             assert isinstance(o_proj.quant_method, ModelOptFp8LinearMethod)

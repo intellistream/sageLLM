@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional, Union
 import torch
 import torch.nn.functional as F
 import torch_xla
+
 from vllm.lora.ops.xla_ops import bgmv_expand, bgmv_expand_slice, bgmv_shrink
 from vllm.lora.punica_wrapper.utils import convert_mapping
 

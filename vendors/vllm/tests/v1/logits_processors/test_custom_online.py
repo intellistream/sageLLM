@@ -9,15 +9,19 @@ from typing import Any, Optional
 import openai
 import pytest
 import pytest_asyncio
-from tests.utils import (RemoteOpenAIServerCustom,
-                         create_new_process_for_each_test)
-from tests.v1.logits_processors.utils import (DUMMY_LOGITPROC_ARG,
-                                              DUMMY_LOGITPROC_FQCN,
-                                              DUMMY_LOGITPROC_MODULE,
-                                              MAX_TOKENS, MODEL_NAME,
-                                              TEMP_GREEDY, dummy_module)
+
+from tests.utils import RemoteOpenAIServerCustom, create_new_process_for_each_test
+from tests.v1.logits_processors.utils import (
+    DUMMY_LOGITPROC_ARG,
+    DUMMY_LOGITPROC_FQCN,
+    DUMMY_LOGITPROC_MODULE,
+    MAX_TOKENS,
+    MODEL_NAME,
+    TEMP_GREEDY,
+    dummy_module,
+    prompts,
+)
 from tests.v1.logits_processors.utils import entry_points as fake_entry_points
-from tests.v1.logits_processors.utils import prompts
 
 
 def _server_with_logitproc_entrypoint(

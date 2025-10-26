@@ -8,17 +8,20 @@ import pytest
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
+
 import vllm.envs as envs
 from vllm.distributed import cleanup_dist_env_and_memory
-from vllm.distributed.device_communicators.cuda_communicator import \
-    CudaCommunicator
-from vllm.distributed.device_communicators.pynccl import \
-    register_nccl_symmetric_ops
+from vllm.distributed.device_communicators.cuda_communicator import CudaCommunicator
+from vllm.distributed.device_communicators.pynccl import register_nccl_symmetric_ops
 from vllm.distributed.device_communicators.pynccl_allocator import (
-    get_nccl_mem_pool, is_symmetric_memory_enabled)
-from vllm.distributed.parallel_state import (get_tp_group,
-                                             init_distributed_environment,
-                                             initialize_model_parallel)
+    get_nccl_mem_pool,
+    is_symmetric_memory_enabled,
+)
+from vllm.distributed.parallel_state import (
+    get_tp_group,
+    init_distributed_environment,
+    initialize_model_parallel,
+)
 from vllm.platforms import current_platform
 from vllm.utils import update_environment_variables
 

@@ -10,12 +10,13 @@ from functools import cache, wraps
 from typing import TYPE_CHECKING, Callable, Optional, TypeVar, Union
 
 import torch
-# import custom ops, trigger op registration
-import vllm._C  # noqa
-import vllm.envs as envs
 from torch.distributed import PrefixStore, ProcessGroup
 from torch.distributed.distributed_c10d import is_nccl_available
 from typing_extensions import ParamSpec
+
+# import custom ops, trigger op registration
+import vllm._C  # noqa
+import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.utils import cuda_device_count_stateless, import_pynvml
 
@@ -289,8 +290,7 @@ class CudaPlatformBase(Platform):
                 logger.info_once("Using Cutlass MLA backend on V1 engine.")
                 return "vllm.v1.attention.backends.mla.cutlass_mla.CutlassMLABackend"
             if use_flashinfermla:
-                from vllm.v1.attention.backends.utils import \
-                    set_kv_cache_layout
+                from vllm.v1.attention.backends.utils import set_kv_cache_layout
 
                 set_kv_cache_layout("HND")
                 logger.info_once("Using FlashInfer MLA backend on V1 engine.")
@@ -336,8 +336,7 @@ class CudaPlatformBase(Platform):
             if selected_backend == _Backend.FLASHINFER:
                 logger.info_once("Using FlashInfer backend on V1 engine.")
                 if cls.has_device_capability(100):
-                    from vllm.v1.attention.backends.utils import \
-                        set_kv_cache_layout
+                    from vllm.v1.attention.backends.utils import set_kv_cache_layout
 
                     set_kv_cache_layout("HND")
                 return FLASHINFER_V1
@@ -365,8 +364,7 @@ class CudaPlatformBase(Platform):
                 if is_default_backend_supported := is_attn_backend_supported(
                     FLASHINFER_V1, head_size, dtype
                 ):
-                    from vllm.v1.attention.backends.utils import \
-                        set_kv_cache_layout
+                    from vllm.v1.attention.backends.utils import set_kv_cache_layout
 
                     logger.info_once(
                         "Using FlashInfer backend with HND KV cache layout on "
@@ -511,8 +509,7 @@ class CudaPlatformBase(Platform):
                 supported = True
             elif attention_backend == "FLASH_ATTN":
                 if fp8_attention:
-                    from vllm.attention.utils.fa_utils import \
-                        flash_attn_supports_fp8
+                    from vllm.attention.utils.fa_utils import flash_attn_supports_fp8
 
                     supported = flash_attn_supports_fp8()
                 else:

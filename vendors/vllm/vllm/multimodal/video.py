@@ -11,6 +11,7 @@ from typing import Any, Union
 import numpy as np
 import numpy.typing as npt
 from PIL import Image
+
 from vllm import envs
 
 from .base import MediaIO

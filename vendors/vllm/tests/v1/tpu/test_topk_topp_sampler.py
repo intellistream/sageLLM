@@ -5,6 +5,7 @@ import math
 import pytest
 import torch
 import torch_xla
+
 from vllm.platforms import current_platform
 from vllm.v1.sample.ops.topk_topp_sampler import apply_top_k_top_p
 

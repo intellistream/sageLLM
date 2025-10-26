@@ -5,9 +5,9 @@ from dataclasses import dataclass
 import numpy as np
 import pytest
 import torch
+
 from tests.v1.attention.utils import BatchSpec, create_common_attn_metadata
-from vllm.v1.attention.backends.utils import \
-    make_local_attention_virtual_batches
+from vllm.v1.attention.backends.utils import make_local_attention_virtual_batches
 
 
 @dataclass

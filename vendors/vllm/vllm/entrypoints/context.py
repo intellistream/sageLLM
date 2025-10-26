@@ -10,8 +10,12 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from openai.types.responses.tool import Mcp
 from openai_harmony import Author, Message, Role, StreamState, TextContent
+
 from vllm.entrypoints.harmony_utils import (
-    get_encoding, get_streamable_parser_for_assistant, render_for_completion)
+    get_encoding,
+    get_streamable_parser_for_assistant,
+    render_for_completion,
+)
 from vllm.entrypoints.tool import Tool
 from vllm.entrypoints.tool_server import ToolServer
 from vllm.outputs import RequestOutput

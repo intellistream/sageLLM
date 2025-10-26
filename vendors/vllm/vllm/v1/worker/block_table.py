@@ -4,6 +4,7 @@ from typing import Union
 
 import numpy as np
 import torch
+
 from vllm.distributed import get_dcp_group
 from vllm.logger import init_logger
 from vllm.utils import cdiv

@@ -5,8 +5,13 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
-from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
-                                              AttentionLayer, AttentionType)
+
+from vllm.attention.backends.abstract import (
+    AttentionBackend,
+    AttentionImpl,
+    AttentionLayer,
+    AttentionType,
+)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.utils import cdiv, next_power_of_2

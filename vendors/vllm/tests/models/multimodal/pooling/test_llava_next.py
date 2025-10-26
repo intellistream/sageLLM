@@ -4,6 +4,7 @@
 import pytest
 import torch.nn.functional as F
 from transformers import AutoModelForImageTextToText
+
 from vllm.platforms import current_platform
 
 from ....conftest import IMAGE_ASSETS, HfRunner, PromptImageInput, VllmRunner

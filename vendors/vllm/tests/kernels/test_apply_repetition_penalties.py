@@ -2,9 +2,12 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
 import torch
+
 from tests.kernels.utils import opcheck
-from vllm._custom_ops import (apply_repetition_penalties_cuda,
-                              apply_repetition_penalties_torch)
+from vllm._custom_ops import (
+    apply_repetition_penalties_cuda,
+    apply_repetition_penalties_torch,
+)
 from vllm.platforms import current_platform
 
 NUM_SEQS = [1, 2, 3, 4, 8, 13, 17, 32, 37, 256, 1023, 1024, 1025]

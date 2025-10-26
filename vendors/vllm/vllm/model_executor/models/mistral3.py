@@ -3,42 +3,59 @@
 
 from abc import abstractmethod
 from collections.abc import Iterable, Mapping, Sequence
-from typing import (Annotated, Final, Literal, Optional, Protocol, TypeVar,
-                    Union)
+from typing import Annotated, Final, Literal, Optional, Protocol, TypeVar, Union
 
 import torch
 import torch.nn as nn
-from transformers import (BatchFeature, Mistral3Config, PixtralVisionConfig,
-                          PretrainedConfig)
+from transformers import (
+    BatchFeature,
+    Mistral3Config,
+    PixtralVisionConfig,
+    PretrainedConfig,
+)
 from transformers.models.pixtral import PixtralProcessor
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.activation import get_act_fn
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import ColumnParallelLinear, RowParallelLinear
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.cache import BaseMultiModalProcessorCache
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo,
-                                        InputProcessingContext,
-                                        PromptReplacement, PromptUpdate,
-                                        PromptUpdateDetails)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    InputProcessingContext,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsLoRA,
-                         SupportsMultiModal, SupportsPP)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsPP,
+)
 from .pixtral import PixtralHFEncoderInfo, PixtralHFVisionModel
-from .utils import (AutoWeightsLoader, WeightsMapper, flatten_bn,
-                    init_vllm_registered_model, maybe_prefix)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    flatten_bn,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 from .vision import get_vision_encoder_info
 
 

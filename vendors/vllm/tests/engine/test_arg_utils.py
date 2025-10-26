@@ -8,11 +8,20 @@ from dataclasses import dataclass, field
 from typing import Annotated, Literal, Optional, Union
 
 import pytest
+
 from vllm.config import CompilationConfig, config
-from vllm.engine.arg_utils import (EngineArgs, contains_type, get_kwargs,
-                                   get_type, get_type_hints, is_not_builtin,
-                                   is_type, literal_to_kwargs, optional_type,
-                                   parse_type)
+from vllm.engine.arg_utils import (
+    EngineArgs,
+    contains_type,
+    get_kwargs,
+    get_type,
+    get_type_hints,
+    is_not_builtin,
+    is_type,
+    literal_to_kwargs,
+    optional_type,
+    parse_type,
+)
 from vllm.utils import FlexibleArgumentParser
 
 

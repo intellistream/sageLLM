@@ -35,6 +35,7 @@ from typing import Any
 
 import numpy as np
 import torch
+
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.platforms import current_platform
 from vllm.transformers_utils.config import get_config

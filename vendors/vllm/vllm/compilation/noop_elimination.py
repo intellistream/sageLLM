@@ -6,6 +6,7 @@ from typing import Union
 
 import torch.fx
 from torch import SymInt
+
 from vllm.logger import init_logger
 
 from .fx_utils import is_func

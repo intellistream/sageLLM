@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
+
 from vllm.platforms import current_platform
 from vllm.triton_utils import HAS_TRITON
 

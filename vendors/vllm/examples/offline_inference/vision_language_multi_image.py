@@ -14,6 +14,7 @@ from typing import NamedTuple, Optional
 from huggingface_hub import snapshot_download
 from PIL.Image import Image
 from transformers import AutoProcessor, AutoTokenizer
+
 from vllm import LLM, EngineArgs, SamplingParams
 from vllm.lora.request import LoRARequest
 from vllm.multimodal.utils import fetch_image

@@ -4,12 +4,14 @@
 from typing import Optional
 
 import torch
+
 from vllm import _custom_ops as ops
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.model_executor.layers.quantization.utils.allspark_utils import (
-    ALLSPARK_AMPERE_M_CUBLAS_THRESHOLD, check_allspark_supported_dtype_shape)
-from vllm.model_executor.parameter import (BasevLLMParameter,
-                                           permute_param_layout_)
+    ALLSPARK_AMPERE_M_CUBLAS_THRESHOLD,
+    check_allspark_supported_dtype_shape,
+)
+from vllm.model_executor.parameter import BasevLLMParameter, permute_param_layout_
 
 from .MPLinearKernel import MPLinearKernel, MPLinearLayerConfig
 

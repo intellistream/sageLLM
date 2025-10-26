@@ -4,24 +4,35 @@
 from typing import Callable, Optional
 
 import torch
-from compressed_tensors.quantization import (QuantizationArgs,
-                                             QuantizationStrategy)
+from compressed_tensors.quantization import QuantizationArgs, QuantizationStrategy
 from torch.nn import Parameter
-from vllm.model_executor.layers.quantization.compressed_tensors.schemes import \
-    CompressedTensorsScheme
+
+from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
+    CompressedTensorsScheme,
+)
 from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    W8A8BlockFp8LinearOp, check_aiter_fp8_linear_support,
-    create_fp8_input_scale, create_fp8_scale_parameter,
-    create_fp8_weight_parameter, maybe_post_process_fp8_weight_block,
-    process_fp8_weight_block_strategy, process_fp8_weight_channel_strategy,
-    process_fp8_weight_tensor_strategy, validate_fp8_block_shape)
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    GroupShape
+    W8A8BlockFp8LinearOp,
+    check_aiter_fp8_linear_support,
+    create_fp8_input_scale,
+    create_fp8_scale_parameter,
+    create_fp8_weight_parameter,
+    maybe_post_process_fp8_weight_block,
+    process_fp8_weight_block_strategy,
+    process_fp8_weight_channel_strategy,
+    process_fp8_weight_tensor_strategy,
+    validate_fp8_block_shape,
+)
+from vllm.model_executor.layers.quantization.utils.quant_utils import GroupShape
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp, cutlass_block_fp8_supported, maybe_create_device_identity)
-from vllm.model_executor.parameter import (BlockQuantScaleParameter,
-                                           ChannelQuantScaleParameter,
-                                           PerTensorScaleParameter)
+    Fp8LinearOp,
+    cutlass_block_fp8_supported,
+    maybe_create_device_identity,
+)
+from vllm.model_executor.parameter import (
+    BlockQuantScaleParameter,
+    ChannelQuantScaleParameter,
+    PerTensorScaleParameter,
+)
 
 __all__ = ["CompressedTensorsW8A8Fp8"]
 

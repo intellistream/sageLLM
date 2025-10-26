@@ -5,11 +5,13 @@
 from typing import Optional
 
 import torch
-from vllm.distributed import (tensor_model_parallel_all_gather,
-                              tensor_model_parallel_gather)
+
+from vllm.distributed import (
+    tensor_model_parallel_all_gather,
+    tensor_model_parallel_gather,
+)
 from vllm.model_executor.custom_op import CustomOp
-from vllm.model_executor.layers.vocab_parallel_embedding import \
-    VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 from vllm.platforms import current_platform
 
 

@@ -5,6 +5,7 @@ import random
 
 import pytest
 import torch
+
 from tests.kernels.utils import DEFAULT_OPCHECK_TEST_UTILS, opcheck
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform
@@ -352,8 +353,9 @@ def test_reshape_and_cache_flash(
             v_scale,
         )
     elif implementation == "triton":
-        from vllm.attention.ops.triton_reshape_and_cache_flash import \
-            triton_reshape_and_cache_flash
+        from vllm.attention.ops.triton_reshape_and_cache_flash import (
+            triton_reshape_and_cache_flash,
+        )
 
         triton_reshape_and_cache_flash(
             key,

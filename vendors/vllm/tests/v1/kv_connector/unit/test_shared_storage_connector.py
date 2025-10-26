@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import NamedTuple
 
 from PIL import Image
+
 from vllm import LLM, EngineArgs, SamplingParams
 from vllm.assets.image import ImageAsset
 from vllm.config import KVTransferConfig

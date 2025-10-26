@@ -4,6 +4,7 @@
 from typing import Optional, Union
 
 import torch
+
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 

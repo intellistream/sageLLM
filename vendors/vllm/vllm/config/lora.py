@@ -5,9 +5,10 @@ import hashlib
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Optional, Union
 
 import torch
-import vllm.envs as envs
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
+
+import vllm.envs as envs
 from vllm.config.utils import config
 from vllm.logger import init_logger
 from vllm.platforms import current_platform

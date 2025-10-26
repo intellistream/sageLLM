@@ -13,6 +13,7 @@ import pytest_asyncio
 import requests
 from prometheus_client.parser import text_string_to_metric_families
 from transformers import AutoTokenizer
+
 from vllm import version
 
 from ...utils import RemoteOpenAIServer

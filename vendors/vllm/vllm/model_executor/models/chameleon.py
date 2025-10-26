@@ -9,8 +9,13 @@ from typing import Annotated, Any, Literal, Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import (BatchFeature, ChameleonConfig, ChameleonProcessor,
-                          ChameleonVQVAEConfig)
+from transformers import (
+    BatchFeature,
+    ChameleonConfig,
+    ChameleonProcessor,
+    ChameleonVQVAEConfig,
+)
+
 from vllm.attention import Attention
 from vllm.config import CacheConfig, VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
@@ -18,33 +23,53 @@ from vllm.distributed import get_pp_group, get_tensor_model_parallel_world_size
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, row_parallel_weight_loader)
+    default_weight_loader,
+    row_parallel_weight_loader,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
 from vllm.multimodal.parse import MultiModalDataItems
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement,
-                                        PromptUpdate, PromptUpdateDetails)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+    PromptUpdate,
+    PromptUpdateDetails,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsMultiModal, SupportsPP,
-                         SupportsQuant)
-from .utils import (is_pp_missing_parameter,
-                    make_empty_intermediate_tensors_factory, make_layers,
-                    maybe_prefix)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsMultiModal,
+    SupportsPP,
+    SupportsQuant,
+)
+from .utils import (
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 
 logger = init_logger(__name__)
 

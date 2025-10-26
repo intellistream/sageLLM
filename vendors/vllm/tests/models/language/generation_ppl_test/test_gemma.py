@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
+
 from tests.models.utils import GenerateModelInfo
 
 from .ppl_utils import wikitext_ppl_test

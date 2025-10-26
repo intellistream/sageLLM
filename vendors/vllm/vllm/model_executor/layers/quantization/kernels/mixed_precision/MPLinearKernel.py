@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional
 
 import torch
+
 from vllm.model_executor.layers.quantization.utils import replace_parameter
 from vllm.scalar_type import ScalarType
 

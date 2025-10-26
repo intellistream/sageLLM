@@ -7,6 +7,7 @@ Run `pytest tests/samplers/test_beam_search.py`.
 
 import pytest
 from transformers import AutoModelForSeq2SeqLM
+
 from vllm.assets.audio import AudioAsset
 
 # FIXME(zhuohan): The test can not pass if we:

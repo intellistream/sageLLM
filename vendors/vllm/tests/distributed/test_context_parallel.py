@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Literal, NamedTuple, Optional
 
 import pytest
+
 from vllm.config import RunnerOption
 from vllm.logger import init_logger
 

@@ -4,10 +4,12 @@ from collections.abc import Iterator
 from itertools import chain
 from typing import TYPE_CHECKING, Optional
 
-from vllm.v1.sample.logits_processor.interface import (AddedRequest,
-                                                       BatchUpdate,
-                                                       MovedRequest,
-                                                       RemovedRequest)
+from vllm.v1.sample.logits_processor.interface import (
+    AddedRequest,
+    BatchUpdate,
+    MovedRequest,
+    RemovedRequest,
+)
 
 if TYPE_CHECKING:
     from vllm.v1.sample.logits_processor.interface import LogitsProcessor

@@ -8,14 +8,14 @@ from collections.abc import Callable
 
 import pytest
 import torch
+from xformers import ops as xops
+from xformers.ops.fmha.attn_bias import BlockDiagonalCausalFromBottomRightMask
+
 from tests.kernels.utils import make_alibi_bias
-from vllm.attention.ops.chunked_prefill_paged_decode import \
-    chunked_prefill_paged_decode
+from vllm.attention.ops.chunked_prefill_paged_decode import chunked_prefill_paged_decode
 from vllm.attention.ops.prefix_prefill import context_attention_fwd
 from vllm.platforms import current_platform
 from vllm.utils import STR_DTYPE_TO_TORCH_DTYPE
-from xformers import ops as xops
-from xformers.ops.fmha.attn_bias import BlockDiagonalCausalFromBottomRightMask
 
 NUM_HEADS = [64]
 NUM_QUERIES_PER_KV = [1, 64]

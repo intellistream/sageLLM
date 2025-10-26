@@ -7,8 +7,11 @@ Run `pytest tests/kernels/moe/test_grouped_topk.py`.
 
 import pytest
 import torch
-from vllm.model_executor.layers.fused_moe.fused_moe import (fused_grouped_topk,
-                                                            grouped_topk)
+
+from vllm.model_executor.layers.fused_moe.fused_moe import (
+    fused_grouped_topk,
+    grouped_topk,
+)
 from vllm.platforms import current_platform
 
 

@@ -5,6 +5,7 @@ import json
 
 import httpx
 from openai import OpenAI
+
 from vllm.assets.audio import AudioAsset
 
 

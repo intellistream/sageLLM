@@ -7,13 +7,17 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from transformers.activations import GELUActivation
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.multimodal import MULTIMODAL_REGISTRY
 from vllm.multimodal.inputs import MultiModalDataDict
 
-from .llava_next import (LlavaDummyInputsBuilder, LlavaNextMultiModalProcessor,
-                         LlavaNextProcessingInfo)
+from .llava_next import (
+    LlavaDummyInputsBuilder,
+    LlavaNextMultiModalProcessor,
+    LlavaNextProcessingInfo,
+)
 from .llava_onevision import LlavaOnevisionForConditionalGeneration
 from .utils import WeightsMapper
 

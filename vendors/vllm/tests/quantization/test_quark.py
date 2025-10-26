@@ -17,8 +17,12 @@ import lm_eval
 import pytest
 import torch
 from packaging import version
+
 from vllm.model_executor.layers.quantization.quark.quark import (  # noqa: E501
-    QuarkLinearMethod, QuarkW8A8Fp8, QuarkW8A8Int8)
+    QuarkLinearMethod,
+    QuarkW8A8Fp8,
+    QuarkW8A8Int8,
+)
 from vllm.platforms import current_platform
 
 from .reference_mxfp4 import dq_mxfp4_torch, qdq_mxfp4_torch
@@ -28,8 +32,7 @@ QUARK_MXFP4_AVAILABLE = find_spec("quark") is not None and version.parse(
 ) >= version.parse("0.8.99")
 
 if QUARK_MXFP4_AVAILABLE:
-    from quark.torch.export.nn.modules.realquantizer import \
-        StaticScaledRealQuantizer
+    from quark.torch.export.nn.modules.realquantizer import StaticScaledRealQuantizer
     from quark.torch.kernel import mx as mx_kernel
     from quark.torch.quantization.config.config import FP4PerGroupSpec
 

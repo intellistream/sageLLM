@@ -9,6 +9,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 from vllm.model_executor.layers.fused_moe.utils import count_expert_num_tokens
 
 

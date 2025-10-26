@@ -3,16 +3,23 @@
 
 import pytest
 import torch
+
 from tests.kernels.moe.utils import make_test_quant_config, make_test_weights
-from tests.kernels.quant_utils import (native_per_token_group_quant_fp8,
-                                       native_w8a8_block_matmul)
+from tests.kernels.quant_utils import (
+    native_per_token_group_quant_fp8,
+    native_w8a8_block_matmul,
+)
 from vllm.config import VllmConfig, set_current_vllm_config
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.fused_moe import fused_experts
 from vllm.model_executor.layers.fused_moe.deep_gemm_moe import (
-    _valid_deep_gemm_shape, deep_gemm_moe_fp8)
+    _valid_deep_gemm_shape,
+    deep_gemm_moe_fp8,
+)
 from vllm.model_executor.layers.fused_moe.fused_moe import (
-    fused_topk, modular_triton_fused_moe)
+    fused_topk,
+    modular_triton_fused_moe,
+)
 from vllm.platforms import current_platform
 from vllm.utils import has_deep_gemm
 from vllm.utils.deep_gemm import is_deep_gemm_e8m0_used

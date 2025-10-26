@@ -3,6 +3,7 @@
 
 import pytest
 from transformers import PreTrainedTokenizerBase
+
 from vllm.transformers_utils.tokenizer import get_tokenizer
 
 TOKENIZER_NAMES = [

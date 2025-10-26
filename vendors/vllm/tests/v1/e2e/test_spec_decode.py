@@ -7,6 +7,7 @@ from typing import Any, Union
 
 import pytest
 import torch
+
 from tests.utils import get_attn_backend_list_based_on_platform, large_gpu_mark
 from vllm import LLM, SamplingParams
 from vllm.assets.base import VLLM_S3_BUCKET_URL

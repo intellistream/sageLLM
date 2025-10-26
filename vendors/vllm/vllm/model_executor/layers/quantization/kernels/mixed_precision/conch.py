@@ -5,8 +5,8 @@ from importlib.util import find_spec
 from typing import Final, Optional
 
 import torch
-from vllm.model_executor.parameter import (BasevLLMParameter,
-                                           permute_param_layout_)
+
+from vllm.model_executor.parameter import BasevLLMParameter, permute_param_layout_
 from vllm.scalar_type import scalar_types
 
 from .MPLinearKernel import MPLinearKernel, MPLinearLayerConfig

@@ -53,6 +53,7 @@ import torch.nn.functional as F
 from transformers.activations import ACT2FN, PytorchGELUTanh
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import is_flash_attn_2_available
+
 from vllm.model_executor.layers.linear import ReplicatedLinear
 from vllm.model_executor.models.utils import maybe_prefix
 from vllm.transformers_utils.configs.moonvit import MoonViTConfig

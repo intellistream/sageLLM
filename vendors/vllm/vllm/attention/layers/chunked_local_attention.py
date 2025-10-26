@@ -4,15 +4,18 @@ import functools
 from typing import ClassVar, Optional
 
 import torch
+
 from vllm import envs
-from vllm.attention.backends.abstract import (AttentionBackend,
-                                              AttentionMetadata)
+from vllm.attention.backends.abstract import AttentionBackend, AttentionMetadata
 from vllm.attention.selector import get_attn_backend
 from vllm.config import CacheConfig
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.v1.attention.backends.utils import (
-    AttentionCGSupport, CommonAttentionMetadata,
-    make_local_attention_virtual_batches, subclass_attention_backend)
+    AttentionCGSupport,
+    CommonAttentionMetadata,
+    make_local_attention_virtual_batches,
+    subclass_attention_backend,
+)
 
 from ..layer import Attention
 

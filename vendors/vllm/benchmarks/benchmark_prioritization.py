@@ -10,6 +10,7 @@ import time
 from typing import Optional
 
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
+
 from vllm.engine.arg_utils import EngineArgs
 from vllm.utils import FlexibleArgumentParser
 

@@ -9,23 +9,35 @@ from collections.abc import Sequence
 from contextlib import AbstractContextManager
 from multiprocessing import connection
 from multiprocessing.process import BaseProcess
-from typing import (TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar,
-                    Union, overload)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Generic,
+    Optional,
+    TypeVar,
+    Union,
+    overload,
+)
 
 import torch
-import vllm.envs as envs
 from torch.autograd.profiler import record_function
+
+import vllm.envs as envs
 from vllm.logger import init_logger
-from vllm.usage.usage_lib import (UsageContext, is_usage_stats_enabled,
-                                  usage_message)
-from vllm.utils import (get_open_port, get_open_zmq_ipc_path, get_tcp_uri,
-                        kill_process_tree)
+from vllm.usage.usage_lib import UsageContext, is_usage_stats_enabled, usage_message
+from vllm.utils import (
+    get_open_port,
+    get_open_zmq_ipc_path,
+    get_tcp_uri,
+    kill_process_tree,
+)
 
 if TYPE_CHECKING:
     import numpy as np
+
     from vllm.v1.engine.coordinator import DPCoordinator
-    from vllm.v1.engine.utils import (CoreEngineActorManager,
-                                      CoreEngineProcManager)
+    from vllm.v1.engine.utils import CoreEngineActorManager, CoreEngineProcManager
 
 logger = init_logger(__name__)
 
@@ -232,8 +244,7 @@ def wait_for_completion_or_failure(
         coordinator: The coordinator for data parallel.
     """
 
-    from vllm.v1.engine.utils import (CoreEngineActorManager,
-                                      CoreEngineProcManager)
+    from vllm.v1.engine.utils import CoreEngineActorManager, CoreEngineProcManager
 
     try:
         logger.info("Waiting for API servers to complete ...")

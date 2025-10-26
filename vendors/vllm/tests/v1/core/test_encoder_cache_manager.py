@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
+
 from vllm.multimodal.inputs import MultiModalFeatureSpec, PlaceholderRange
 from vllm.v1.core.encoder_cache_manager import EncoderCacheManager
 

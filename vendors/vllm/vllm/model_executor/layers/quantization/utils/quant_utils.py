@@ -10,6 +10,7 @@ from typing import ClassVar, NamedTuple, Optional
 import numpy
 import torch
 from torch import fx
+
 from vllm._custom_ops import cutlass_scaled_mm_supports_fp4
 from vllm.platforms import current_platform
 from vllm.scalar_type import ScalarType, scalar_types

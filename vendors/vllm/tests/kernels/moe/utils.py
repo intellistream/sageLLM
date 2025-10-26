@@ -3,19 +3,20 @@
 from typing import Optional, Union
 
 import torch
+
 import vllm._custom_ops as ops
 from tests.kernels.quant_utils import per_block_cast_to_int8
-from tests.kernels.quantization.nvfp4_utils import (FLOAT4_E2M1_MAX,
-                                                    FLOAT8_E4M3_MAX)
+from tests.kernels.quantization.nvfp4_utils import FLOAT4_E2M1_MAX, FLOAT8_E4M3_MAX
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.fused_moe import fused_experts, fused_topk
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
 from vllm.model_executor.layers.fused_moe.fused_batched_moe import (
-    BatchedPrepareAndFinalize, BatchedTritonExperts, NaiveBatchedExperts)
-from vllm.model_executor.layers.fused_moe.modular_kernel import \
-    FusedMoEModularKernel
-from vllm.model_executor.layers.fused_moe.utils import \
-    moe_kernel_quantize_input
+    BatchedPrepareAndFinalize,
+    BatchedTritonExperts,
+    NaiveBatchedExperts,
+)
+from vllm.model_executor.layers.fused_moe.modular_kernel import FusedMoEModularKernel
+from vllm.model_executor.layers.fused_moe.utils import moe_kernel_quantize_input
 from vllm.utils import round_up
 from vllm.utils.deep_gemm import per_block_cast_to_fp8
 
@@ -425,7 +426,9 @@ class RealMLP(torch.nn.Module):
         w2_s: Optional[torch.Tensor] = None,
     ) -> None:
         from vllm.model_executor.layers.linear import (
-            MergedColumnParallelLinear, RowParallelLinear)
+            MergedColumnParallelLinear,
+            RowParallelLinear,
+        )
 
         super().__init__()
         self.gate_up_proj = MergedColumnParallelLinear(

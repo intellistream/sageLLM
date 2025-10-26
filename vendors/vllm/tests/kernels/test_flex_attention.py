@@ -8,11 +8,14 @@ import numpy as np
 import pytest
 import torch
 from packaging import version
-from tests.v1.attention.utils import (BatchSpec, create_common_attn_metadata,
-                                      create_standard_kv_cache_spec,
-                                      create_vllm_config)
-from vllm.v1.attention.backends.flex_attention import \
-    FlexAttentionMetadataBuilder
+
+from tests.v1.attention.utils import (
+    BatchSpec,
+    create_common_attn_metadata,
+    create_standard_kv_cache_spec,
+    create_vllm_config,
+)
+from vllm.v1.attention.backends.flex_attention import FlexAttentionMetadataBuilder
 
 from ..models.utils import check_embeddings_close, check_logprobs_close
 

@@ -5,6 +5,7 @@ import pytest
 import torch
 import torch.nn.functional as F
 from transformers import AutoModel
+
 from vllm.platforms import current_platform
 
 from ....conftest import HfRunner

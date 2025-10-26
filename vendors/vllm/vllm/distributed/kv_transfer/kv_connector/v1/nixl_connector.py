@@ -19,17 +19,23 @@ import msgspec
 import numpy as np
 import torch
 import zmq
+
 from vllm import envs
 from vllm.attention.backends.registry import _Backend
 from vllm.attention.selector import backend_name_to_enum, get_attn_backend
 from vllm.config import VllmConfig
 from vllm.distributed.kv_transfer.kv_connector.v1.base import (
-    CopyBlocksOp, KVConnectorBase_V1, KVConnectorMetadata, KVConnectorRole)
-from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
-    KVConnectorStats
+    CopyBlocksOp,
+    KVConnectorBase_V1,
+    KVConnectorMetadata,
+    KVConnectorRole,
+)
+from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
 from vllm.distributed.parallel_state import (
-    get_tensor_model_parallel_rank, get_tensor_model_parallel_world_size,
-    get_tp_group)
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+    get_tp_group,
+)
 from vllm.distributed.utils import divide
 from vllm.forward_context import ForwardContext
 from vllm.logger import init_logger

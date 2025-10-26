@@ -3,12 +3,14 @@
 from typing import Optional
 
 import torch
+
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
 from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
-    TopKWeightAndReduceContiguous, TopKWeightAndReduceDelegate)
-from vllm.model_executor.layers.fused_moe.utils import \
-    moe_kernel_quantize_input
+    TopKWeightAndReduceContiguous,
+    TopKWeightAndReduceDelegate,
+)
+from vllm.model_executor.layers.fused_moe.utils import moe_kernel_quantize_input
 
 
 class MoEPrepareAndFinalizeNoEP(mk.FusedMoEPrepareAndFinalize):

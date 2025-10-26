@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm import LLM, SamplingParams
 from vllm.assets.image import ImageAsset
 from vllm.multimodal.image import convert_image_mode

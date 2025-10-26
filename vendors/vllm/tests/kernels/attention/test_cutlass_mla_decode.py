@@ -6,6 +6,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 import vllm._custom_ops as ops
 from vllm.platforms import current_platform
 from vllm.triton_utils import triton

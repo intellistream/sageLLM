@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 import vllm
 from vllm.assets.image import ImageAsset
 from vllm.lora.request import LoRARequest

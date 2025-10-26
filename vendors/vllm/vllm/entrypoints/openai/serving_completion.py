@@ -9,21 +9,23 @@ from typing import Optional, Union, cast
 
 import jinja2
 from fastapi import Request
+
 from vllm.config import ModelConfig
 from vllm.engine.protocol import EngineClient
 from vllm.entrypoints.logger import RequestLogger
-from vllm.entrypoints.openai.protocol import (CompletionLogProbs,
-                                              CompletionRequest,
-                                              CompletionResponse,
-                                              CompletionResponseChoice,
-                                              CompletionResponseStreamChoice,
-                                              CompletionStreamResponse,
-                                              ErrorResponse,
-                                              PromptTokenUsageInfo,
-                                              RequestResponseMetadata,
-                                              UsageInfo)
-from vllm.entrypoints.openai.serving_engine import (OpenAIServing,
-                                                    clamp_prompt_logprobs)
+from vllm.entrypoints.openai.protocol import (
+    CompletionLogProbs,
+    CompletionRequest,
+    CompletionResponse,
+    CompletionResponseChoice,
+    CompletionResponseStreamChoice,
+    CompletionStreamResponse,
+    ErrorResponse,
+    PromptTokenUsageInfo,
+    RequestResponseMetadata,
+    UsageInfo,
+)
+from vllm.entrypoints.openai.serving_engine import OpenAIServing, clamp_prompt_logprobs
 from vllm.entrypoints.openai.serving_models import OpenAIServingModels
 from vllm.entrypoints.renderer import RenderConfig
 from vllm.entrypoints.utils import get_max_tokens

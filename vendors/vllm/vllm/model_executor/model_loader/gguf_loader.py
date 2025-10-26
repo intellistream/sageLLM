@@ -8,14 +8,20 @@ import torch
 import torch.nn as nn
 from huggingface_hub import hf_hub_download
 from transformers import AutoModelForCausalLM
+
 from vllm.config import ModelConfig, VllmConfig
 from vllm.config.load import LoadConfig
 from vllm.model_executor.model_loader.base_loader import BaseModelLoader
 from vllm.model_executor.model_loader.utils import (
-    initialize_model, process_weights_after_loading, set_default_torch_dtype)
+    initialize_model,
+    process_weights_after_loading,
+    set_default_torch_dtype,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    get_gguf_extra_tensor_names, get_gguf_weight_type_map,
-    gguf_quant_weights_iterator)
+    get_gguf_extra_tensor_names,
+    get_gguf_weight_type_map,
+    gguf_quant_weights_iterator,
+)
 
 
 class GGUFModelLoader(BaseModelLoader):

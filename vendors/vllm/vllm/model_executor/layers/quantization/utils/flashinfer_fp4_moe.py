@@ -5,14 +5,19 @@
 from __future__ import annotations
 
 import torch
+
 import vllm.envs as envs
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
-from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
-                                                         FusedMoEQuantConfig)
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
-    FlashInferExperts
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import \
-    create_flashinfer_prepare_finalize  # noqa: E501
+from vllm.model_executor.layers.fused_moe.config import (
+    FusedMoEConfig,
+    FusedMoEQuantConfig,
+)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
+    FlashInferExperts,
+)
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (
+    create_flashinfer_prepare_finalize,  # noqa: E501
+)
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import has_flashinfer_cutlass_fused_moe
 

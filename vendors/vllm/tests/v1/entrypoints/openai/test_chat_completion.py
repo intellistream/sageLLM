@@ -4,6 +4,7 @@
 import openai  # use the official client for correctness check
 import pytest
 import pytest_asyncio
+
 from tests.utils import RemoteOpenAIServer
 
 # any model with a chat template defined in tokenizer_config should work here

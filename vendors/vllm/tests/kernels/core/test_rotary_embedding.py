@@ -8,6 +8,7 @@ from typing import Optional
 
 import pytest
 import torch
+
 from tests.kernels.utils import opcheck
 from vllm.model_executor.layers.rotary_embedding import RotaryEmbedding
 

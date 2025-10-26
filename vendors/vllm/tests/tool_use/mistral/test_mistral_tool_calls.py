@@ -3,6 +3,7 @@
 
 import openai
 import pytest
+
 from tests.tool_use.utils import MESSAGES_ASKING_FOR_TOOLS, WEATHER_TOOL
 
 

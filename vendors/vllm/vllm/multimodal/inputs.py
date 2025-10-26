@@ -7,11 +7,11 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import partial
 from itertools import accumulate
-from typing import (TYPE_CHECKING, Any, Literal, Optional, TypedDict, Union,
-                    cast, final)
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypedDict, Union, cast, final
 
 import numpy as np
 from typing_extensions import NotRequired, TypeAlias, TypeVar, deprecated
+
 from vllm.utils import LazyLoader, full_groupby, is_list_of
 from vllm.utils.jsontree import json_map_leaves
 

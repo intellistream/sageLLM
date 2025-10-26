@@ -9,33 +9,46 @@ from typing import ClassVar, Union
 
 import numpy as np
 import torch
-from flashinfer import (BatchDecodeWithPagedKVCacheWrapper,
-                        BatchPrefillWithPagedKVCacheWrapper,
-                        MultiLevelCascadeAttentionWrapper)
+from flashinfer import (
+    BatchDecodeWithPagedKVCacheWrapper,
+    BatchPrefillWithPagedKVCacheWrapper,
+    MultiLevelCascadeAttentionWrapper,
+)
 from flashinfer.decode import _get_range_buf, trtllm_batch_decode_with_kv_cache
 from flashinfer.prefill import trtllm_batch_context_with_kv_cache
 from flashinfer.utils import FP4Tensor
+
 from vllm import _custom_ops as ops
-from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
-                                              AttentionType)
+from vllm.attention.backends.abstract import (
+    AttentionBackend,
+    AttentionImpl,
+    AttentionType,
+)
 from vllm.config import CUDAGraphMode, VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    QuantKey, kFp8StaticTensorSym, kNvfp4Quant)
+    QuantKey,
+    kFp8StaticTensorSym,
+    kNvfp4Quant,
+)
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton
 from vllm.utils import cdiv, is_pin_memory_available
-from vllm.utils.flashinfer import (can_use_trtllm_attention,
-                                   flashinfer_disable_q_quantization,
-                                   supports_trtllm_attention,
-                                   use_trtllm_attention)
-from vllm.v1.attention.backends.utils import (AttentionCGSupport,
-                                              AttentionMetadataBuilder,
-                                              CommonAttentionMetadata,
-                                              get_kv_cache_layout,
-                                              get_per_layer_parameters,
-                                              infer_global_hyperparameters,
-                                              split_decodes_and_prefills)
+from vllm.utils.flashinfer import (
+    can_use_trtllm_attention,
+    flashinfer_disable_q_quantization,
+    supports_trtllm_attention,
+    use_trtllm_attention,
+)
+from vllm.v1.attention.backends.utils import (
+    AttentionCGSupport,
+    AttentionMetadataBuilder,
+    CommonAttentionMetadata,
+    get_kv_cache_layout,
+    get_per_layer_parameters,
+    infer_global_hyperparameters,
+    split_decodes_and_prefills,
+)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
 FLASHINFER_WORKSPACE_BUFFER_SIZE = 256 * 1024 * 1024

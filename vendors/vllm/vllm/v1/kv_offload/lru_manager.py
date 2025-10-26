@@ -5,8 +5,12 @@ from collections.abc import Iterable
 from typing import Optional
 
 from vllm.v1.core.kv_cache_utils import BlockHash
-from vllm.v1.kv_offload.abstract import (LoadStoreSpec, OffloadingEvent,
-                                         OffloadingManager, PrepareStoreOutput)
+from vllm.v1.kv_offload.abstract import (
+    LoadStoreSpec,
+    OffloadingEvent,
+    OffloadingManager,
+    PrepareStoreOutput,
+)
 from vllm.v1.kv_offload.backend import Backend, BlockStatus
 
 

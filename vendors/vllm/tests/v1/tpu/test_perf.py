@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
+
 from vllm.platforms import current_platform
 from vllm.sampling_params import SamplingParams
 from vllm.transformers_utils.tokenizer import get_tokenizer

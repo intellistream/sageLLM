@@ -37,28 +37,37 @@ from einops import rearrange
 from transformers import BatchFeature
 from transformers.models.qwen2_5_vl import Qwen2_5_VLProcessor
 from transformers.models.qwen2_5_vl.configuration_qwen2_5_vl import (
-    Qwen2_5_VLConfig, Qwen2_5_VLVisionConfig)
+    Qwen2_5_VLConfig,
+    Qwen2_5_VLVisionConfig,
+)
+
 from vllm.attention.backends.registry import _Backend
-from vllm.attention.layer import (check_upstream_fa_availability,
-                                  maybe_get_vit_flash_attn_backend)
+from vllm.attention.layer import (
+    check_upstream_fa_availability,
+    maybe_get_vit_flash_attn_backend,
+)
 from vllm.config import VllmConfig
 from vllm.distributed import parallel_state
 from vllm.distributed import utils as dist_utils
 from vllm.logger import init_logger
 from vllm.model_executor.layers.activation import get_act_and_mul_fn
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.module_mapping import MultiModelKeys
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.evs import (compute_mrope_for_media,
-                                 compute_retained_tokens_count,
-                                 compute_retention_mask,
-                                 recompute_mrope_positions)
+from vllm.multimodal.evs import (
+    compute_mrope_for_media,
+    compute_retained_tokens_count,
+    compute_retention_mask,
+    recompute_mrope_positions,
+)
 from vllm.multimodal.inputs import MultiModalFieldConfig, MultiModalKwargs
 from vllm.multimodal.parse import MultiModalDataItems
 from vllm.multimodal.processing import PromptReplacement, PromptUpdate
@@ -66,14 +75,28 @@ from vllm.sequence import IntermediateTensors
 from vllm.utils import is_pin_memory_available
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
 
-from .interfaces import (MultiModalEmbeddings, SupportsEagle3, SupportsLoRA,
-                         SupportsMultiModal, SupportsMultiModalPruning,
-                         SupportsPP, SupportsQuant)
+from .interfaces import (
+    MultiModalEmbeddings,
+    SupportsEagle3,
+    SupportsLoRA,
+    SupportsMultiModal,
+    SupportsMultiModalPruning,
+    SupportsPP,
+    SupportsQuant,
+)
 from .qwen2_vl import Qwen2VLDummyInputsBuilder as Qwen2_5_VLDummyInputsBuilder
-from .qwen2_vl import (Qwen2VLMultiModalProcessor, Qwen2VLProcessingInfo,
-                       apply_rotary_pos_emb_vision)
-from .utils import (AutoWeightsLoader, WeightsMapper, cast_overflow_tensors,
-                    init_vllm_registered_model, maybe_prefix)
+from .qwen2_vl import (
+    Qwen2VLMultiModalProcessor,
+    Qwen2VLProcessingInfo,
+    apply_rotary_pos_emb_vision,
+)
+from .utils import (
+    AutoWeightsLoader,
+    WeightsMapper,
+    cast_overflow_tensors,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 from .vision import get_vit_attn_backend, run_dp_sharded_mrope_vision_model
 
 logger = init_logger(__name__)

@@ -10,6 +10,7 @@ import openai  # use the official client for correctness check
 import pytest
 import pytest_asyncio
 import requests
+
 from tests.utils import RemoteOpenAIServer
 from vllm.platforms import current_platform
 

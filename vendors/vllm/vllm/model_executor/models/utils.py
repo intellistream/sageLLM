@@ -8,20 +8,27 @@ from typing import Any, Literal, Optional, Protocol, Union, overload
 
 import torch
 import torch.nn as nn
-import vllm.envs as envs
 from torch.func import functional_call
 from transformers import PretrainedConfig
 from typing_extensions import deprecated
+
+import vllm.envs as envs
 from vllm.config import VllmConfig
-from vllm.distributed import (get_tensor_model_parallel_rank,
-                              get_tensor_model_parallel_world_size)
+from vllm.distributed import (
+    get_tensor_model_parallel_rank,
+    get_tensor_model_parallel_world_size,
+)
 from vllm.logger import init_logger
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.multimodal import NestedTensors
 from vllm.sequence import IntermediateTensors
-from vllm.utils import (cdiv, direct_register_custom_op,
-                        get_cuda_view_from_cpu_tensor, is_pin_memory_available,
-                        is_uva_available)
+from vllm.utils import (
+    cdiv,
+    direct_register_custom_op,
+    get_cuda_view_from_cpu_tensor,
+    is_pin_memory_available,
+    is_uva_available,
+)
 
 logger = init_logger(__name__)
 

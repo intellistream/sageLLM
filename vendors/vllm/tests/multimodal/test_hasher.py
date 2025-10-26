@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 import torch
 from PIL import Image, ImageDraw
+
 from vllm.multimodal.hasher import MultiModalHasher
 
 pytestmark = pytest.mark.cpu_test

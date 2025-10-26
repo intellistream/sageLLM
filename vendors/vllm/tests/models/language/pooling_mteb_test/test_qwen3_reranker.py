@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 import torch
+
 from tests.conftest import HfRunner
 from tests.models.utils import LASTPoolingRerankModelInfo, RerankModelInfo
 from tests.utils import multi_gpu_test

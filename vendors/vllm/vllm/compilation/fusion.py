@@ -8,11 +8,19 @@ from torch import fx
 from torch._higher_order_ops.auto_functionalize import auto_functionalized
 from torch._inductor.pattern_matcher import PatternMatcherPass
 from torch._ops import OpOverload
+
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape, QuantKey, ScaleDesc, kFp8DynamicTensorSym, kFp8DynamicTokenSym,
-    kFp8StaticTensorSym, kNvfp4Quant, kStaticTensorScale)
+    GroupShape,
+    QuantKey,
+    ScaleDesc,
+    kFp8DynamicTensorSym,
+    kFp8DynamicTokenSym,
+    kFp8StaticTensorSym,
+    kNvfp4Quant,
+    kStaticTensorScale,
+)
 from vllm.platforms import current_platform
 
 from .inductor_pass import enable_fake_mode

@@ -6,25 +6,29 @@ from collections.abc import Mapping
 from typing import Literal, Optional
 
 import pytest
-from mistral_common.tokens.tokenizers.base import (SpecialTokenPolicy,
-                                                   SpecialTokens)
-from mistral_common.tokens.tokenizers.tekken import (SpecialTokenInfo,
-                                                     Tekkenizer)
+from mistral_common.tokens.tokenizers.base import SpecialTokenPolicy, SpecialTokens
+from mistral_common.tokens.tokenizers.tekken import SpecialTokenInfo, Tekkenizer
+
 from vllm.assets.audio import AudioAsset
 from vllm.assets.image import ImageAsset
 from vllm.assets.video import VideoAsset
 from vllm.config import ModelConfig
-from vllm.entrypoints.chat_utils import (_try_extract_ast,
-                                         apply_mistral_chat_template,
-                                         load_chat_template,
-                                         parse_chat_messages,
-                                         parse_chat_messages_futures,
-                                         resolve_chat_template_content_format,
-                                         resolve_chat_template_kwargs,
-                                         resolve_hf_chat_template)
+from vllm.entrypoints.chat_utils import (
+    _try_extract_ast,
+    apply_mistral_chat_template,
+    load_chat_template,
+    parse_chat_messages,
+    parse_chat_messages_futures,
+    resolve_chat_template_content_format,
+    resolve_chat_template_kwargs,
+    resolve_hf_chat_template,
+)
 from vllm.multimodal import MultiModalDataDict, MultiModalUUIDDict
-from vllm.multimodal.utils import (encode_audio_base64, encode_image_base64,
-                                   encode_video_base64)
+from vllm.multimodal.utils import (
+    encode_audio_base64,
+    encode_image_base64,
+    encode_video_base64,
+)
 from vllm.transformers_utils.tokenizer import get_tokenizer
 from vllm.transformers_utils.tokenizers.mistral import MistralTokenizer
 

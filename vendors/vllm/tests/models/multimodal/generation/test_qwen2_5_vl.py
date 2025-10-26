@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import pytest
+
 from vllm.multimodal.video import sample_frames_from_video
 
 from ....conftest import VIDEO_ASSETS

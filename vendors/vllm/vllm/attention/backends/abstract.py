@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Generic, Optional, Protocol, TypeVar
 
 import torch
+
 from vllm.model_executor.layers.quantization.utils.quant_utils import QuantKey
 
 

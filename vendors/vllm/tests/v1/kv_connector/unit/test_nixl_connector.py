@@ -15,18 +15,26 @@ from unittest.mock import patch
 import pytest
 import ray
 import torch
+
 from vllm import LLM
 from vllm.config import KVTransferConfig
 from vllm.distributed.kv_transfer.kv_connector.utils import KVOutputAggregator
-from vllm.distributed.kv_transfer.kv_connector.v1.metrics import \
-    KVConnectorStats
-from vllm.distributed.kv_transfer.kv_connector.v1.multi_connector import \
-    MultiKVConnectorStats
+from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
+from vllm.distributed.kv_transfer.kv_connector.v1.multi_connector import (
+    MultiKVConnectorStats,
+)
 from vllm.distributed.kv_transfer.kv_connector.v1.nixl_connector import (
-    KVConnectorRole, NixlAgentMetadata, NixlConnector, NixlConnectorMetadata,
-    NixlConnectorWorker, NixlKVConnectorStats)
+    KVConnectorRole,
+    NixlAgentMetadata,
+    NixlConnector,
+    NixlConnectorMetadata,
+    NixlConnectorWorker,
+    NixlKVConnectorStats,
+)
 from vllm.distributed.kv_transfer.kv_transfer_state import (
-    ensure_kv_transfer_shutdown, has_kv_transfer_group)
+    ensure_kv_transfer_shutdown,
+    has_kv_transfer_group,
+)
 from vllm.forward_context import ForwardContext
 from vllm.platforms.interface import Platform
 from vllm.sampling_params import SamplingParams
@@ -995,8 +1003,9 @@ def test_kv_buffer_to_nixl_memory_types(dist_init, kv_buffer_device, nixl_memory
     vllm_config = create_vllm_config()
     # Override the default memory types in the config
     vllm_config.kv_transfer_config.kv_buffer_device = kv_buffer_device
-    from vllm.distributed.kv_transfer.kv_connector.v1.nixl_connector import \
-        _NIXL_SUPPORTED_DEVICE
+    from vllm.distributed.kv_transfer.kv_connector.v1.nixl_connector import (
+        _NIXL_SUPPORTED_DEVICE,
+    )
 
     _NIXL_SUPPORTED_DEVICE.update(FakePlatform.get_nixl_supported_devices())
 

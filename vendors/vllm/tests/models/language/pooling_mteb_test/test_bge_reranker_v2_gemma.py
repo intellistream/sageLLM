@@ -5,9 +5,12 @@ from typing import Any, Optional
 import numpy as np
 import pytest
 import torch
+
 from tests.conftest import HfRunner
 from tests.models.language.pooling_mteb_test.mteb_utils import (
-    VllmMtebEncoder, mteb_test_rerank_models)
+    VllmMtebEncoder,
+    mteb_test_rerank_models,
+)
 from tests.models.utils import LASTPoolingRerankModelInfo, RerankModelInfo
 
 RERANK_MODELS = [

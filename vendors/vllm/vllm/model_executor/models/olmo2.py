@@ -32,6 +32,7 @@ from typing import Optional, Union
 import torch
 from torch import nn
 from transformers import Olmo2Config
+
 from vllm.attention import Attention
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import VllmConfig
@@ -41,18 +42,27 @@ from vllm.distributed.parallel_state import get_tensor_model_parallel_rank
 from vllm.distributed.utils import split_tensor_along_last_dim
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    ParallelLMHead, VocabParallelEmbedding)
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.interfaces import SupportsLoRA, SupportsPP
 from vllm.model_executor.models.utils import (
-    AutoWeightsLoader, extract_layer_index, is_pp_missing_parameter,
-    make_empty_intermediate_tensors_factory, make_layers, maybe_prefix)
+    AutoWeightsLoader,
+    extract_layer_index,
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs import Olmo3Config
 

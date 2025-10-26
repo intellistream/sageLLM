@@ -7,6 +7,7 @@ import msgspec
 import msgspec.msgpack
 import pytest
 import zmq
+
 from vllm.config.kv_events import KVEventsConfig
 from vllm.distributed.kv_events import EventPublisherFactory
 

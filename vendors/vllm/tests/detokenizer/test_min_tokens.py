@@ -3,6 +3,7 @@
 
 import pytest
 from transformers import AutoTokenizer
+
 from vllm import SamplingParams
 from vllm.v1.engine import EngineCoreRequest
 from vllm.v1.engine.detokenizer import FastIncrementalDetokenizer

@@ -6,6 +6,7 @@ import numpy as np
 import openai
 import pytest
 from scipy.spatial.distance import cosine
+
 from vllm import LLM, SamplingParams
 from vllm.config import ModelConfig
 

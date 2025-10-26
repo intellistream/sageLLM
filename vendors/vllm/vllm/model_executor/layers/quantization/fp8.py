@@ -5,59 +5,94 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import torch
-import vllm.envs as envs
-import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from torch.nn import Module
 from torch.nn.parameter import Parameter
+
+import vllm.envs as envs
+import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm import _custom_ops as ops
 from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe import (
-    FusedMoE, FusedMoEActivationFormat, FusedMoEMethodBase,
-    FusedMoEPermuteExpertsUnpermute, FusedMoEPrepareAndFinalize,
-    FusedMoeWeightScaleSupported)
+    FusedMoE,
+    FusedMoEActivationFormat,
+    FusedMoEMethodBase,
+    FusedMoEPermuteExpertsUnpermute,
+    FusedMoEPrepareAndFinalize,
+    FusedMoeWeightScaleSupported,
+)
 from vllm.model_executor.layers.fused_moe.config import (
-    FusedMoEQuantConfig, fp8_w8a8_moe_quant_config)
-from vllm.model_executor.layers.fused_moe.layer import \
-    UnquantizedFusedMoEMethod
-from vllm.model_executor.layers.linear import (LinearBase, LinearMethodBase,
-                                               UnquantizedLinearMethod)
+    FusedMoEQuantConfig,
+    fp8_w8a8_moe_quant_config,
+)
+from vllm.model_executor.layers.fused_moe.layer import UnquantizedFusedMoEMethod
+from vllm.model_executor.layers.linear import (
+    LinearBase,
+    LinearMethodBase,
+    UnquantizedLinearMethod,
+)
 from vllm.model_executor.layers.quantization import QuantizationMethods
 from vllm.model_executor.layers.quantization.base_config import (
-    QuantizationConfig, QuantizeMethodBase)
+    QuantizationConfig,
+    QuantizeMethodBase,
+)
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
 from vllm.model_executor.layers.quantization.utils.flashinfer_utils import (
-    FlashinferMoeBackend, apply_flashinfer_per_tensor_scale_fp8,
+    FlashinferMoeBackend,
+    apply_flashinfer_per_tensor_scale_fp8,
     build_flashinfer_fp8_cutlass_moe_prepare_finalize,
-    flashinfer_cutlass_moe_fp8, get_flashinfer_moe_backend,
-    register_moe_scaling_factors, rotate_flashinfer_fp8_moe_weights,
-    select_cutlass_fp8_gemm_impl, swap_w13_to_w31)
+    flashinfer_cutlass_moe_fp8,
+    get_flashinfer_moe_backend,
+    register_moe_scaling_factors,
+    rotate_flashinfer_fp8_moe_weights,
+    select_cutlass_fp8_gemm_impl,
+    swap_w13_to_w31,
+)
 from vllm.model_executor.layers.quantization.utils.fp8_utils import (
-    W8A8BlockFp8LinearOp, check_aiter_fp8_linear_support,
-    create_fp8_input_scale, create_fp8_scale_parameter,
-    create_fp8_weight_parameter, expert_weight_is_col_major,
-    maybe_post_process_fp8_weight_block, process_fp8_weight_block_strategy,
-    process_fp8_weight_tensor_strategy, requant_weight_ue8m0_inplace,
-    validate_fp8_block_shape)
+    W8A8BlockFp8LinearOp,
+    check_aiter_fp8_linear_support,
+    create_fp8_input_scale,
+    create_fp8_scale_parameter,
+    create_fp8_weight_parameter,
+    expert_weight_is_col_major,
+    maybe_post_process_fp8_weight_block,
+    process_fp8_weight_block_strategy,
+    process_fp8_weight_tensor_strategy,
+    requant_weight_ue8m0_inplace,
+    validate_fp8_block_shape,
+)
 from vllm.model_executor.layers.quantization.utils.marlin_utils_fp8 import (
-    apply_fp8_marlin_linear, prepare_fp8_layer_for_marlin,
-    prepare_moe_fp8_layer_for_marlin)
+    apply_fp8_marlin_linear,
+    prepare_fp8_layer_for_marlin,
+    prepare_moe_fp8_layer_for_marlin,
+)
 from vllm.model_executor.layers.quantization.utils.quant_utils import (
-    GroupShape, is_layer_skipped)
+    GroupShape,
+    is_layer_skipped,
+)
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    Fp8LinearOp, all_close_1d, cutlass_block_fp8_supported,
-    cutlass_fp8_supported, maybe_create_device_identity,
-    normalize_e4m3fn_to_e4m3fnuz, per_tensor_dequantize)
-from vllm.model_executor.parameter import (BlockQuantScaleParameter,
-                                           ModelWeightParameter,
-                                           PerTensorScaleParameter)
+    Fp8LinearOp,
+    all_close_1d,
+    cutlass_block_fp8_supported,
+    cutlass_fp8_supported,
+    maybe_create_device_identity,
+    normalize_e4m3fn_to_e4m3fnuz,
+    per_tensor_dequantize,
+)
+from vllm.model_executor.parameter import (
+    BlockQuantScaleParameter,
+    ModelWeightParameter,
+    PerTensorScaleParameter,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.platforms import current_platform
 from vllm.scalar_type import scalar_types
 from vllm.utils import has_deep_gemm
-from vllm.utils.deep_gemm import (get_col_major_tma_aligned_tensor,
-                                  is_deep_gemm_e8m0_used,
-                                  is_deep_gemm_supported)
+from vllm.utils.deep_gemm import (
+    get_col_major_tma_aligned_tensor,
+    is_deep_gemm_e8m0_used,
+    is_deep_gemm_supported,
+)
 from vllm.utils.flashinfer import has_flashinfer_moe
 
 if TYPE_CHECKING:
@@ -211,7 +246,9 @@ class Fp8Config(QuantizationConfig):
     ) -> Optional["QuantizeMethodBase"]:
         from vllm.attention.layer import Attention
         from vllm.model_executor.layers.quantization.ipex_quant import (
-            XPUFp8LinearMethod, XPUFp8MoEMethod)
+            XPUFp8LinearMethod,
+            XPUFp8MoEMethod,
+        )
 
         fp8_config = Fp8Config(
             is_checkpoint_fp8_serialized=self.is_checkpoint_fp8_serialized,
@@ -707,7 +744,9 @@ class Fp8MoEMethod(FusedMoEMethodBase):
     def process_weights_after_loading(self, layer: Module) -> None:
         # Lazy import to avoid importing triton too early.
         from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
-            is_rocm_aiter_moe_enabled, shuffle_weights)
+            is_rocm_aiter_moe_enabled,
+            shuffle_weights,
+        )
 
         self.rocm_aiter_moe_enabled = is_rocm_aiter_moe_enabled()
 
@@ -951,7 +990,9 @@ class Fp8MoEMethod(FusedMoEMethodBase):
         layer: torch.nn.Module,
     ) -> FusedMoEPermuteExpertsUnpermute:
         from vllm.model_executor.layers.fused_moe import (
-            BatchedTritonOrDeepGemmExperts, TritonOrDeepGemmExperts)
+            BatchedTritonOrDeepGemmExperts,
+            TritonOrDeepGemmExperts,
+        )
 
         assert not self.use_marlin and not self.rocm_aiter_moe_enabled, (
             "Marlin and ROCm AITER are not supported with all2all yet."
@@ -1133,8 +1174,9 @@ class Fp8MoEMethod(FusedMoEMethodBase):
         topk_weights, topk_ids, zero_expert_result = select_result
 
         if self.rocm_aiter_moe_enabled:
-            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
-                rocm_aiter_fused_experts  # noqa: E501
+            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+                rocm_aiter_fused_experts,  # noqa: E501
+            )
 
             assert self.fused_experts is None
             result = rocm_aiter_fused_experts(

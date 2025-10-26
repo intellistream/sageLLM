@@ -27,21 +27,31 @@ import torch.nn as nn
 from torch import Tensor
 from torch.nn.functional import gumbel_softmax, pad, softmax
 from transformers import BatchFeature, PretrainedConfig
+
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.model_executor.layers.linear import ReplicatedLinear
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.models.aimv2 import AIMv2Model
 from vllm.model_executor.models.siglip import SiglipVisionModel
-from vllm.model_executor.models.utils import (AutoWeightsLoader, flatten_bn,
-                                              init_vllm_registered_model,
-                                              maybe_prefix)
+from vllm.model_executor.models.utils import (
+    AutoWeightsLoader,
+    flatten_bn,
+    init_vllm_registered_model,
+    maybe_prefix,
+)
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalKwargsItems)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalKwargsItems,
+)
 from vllm.multimodal.parse import ImageSize, MultiModalDataItems
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptReplacement)
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptReplacement,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.processors.ovis import OvisProcessor

@@ -7,17 +7,23 @@ from typing import Optional, Union
 
 import pytest
 import torch
-from tests.v1.attention.utils import (BatchSpec, create_common_attn_metadata,
-                                      create_standard_kv_cache_spec,
-                                      create_vllm_config,
-                                      get_attention_backend)
 from torch.nn.attention.flex_attention import create_block_mask, flex_attention
+
+from tests.v1.attention.utils import (
+    BatchSpec,
+    create_common_attn_metadata,
+    create_standard_kv_cache_spec,
+    create_vllm_config,
+    get_attention_backend,
+)
 from vllm.attention.backends.registry import _Backend
 from vllm.config import ModelConfig
 from vllm.platforms import current_platform
 from vllm.utils import STR_DTYPE_TO_TORCH_DTYPE, cdiv, is_torch_equal_or_newer
-from vllm.v1.attention.backends.utils import (CommonAttentionMetadata,
-                                              set_kv_cache_layout)
+from vllm.v1.attention.backends.utils import (
+    CommonAttentionMetadata,
+    set_kv_cache_layout,
+)
 from vllm.v1.kv_cache_interface import FullAttentionSpec
 
 BACKENDS_TO_TEST = [

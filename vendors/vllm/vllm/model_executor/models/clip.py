@@ -6,32 +6,46 @@ from typing import Annotated, Literal, Optional, Union
 
 import torch
 import torch.nn as nn
-from transformers import (BatchFeature, CLIPConfig, CLIPProcessor,
-                          CLIPTextConfig, CLIPVisionConfig)
+from transformers import (
+    BatchFeature,
+    CLIPConfig,
+    CLIPProcessor,
+    CLIPTextConfig,
+    CLIPVisionConfig,
+)
+
 from vllm.attention import Attention
 from vllm.attention.layer import MultiHeadAttention
 from vllm.config import VllmConfig
 from vllm.config.multimodal import BaseDummyOptions
 from vllm.distributed import divide, get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.activation import get_act_fn
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.pooler import DispatchPooler, Pooler
 from vllm.model_executor.layers.quantization import QuantizationConfig
-from vllm.model_executor.layers.vocab_parallel_embedding import \
-    VocabParallelEmbedding
+from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding
 from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.model_executor.models.interfaces import SupportsQuant
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.multimodal.inputs import (MultiModalDataDict, MultiModalFieldConfig,
-                                    MultiModalInputs, MultiModalKwargsItems,
-                                    MultiModalUUIDDict)
-from vllm.multimodal.parse import (ImageProcessorItems, ImageSize,
-                                   MultiModalDataItems)
-from vllm.multimodal.processing import (BaseMultiModalProcessor,
-                                        BaseProcessingInfo, PromptIndexTargets,
-                                        PromptReplacement, PromptUpdate)
+from vllm.multimodal.inputs import (
+    MultiModalDataDict,
+    MultiModalFieldConfig,
+    MultiModalInputs,
+    MultiModalKwargsItems,
+    MultiModalUUIDDict,
+)
+from vllm.multimodal.parse import ImageProcessorItems, ImageSize, MultiModalDataItems
+from vllm.multimodal.processing import (
+    BaseMultiModalProcessor,
+    BaseProcessingInfo,
+    PromptIndexTargets,
+    PromptReplacement,
+    PromptUpdate,
+)
 from vllm.multimodal.profiling import BaseDummyInputsBuilder
 from vllm.sequence import IntermediateTensors
 from vllm.utils.tensor_schema import TensorSchema, TensorShape
@@ -39,10 +53,13 @@ from vllm.utils.tensor_schema import TensorSchema, TensorShape
 from .interfaces import MultiModalEmbeddings, SupportsMultiModal
 from .interfaces_base import default_pooling_type
 from .utils import AutoWeightsLoader, maybe_prefix
-from .vision import (VisionEncoderInfo, VisionFeatureSelectStrategy,
-                     VisionFeatureSelectStrategyStr,
-                     get_num_selected_vision_tokens,
-                     resolve_visual_encoder_outputs)
+from .vision import (
+    VisionEncoderInfo,
+    VisionFeatureSelectStrategy,
+    VisionFeatureSelectStrategyStr,
+    get_num_selected_vision_tokens,
+    resolve_visual_encoder_outputs,
+)
 
 
 class CLIPImagePixelInputs(TensorSchema):

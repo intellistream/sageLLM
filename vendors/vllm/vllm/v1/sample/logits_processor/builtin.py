@@ -4,10 +4,13 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Callable, Optional, TypeVar
 
 import torch
+
 from vllm import SamplingParams
-from vllm.v1.sample.logits_processor.interface import (BatchUpdate,
-                                                       LogitsProcessor,
-                                                       MoveDirectionality)
+from vllm.v1.sample.logits_processor.interface import (
+    BatchUpdate,
+    LogitsProcessor,
+    MoveDirectionality,
+)
 
 if TYPE_CHECKING:
     from vllm.config import VllmConfig

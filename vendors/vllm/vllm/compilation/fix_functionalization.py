@@ -7,6 +7,7 @@ from typing import Optional, Union
 
 import torch
 from torch._higher_order_ops.auto_functionalize import auto_functionalized
+
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 

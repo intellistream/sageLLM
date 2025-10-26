@@ -6,6 +6,7 @@ import pytest
 import torch
 import transformers
 from transformers import AutoConfig, PreTrainedModel
+
 from vllm.config import ModelConfig
 from vllm.model_executor.models.utils import WeightsMapper
 from vllm.multimodal import MULTIMODAL_REGISTRY

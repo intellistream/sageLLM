@@ -4,19 +4,30 @@ from importlib.util import find_spec
 
 import pytest
 import torch
+
 import vllm.envs as envs
 from vllm.compilation.collective_fusion import AllReduceFusionPass
 from vllm.compilation.fix_functionalization import FixFunctionalizationPass
 from vllm.compilation.noop_elimination import NoOpEliminationPass
 from vllm.compilation.post_cleanup import PostCleanupPass
-from vllm.config import (CompilationConfig, CompilationLevel, DeviceConfig,
-                         ModelConfig, PassConfig, VllmConfig)
+from vllm.config import (
+    CompilationConfig,
+    CompilationLevel,
+    DeviceConfig,
+    ModelConfig,
+    PassConfig,
+    VllmConfig,
+)
 from vllm.distributed import tensor_model_parallel_all_reduce
-from vllm.distributed.parallel_state import (init_distributed_environment,
-                                             initialize_model_parallel)
+from vllm.distributed.parallel_state import (
+    init_distributed_environment,
+    initialize_model_parallel,
+)
 from vllm.model_executor.layers.layernorm import RMSNorm
 from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
-    GroupShape, QuantFP8)
+    GroupShape,
+    QuantFP8,
+)
 from vllm.platforms import current_platform
 from vllm.utils import update_environment_variables
 

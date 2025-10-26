@@ -6,6 +6,7 @@ from dataclasses import MISSING, Field, asdict, dataclass, field
 from unittest.mock import patch
 
 import pytest
+
 from vllm.compilation.backends import VllmBackend
 from vllm.config import ModelConfig, PoolerConfig, VllmConfig, update_config
 from vllm.config.load import LoadConfig

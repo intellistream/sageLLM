@@ -5,6 +5,7 @@ import os
 from typing import Optional, Union
 
 from transformers import AutoConfig, PretrainedConfig
+
 from vllm.transformers_utils.configs.deepseek_vl2 import DeepseekV2Config
 
 

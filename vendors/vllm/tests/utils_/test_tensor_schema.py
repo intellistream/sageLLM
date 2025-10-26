@@ -3,10 +3,10 @@
 
 import pytest
 import torch
+
 from vllm.model_executor.models.glm4_1v import Glm4vImageEmbeddingInputs
 from vllm.model_executor.models.granite_speech import GraniteSpeechAudioInputs
-from vllm.model_executor.models.hyperclovax_vision import \
-    HCXVisionVideoPixelInputs
+from vllm.model_executor.models.hyperclovax_vision import HCXVisionVideoPixelInputs
 from vllm.model_executor.models.phi3v import Phi3VImagePixelInputs
 
 

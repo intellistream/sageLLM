@@ -11,6 +11,7 @@ AsyncLLMEngine are working correctly.
 
 import lm_eval
 import pytest
+
 from vllm.platforms import current_platform
 
 from ....utils import RemoteOpenAIServer

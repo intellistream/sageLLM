@@ -5,19 +5,27 @@ from dataclasses import dataclass
 from typing import ClassVar, Optional, Union
 
 import torch
+
 from vllm import envs
-from vllm.attention.backends.abstract import (AttentionLayer, AttentionType,
-                                              is_quantized_kv_cache)
-from vllm.attention.utils.fa_utils import (flash_attn_supports_mla,
-                                           get_flash_attn_version)
+from vllm.attention.backends.abstract import (
+    AttentionLayer,
+    AttentionType,
+    is_quantized_kv_cache,
+)
+from vllm.attention.utils.fa_utils import (
+    flash_attn_supports_mla,
+    get_flash_attn_version,
+)
 from vllm.config import VllmConfig
 from vllm.distributed.parallel_state import get_dcp_group
 from vllm.logger import init_logger
-from vllm.v1.attention.backends.mla.common import (MLACommonBackend,
-                                                   MLACommonDecodeMetadata,
-                                                   MLACommonImpl,
-                                                   MLACommonMetadata,
-                                                   MLACommonMetadataBuilder)
+from vllm.v1.attention.backends.mla.common import (
+    MLACommonBackend,
+    MLACommonDecodeMetadata,
+    MLACommonImpl,
+    MLACommonMetadata,
+    MLACommonMetadataBuilder,
+)
 from vllm.v1.attention.backends.utils import AttentionCGSupport
 from vllm.v1.kv_cache_interface import AttentionSpec
 from vllm.vllm_flash_attn import flash_attn_varlen_func, get_scheduler_metadata

@@ -4,13 +4,15 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
+
 from vllm.attention.backends.abstract import AttentionBackend
-from vllm.v1.attention.backends.mamba_attn import \
-    BaseMambaAttentionMetadataBuilder
-from vllm.v1.attention.backends.utils import (PAD_SLOT_ID,
-                                              CommonAttentionMetadata,
-                                              compute_causal_conv1d_metadata,
-                                              split_decodes_and_prefills)
+from vllm.v1.attention.backends.mamba_attn import BaseMambaAttentionMetadataBuilder
+from vllm.v1.attention.backends.utils import (
+    PAD_SLOT_ID,
+    CommonAttentionMetadata,
+    compute_causal_conv1d_metadata,
+    split_decodes_and_prefills,
+)
 
 
 class ShortConvAttentionBackend(AttentionBackend):

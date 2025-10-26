@@ -23,6 +23,7 @@ from typing import Optional
 
 import torch
 from torch import nn
+
 from vllm.attention.layer import Attention
 from vllm.compilation.decorators import support_torch_compile
 from vllm.config import CacheConfig, ModelConfig, VllmConfig
@@ -30,24 +31,41 @@ from vllm.distributed import get_tensor_model_parallel_world_size
 from vllm.distributed.parallel_state import get_pp_group
 from vllm.model_executor.layers.activation import ReLUSquaredActivation
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.mamba.mamba_mixer2 import MambaMixer2
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator, MambaStateShapeCalculator)
+    MambaStateDtypeCalculator,
+    MambaStateShapeCalculator,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    DEFAULT_VOCAB_PADDING_SIZE, ParallelLMHead, VocabParallelEmbedding)
+    DEFAULT_VOCAB_PADDING_SIZE,
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    default_weight_loader, maybe_remap_kv_scale_name)
-from vllm.model_executor.models.interfaces import (HasInnerState, IsHybrid,
-                                                   SupportsLoRA, SupportsPP,
-                                                   SupportsQuant)
+    default_weight_loader,
+    maybe_remap_kv_scale_name,
+)
+from vllm.model_executor.models.interfaces import (
+    HasInnerState,
+    IsHybrid,
+    SupportsLoRA,
+    SupportsPP,
+    SupportsQuant,
+)
 from vllm.model_executor.models.utils import (
-    AutoWeightsLoader, WeightsMapper, make_empty_intermediate_tensors_factory,
-    make_layers, maybe_prefix)
+    AutoWeightsLoader,
+    WeightsMapper,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs import NemotronHConfig
 

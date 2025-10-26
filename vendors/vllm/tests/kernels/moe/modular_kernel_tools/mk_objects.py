@@ -4,27 +4,37 @@ from dataclasses import dataclass
 from typing import Optional, Union
 
 import torch
+
 # Fused experts and PrepareFinalize imports
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
-from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import \
-    BatchedDeepGemmExperts
-from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import \
-    BatchedTritonOrDeepGemmExperts  # noqa: E501
-from vllm.model_executor.layers.fused_moe.config import (FusedMoEConfig,
-                                                         FusedMoEQuantConfig)
+from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import (
+    BatchedDeepGemmExperts,
+)
+from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (
+    BatchedTritonOrDeepGemmExperts,  # noqa: E501
+)
+from vllm.model_executor.layers.fused_moe.config import (
+    FusedMoEConfig,
+    FusedMoEQuantConfig,
+)
 from vllm.model_executor.layers.fused_moe.deep_gemm_moe import DeepGemmExperts
 from vllm.model_executor.layers.fused_moe.fused_batched_moe import (
-    BatchedTritonExperts, NaiveBatchedExperts)
-from vllm.model_executor.layers.fused_moe.layer import (FusedMoEMethodBase,
-                                                        TritonExperts)
-from vllm.model_executor.layers.fused_moe.prepare_finalize import \
-    MoEPrepareAndFinalizeNoEP
-from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import \
-    TritonOrDeepGemmExperts
-from vllm.model_executor.layers.quantization.utils.quant_utils import \
-    cutlass_fp4_supported
-from vllm.model_executor.layers.quantization.utils.w8a8_utils import \
-    cutlass_fp8_supported
+    BatchedTritonExperts,
+    NaiveBatchedExperts,
+)
+from vllm.model_executor.layers.fused_moe.layer import FusedMoEMethodBase, TritonExperts
+from vllm.model_executor.layers.fused_moe.prepare_finalize import (
+    MoEPrepareAndFinalizeNoEP,
+)
+from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import (
+    TritonOrDeepGemmExperts,
+)
+from vllm.model_executor.layers.quantization.utils.quant_utils import (
+    cutlass_fp4_supported,
+)
+from vllm.model_executor.layers.quantization.utils.w8a8_utils import (
+    cutlass_fp8_supported,
+)
 from vllm.platforms import current_platform
 from vllm.utils import has_deep_ep, has_deep_gemm, has_pplx
 from vllm.utils.deep_gemm import is_deep_gemm_supported
@@ -186,10 +196,12 @@ register_experts(
 
 # Disable on blackwell for now
 if has_deep_ep() and not current_platform.has_device_capability(100):
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import \
-        DeepEPHTPrepareAndFinalize  # noqa: E501
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import \
-        DeepEPLLPrepareAndFinalize  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (
+        DeepEPHTPrepareAndFinalize,  # noqa: E501
+    )
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (
+        DeepEPLLPrepareAndFinalize,  # noqa: E501
+    )
 
     register_prepare_and_finalize(
         DeepEPHTPrepareAndFinalize,
@@ -208,8 +220,9 @@ if has_deep_ep() and not current_platform.has_device_capability(100):
     )
 
 if has_pplx():
-    from vllm.model_executor.layers.fused_moe.pplx_prepare_finalize import \
-        PplxPrepareAndFinalize
+    from vllm.model_executor.layers.fused_moe.pplx_prepare_finalize import (
+        PplxPrepareAndFinalize,
+    )
 
     register_prepare_and_finalize(
         PplxPrepareAndFinalize,
@@ -220,11 +233,13 @@ if has_pplx():
     )
 
 if has_flashinfer_cutlass_fused_moe() and current_platform.has_device_capability(100):
-    from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import \
-        FlashInferExperts  # noqa: E501
+    from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
+        FlashInferExperts,  # noqa: E501
+    )
     from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (  # noqa: E501
         FlashInferCutlassMoEPrepareAndFinalize,
-        create_flashinfer_prepare_finalize)
+        create_flashinfer_prepare_finalize,
+    )
 
     register_prepare_and_finalize(
         FlashInferCutlassMoEPrepareAndFinalize,
@@ -293,8 +308,10 @@ if has_deep_gemm() and is_deep_gemm_supported():
     )
 
 if cutlass_fp8_supported():
-    from vllm.model_executor.layers.fused_moe import (CutlassBatchedExpertsFp8,
-                                                      CutlassExpertsFp8)
+    from vllm.model_executor.layers.fused_moe import (
+        CutlassBatchedExpertsFp8,
+        CutlassExpertsFp8,
+    )
 
     register_experts(
         CutlassExpertsFp8,
@@ -314,8 +331,7 @@ if cutlass_fp8_supported():
     )
 
 if cutlass_fp4_supported():
-    from vllm.model_executor.layers.fused_moe.cutlass_moe import \
-        CutlassExpertsFp4
+    from vllm.model_executor.layers.fused_moe.cutlass_moe import CutlassExpertsFp4
 
     register_experts(
         CutlassExpertsFp4,

@@ -4,18 +4,26 @@ from typing import Any, Optional, Union, cast
 
 from torch.nn import CosineSimilarity
 from typing_extensions import Required, TypeAlias, TypedDict
+
 from vllm.config import ModelConfig
 from vllm.entrypoints.chat_utils import (
-    BaseMultiModalItemTracker, ChatCompletionContentPartImageEmbedsParam,
-    ChatCompletionContentPartImageParam, ChatCompletionContentPartTextParam,
-    MultiModalItemTracker, _ContentPart, _parse_chat_message_content_part)
+    BaseMultiModalItemTracker,
+    ChatCompletionContentPartImageEmbedsParam,
+    ChatCompletionContentPartImageParam,
+    ChatCompletionContentPartTextParam,
+    MultiModalItemTracker,
+    _ContentPart,
+    _parse_chat_message_content_part,
+)
 from vllm.inputs import TokensPrompt
 from vllm.model_executor.models.interfaces import supports_score_template
 from vllm.multimodal.inputs import MultiModalDataDict
 from vllm.outputs import PoolingRequestOutput
-from vllm.transformers_utils.tokenizer import (AnyTokenizer,
-                                               PreTrainedTokenizer,
-                                               PreTrainedTokenizerFast)
+from vllm.transformers_utils.tokenizer import (
+    AnyTokenizer,
+    PreTrainedTokenizer,
+    PreTrainedTokenizerFast,
+)
 
 ScoreContentPartParam: TypeAlias = Union[
     ChatCompletionContentPartImageParam, ChatCompletionContentPartImageEmbedsParam

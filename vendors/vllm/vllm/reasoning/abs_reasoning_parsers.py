@@ -13,9 +13,11 @@ from vllm.logger import init_logger
 from vllm.utils import import_from_path, is_list_of
 
 if TYPE_CHECKING:
-    from vllm.entrypoints.openai.protocol import (ChatCompletionRequest,
-                                                  DeltaMessage,
-                                                  ResponsesRequest)
+    from vllm.entrypoints.openai.protocol import (
+        ChatCompletionRequest,
+        DeltaMessage,
+        ResponsesRequest,
+    )
     from vllm.transformers_utils.tokenizer import AnyTokenizer
 else:
     ChatCompletionRequest = Any

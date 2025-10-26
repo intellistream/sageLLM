@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 import torch
+
 from vllm.v1.worker.tpu_input_batch import InputBatch
 
 DEFAULT_SAMPLING_PARAMS = dict(

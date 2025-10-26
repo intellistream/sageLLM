@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+
 from vllm.config import LogprobsMode
 from vllm.utils import is_pin_memory_available
 from vllm.v1.outputs import LogprobsTensors, SamplerOutput

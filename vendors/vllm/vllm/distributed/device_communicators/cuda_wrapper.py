@@ -11,6 +11,7 @@ from typing import Any, Optional
 
 # this line makes it possible to directly load `libcudart.so` using `ctypes`
 import torch  # noqa
+
 import vllm.envs as envs
 from vllm.logger import init_logger
 

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 import torch
 from torch import nn
 from transformers import PretrainedConfig
+
 from vllm.attention.backends.abstract import AttentionMetadata
 from vllm.attention.layer import Attention
 from vllm.compilation.decorators import support_torch_compile
@@ -22,31 +23,45 @@ from vllm.forward_context import ForwardContext, get_forward_context
 from vllm.model_executor.custom_op import CustomOp
 from vllm.model_executor.layers.activation import SiluAndMul
 from vllm.model_executor.layers.layernorm import RMSNorm
-from vllm.model_executor.layers.linear import (ColumnParallelLinear,
-                                               MergedColumnParallelLinear,
-                                               QKVParallelLinear,
-                                               RowParallelLinear)
+from vllm.model_executor.layers.linear import (
+    ColumnParallelLinear,
+    MergedColumnParallelLinear,
+    QKVParallelLinear,
+    RowParallelLinear,
+)
 from vllm.model_executor.layers.logits_processor import LogitsProcessor
 from vllm.model_executor.layers.mamba.abstract import MambaBase
 from vllm.model_executor.layers.mamba.mamba_utils import (
-    MambaStateDtypeCalculator, MambaStateShapeCalculator)
+    MambaStateDtypeCalculator,
+    MambaStateShapeCalculator,
+)
 from vllm.model_executor.layers.mamba.ops.causal_conv1d import (
-    causal_conv1d_fn, causal_conv1d_update)
-from vllm.model_executor.layers.mamba.ops.mamba_ssm import \
-    selective_state_update
-from vllm.model_executor.layers.mamba.ops.ssd_combined import \
-    mamba_chunk_scan_combined_varlen
+    causal_conv1d_fn,
+    causal_conv1d_update,
+)
+from vllm.model_executor.layers.mamba.ops.mamba_ssm import selective_state_update
+from vllm.model_executor.layers.mamba.ops.ssd_combined import (
+    mamba_chunk_scan_combined_varlen,
+)
 from vllm.model_executor.layers.quantization import QuantizationConfig
 from vllm.model_executor.layers.rotary_embedding import get_rope
 from vllm.model_executor.layers.vocab_parallel_embedding import (
-    DEFAULT_VOCAB_PADDING_SIZE, ParallelLMHead, VocabParallelEmbedding)
+    DEFAULT_VOCAB_PADDING_SIZE,
+    ParallelLMHead,
+    VocabParallelEmbedding,
+)
 from vllm.model_executor.model_loader.weight_utils import (
-    composed_weight_loader, default_weight_loader, sharded_weight_loader)
-from vllm.model_executor.models.interfaces import (HasInnerState, IsHybrid,
-                                                   SupportsPP)
+    composed_weight_loader,
+    default_weight_loader,
+    sharded_weight_loader,
+)
+from vllm.model_executor.models.interfaces import HasInnerState, IsHybrid, SupportsPP
 from vllm.model_executor.models.utils import (
-    is_pp_missing_parameter, make_empty_intermediate_tensors_factory,
-    make_layers, maybe_prefix)
+    is_pp_missing_parameter,
+    make_empty_intermediate_tensors_factory,
+    make_layers,
+    maybe_prefix,
+)
 from vllm.model_executor.utils import set_weight_attrs
 from vllm.sequence import IntermediateTensors
 from vllm.utils import direct_register_custom_op
@@ -454,8 +469,7 @@ class Plamo2MambaMixer(MambaBase, CustomOp):
         return "mamba2"
 
     def get_attn_backend(self) -> type["AttentionBackend"]:
-        from vllm.v1.attention.backends.mamba2_attn import \
-            Mamba2AttentionBackend
+        from vllm.v1.attention.backends.mamba2_attn import Mamba2AttentionBackend
 
         return Mamba2AttentionBackend
 

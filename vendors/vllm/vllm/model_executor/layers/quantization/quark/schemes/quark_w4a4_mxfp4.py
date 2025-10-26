@@ -6,12 +6,15 @@ from typing import Any, Callable, Optional
 
 import torch
 import torch.nn.functional as F
+
 from vllm import envs
 from vllm.model_executor.layers.quantization.quark.schemes import QuarkScheme
 from vllm.model_executor.layers.quantization.utils.mxfp4_utils import (
-    OCP_MX_BLOCK_SIZE, dequant_mxfp4, quant_dequant_mxfp4)
-from vllm.model_executor.parameter import (GroupQuantScaleParameter,
-                                           PackedvLLMParameter)
+    OCP_MX_BLOCK_SIZE,
+    dequant_mxfp4,
+    quant_dequant_mxfp4,
+)
+from vllm.model_executor.parameter import GroupQuantScaleParameter, PackedvLLMParameter
 from vllm.platforms import current_platform
 
 
@@ -28,6 +31,7 @@ try:
     from aiter.ops.shuffle import shuffle_weight
     from aiter.ops.triton.gemm_afp4wfp4 import gemm_afp4wfp4
     from aiter.ops.triton.quant import dynamic_mxfp4_quant
+
     from vllm.utils import direct_register_custom_op
 
     if is_rocm_aiter_fp4_asm_gemm_enabled():
@@ -130,8 +134,7 @@ class QuarkW4A4MXFP4(QuarkScheme):
             )
             try:
                 from quark.torch.export.nn.modules import realquantizer
-                from quark.torch.quantization.config.config import \
-                    QuantizationSpec
+                from quark.torch.quantization.config.config import QuantizationSpec
             except ImportError as err:
                 raise ImportError(
                     "The package `amd-quark` is required to use AMD Quark "

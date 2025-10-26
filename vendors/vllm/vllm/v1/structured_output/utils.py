@@ -11,9 +11,10 @@ from typing import TYPE_CHECKING
 import numpy as np
 import regex as re
 import torch
-import vllm.envs as envs
 from cachetools import LRUCache
 from diskcache import Cache
+
+import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.utils import LazyLoader
 
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     import transformers.file_utils as file_utils
     import transformers.models.gpt2.tokenization_gpt2 as tokenization_gpt2
     import xgrammar as xgr
+
     from vllm.transformers_utils.tokenizer import AnyTokenizer
     from vllm.v1.core.sched.output import SchedulerOutput
     from vllm.v1.worker.gpu_input_batch import InputBatch

@@ -3,6 +3,7 @@
 
 import pytest
 import torch
+
 from tests.kernels.quant_utils import ref_dynamic_per_token_quant
 from tests.kernels.utils import opcheck
 from vllm._custom_ops import scaled_int8_quant

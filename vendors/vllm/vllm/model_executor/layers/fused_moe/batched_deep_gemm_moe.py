@@ -4,18 +4,18 @@ from math import log2
 from typing import Optional
 
 import torch
+
 import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.config import FusedMoEQuantConfig
-from vllm.model_executor.layers.fused_moe.deep_gemm_utils import \
-    deep_gemm_block_shape
-from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import \
-    TopKWeightAndReduceDelegate
+from vllm.model_executor.layers.fused_moe.deep_gemm_utils import deep_gemm_block_shape
+from vllm.model_executor.layers.fused_moe.topk_weight_and_reduce import (
+    TopKWeightAndReduceDelegate,
+)
 from vllm.model_executor.layers.fused_moe.utils import _resize_cache
 from vllm.platforms import current_platform
 from vllm.triton_utils import tl, triton
-from vllm.utils.deep_gemm import (fp8_m_grouped_gemm_nt_masked,
-                                  is_deep_gemm_e8m0_used)
+from vllm.utils.deep_gemm import fp8_m_grouped_gemm_nt_masked, is_deep_gemm_e8m0_used
 
 logger = init_logger(__name__)
 

@@ -4,6 +4,7 @@
 from typing import Optional
 
 import torch
+
 import vllm.envs as envs
 from vllm import _custom_ops as ops
 from vllm.platforms import current_platform

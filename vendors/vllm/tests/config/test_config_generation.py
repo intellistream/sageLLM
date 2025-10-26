@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 import pytest
+
 from vllm.engine.arg_utils import EngineArgs
 from vllm.model_executor.layers.quantization.quark.utils import deep_compare
 

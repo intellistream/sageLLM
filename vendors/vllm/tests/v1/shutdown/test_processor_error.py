@@ -5,6 +5,7 @@
 import asyncio
 
 import pytest
+
 from tests.v1.shutdown.utils import SHUTDOWN_TEST_TIMEOUT_SEC
 from vllm import SamplingParams
 from vllm.engine.arg_utils import AsyncEngineArgs

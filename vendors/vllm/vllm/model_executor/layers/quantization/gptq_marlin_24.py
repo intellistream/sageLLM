@@ -5,15 +5,20 @@ from typing import Any, Optional
 
 import torch
 from torch.nn.parameter import Parameter
+
 from vllm import _custom_ops as ops
 from vllm.logger import init_logger
 from vllm.model_executor.layers.linear import LinearBase, LinearMethodBase
-from vllm.model_executor.layers.quantization import (QuantizationConfig,
-                                                     QuantizationMethods)
-from vllm.model_executor.parameter import (BasevLLMParameter,
-                                           ChannelQuantScaleParameter,
-                                           GroupQuantScaleParameter,
-                                           PackedvLLMParameter)
+from vllm.model_executor.layers.quantization import (
+    QuantizationConfig,
+    QuantizationMethods,
+)
+from vllm.model_executor.parameter import (
+    BasevLLMParameter,
+    ChannelQuantScaleParameter,
+    GroupQuantScaleParameter,
+    PackedvLLMParameter,
+)
 from vllm.scalar_type import scalar_types
 
 logger = init_logger(__name__)

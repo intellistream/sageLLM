@@ -5,9 +5,12 @@ from functools import cache
 from typing import Optional
 
 import torch
+
 from vllm import envs
 from vllm.model_executor.layers.fused_moe.config import (
-    FUSED_MOE_UNQUANTIZED_CONFIG, FusedMoEQuantConfig)
+    FUSED_MOE_UNQUANTIZED_CONFIG,
+    FusedMoEQuantConfig,
+)
 from vllm.platforms import current_platform
 from vllm.utils import direct_register_custom_op
 

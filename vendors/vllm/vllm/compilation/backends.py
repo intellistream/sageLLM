@@ -12,15 +12,20 @@ from typing import Any, Callable, Optional
 
 import torch
 import torch.fx as fx
-import vllm.envs as envs
 from torch._dispatch.python import enable_python_dispatcher
+
+import vllm.envs as envs
 from vllm.config import CompilationConfig, CUDAGraphMode, VllmConfig
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 from vllm.utils import is_torch_equal_or_newer, resolve_obj_by_qualname
 
-from .compiler_interface import (CompilerInterface, EagerAdaptor,
-                                 InductorAdaptor, InductorStandaloneAdaptor)
+from .compiler_interface import (
+    CompilerInterface,
+    EagerAdaptor,
+    InductorAdaptor,
+    InductorStandaloneAdaptor,
+)
 from .counter import compilation_counter
 from .inductor_pass import InductorPass
 from .pass_manager import PostGradPassManager
