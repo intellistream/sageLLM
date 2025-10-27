@@ -252,6 +252,9 @@ class ExecutionCoordinator:
 
         start_time = datetime.now()
 
+        if not self.http_session:
+            raise RuntimeError("HTTP session not initialized")
+
         try:
             async with self.http_session.post(url, json=payload) as response:
                 elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
@@ -290,6 +293,9 @@ class ExecutionCoordinator:
         """
         if not self.http_session:
             await self.initialize()
+
+        if not self.http_session:
+            return False
 
         try:
             url = f"http://{instance.host}:{instance.port}/health"
@@ -341,6 +347,9 @@ class ExecutionCoordinator:
         """
         if not self.http_session:
             await self.initialize()
+
+        if not self.http_session:
+            return None
 
         try:
             url = f"http://{instance.host}:{instance.port}/v1/models"
@@ -401,6 +410,68 @@ class ExecutionCoordinator:
     def get_metrics(self) -> PerformanceMetrics:
         """Get aggregated performance metrics."""
         return self.metrics
+
+    async def health_check_all(self):
+        """
+        Check health of all registered instances.
+        
+        Updates the is_healthy status for each instance.
+        """
+        if not self.instances:
+            return
+
+        # Check all instances in parallel
+        tasks = [
+            self.health_check(instance) 
+            for instance in self.instances.values()
+        ]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Update instance health status
+        for instance, result in zip(self.instances.values(), results):
+            if isinstance(result, Exception):
+                logger.error(
+                    "Health check exception for %s: %s", 
+                    instance.instance_id, 
+                    result
+                )
+                instance.is_healthy = False
+            elif isinstance(result, bool):
+                instance.is_healthy = result
+            else:
+                instance.is_healthy = False
+
+    def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
+        """
+        Get metrics for a specific instance.
+        
+        Args:
+            instance_id: ID of the instance
+            
+        Returns:
+            Dictionary with instance metrics or None if not found
+        """
+        instance = self.instances.get(instance_id)
+        if not instance:
+            return None
+
+        return {
+            "instance_id": instance.instance_id,
+            "host": instance.host,
+            "port": instance.port,
+            "model_name": instance.model_name,
+            "is_healthy": instance.is_healthy,
+            "is_available": instance.is_available,
+            "current_load": instance.current_load,
+            "active_requests": instance.active_requests,
+            "max_concurrent_requests": instance.max_concurrent_requests,
+            "avg_latency_ms": instance.avg_latency_ms,
+            "throughput_tokens_per_sec": instance.throughput_tokens_per_sec,
+            "gpu_count": instance.gpu_count,
+            "gpu_utilization": instance.gpu_utilization,
+            "gpu_memory_gb": instance.gpu_memory_gb,
+            "instance_type": instance.instance_type.value,
+        }
 
     async def shutdown_all(self):
         """Shutdown coordinator and cleanup resources."""
