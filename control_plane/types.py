@@ -55,6 +55,7 @@ class RequestMetadata:
     """Metadata for an inference request."""
 
     request_id: str
+    prompt: str | None = None  # Prompt text for inference
     user_id: str | None = None
     priority: RequestPriority = RequestPriority.NORMAL
     slo_deadline_ms: float | None = None  # SLO deadline in milliseconds
