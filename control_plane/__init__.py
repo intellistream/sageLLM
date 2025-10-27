@@ -53,7 +53,7 @@ from .types import (
                           PDMetrics,
                           PDSeparationConfig,
                           PerformanceMetrics,
-                          PreffillingConfig,
+                          PrefillingConfig,
                           RequestMetadata,
                           RequestPriority,
                           RequestStatus,
@@ -71,7 +71,7 @@ __all__ = [
     "PerformanceMetrics",
     # Types - PD Separation
     "ExecutionInstanceType",
-    "PreffillingConfig",
+    "PrefillingConfig",
     "DecodingConfig",
     "PDSeparationConfig",
     "PDMetrics",

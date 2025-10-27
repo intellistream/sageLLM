@@ -7,7 +7,7 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from .executor import ExecutionCoordinator
 from .parallelism import ParallelismOptimizer
@@ -76,7 +76,7 @@ class ControlPlaneManager:
         # PD Separation routing
         self.enable_pd_separation = enable_pd_separation
         self.pd_config = pd_config or PDSeparationConfig()
-        self.pd_router = (
+        self.pd_router: Optional[PDRoutingStrategy] = (
             PDRoutingStrategy(self.pd_config) if enable_pd_separation else None
         )
 
@@ -270,36 +270,38 @@ class ControlPlaneManager:
 
         # PD-aware routing: determine request phase and route to appropriate instance
         if self.enable_pd_separation and self.pd_router:
-            target_phase = self.pd_router.determine_request_phase(request)
+            pd_router = self.pd_router  # Local reference for type checker
+            target_phase = pd_router.determine_request_phase(request)
 
-            logger.debug(
-                "PD routing: request %s routed to phase %s",
-                request.request_id,
-                target_phase.name,
-            )
-
-            # Filter instances by target phase
-            compatible_instances = self.pd_router.filter_instances_by_type(
-                self.executor.get_all_instances(),
-                target_phase,
-            )
-
-            if compatible_instances:
-                # Select best instance based on PD specialization
-                best_instance = max(
-                    compatible_instances,
-                    key=lambda inst: self.pd_router.get_instance_specialization(inst).get(target_phase, 0),
-                )
-                instance = best_instance
+            if target_phase:  # Only proceed if phase was determined
                 logger.debug(
-                    "Selected PD-specialized instance %s for request %s",
-                    instance.instance_id,
+                    "PD routing: request %s routed to phase %s",
                     request.request_id,
+                    target_phase.name,
                 )
+
+                # Filter instances by target phase
+                compatible_instances = pd_router.filter_instances_by_type(
+                    self.executor.get_all_instances(),
+                    target_phase,
+                )
+
+                if compatible_instances:
+                    # Select best instance based on PD specialization
+                    best_instance = max(
+                        compatible_instances,
+                        key=lambda inst: pd_router.get_instance_specialization(inst).get(target_phase.name, 0),
+                    )
+                    instance = best_instance
+                    logger.debug(
+                        "Selected PD-specialized instance %s for request %s",
+                        instance.instance_id,
+                        request.request_id,
+                    )
 
         # Recommend parallelism config based on instance type
         if self.enable_pd_separation and self.pd_router:
-            parallelism_config = self.pd_router.recommend_parallelism_config(instance)
+            parallelism_config = self.pd_router.recommend_parallelism_config(instance, request)
             if parallelism_config:
                 decision.tensor_parallel_size = parallelism_config['tensor_parallel_size']
                 decision.pipeline_parallel_size = (

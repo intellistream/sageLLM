@@ -18,7 +18,7 @@ from control_plane import (  # noqa: E402
     ExecutionInstance,
     ExecutionInstanceType,
     PDSeparationConfig,
-    PreffillingConfig,
+    PrefillingConfig,
     RequestMetadata,
     RequestPriority,
 )
@@ -52,7 +52,7 @@ async def test_pd_separation_routing():
         pipeline_parallel_size=1,
         gpu_count=4,
         instance_type=ExecutionInstanceType.PREFILLING,
-        prefilling_config=PreffillingConfig(
+        prefilling_config=PrefillingConfig(
             target_batch_size=64,
             tensor_parallel_size=4,
             enable_chunked_prefill=True,
@@ -164,6 +164,9 @@ async def test_instance_specialization_scoring():
         ExecutionInstanceType.DECODING,
     ]
 
+    # Verify PD router is enabled
+    assert manager.pd_router is not None, "PD router should be enabled"
+
     for phase in phases:
         scores = {}
         for instance in instances:
@@ -199,6 +202,9 @@ async def test_pd_routing_policy_threshold():
         pd_config=pd_config,
     )
 
+    # Verify PD router is enabled
+    assert manager.pd_router is not None, "PD router should be enabled"
+
     # Create request with many output tokens (short input/output ratio)
     request = RequestMetadata(
         request_id="decode-heavy",
@@ -226,6 +232,9 @@ async def test_pd_routing_policy_adaptive():
         enable_pd_separation=True,
         pd_config=pd_config,
     )
+
+    # Verify PD router is enabled
+    assert manager.pd_router is not None, "PD router should be enabled"
 
     # Critical priority request should prefer decoding (low latency)
     critical_request = RequestMetadata(

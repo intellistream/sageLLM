@@ -22,7 +22,7 @@ from control_plane import (  # noqa: E402
     ExecutionInstance,
     ExecutionInstanceType,
     PDSeparationConfig,
-    PreffillingConfig,
+    PrefillingConfig,
     RequestMetadata,
     RequestPriority,
 )
@@ -61,7 +61,7 @@ async def test_sage_control_plane_vllm_integration():
             pipeline_parallel_size=1,
             gpu_count=4,
             instance_type=ExecutionInstanceType.PREFILLING,
-            prefilling_config=PreffillingConfig(
+            prefilling_config=PrefillingConfig(
                 target_batch_size=64,
                 tensor_parallel_size=4,
             ),

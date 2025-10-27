@@ -10,13 +10,13 @@ from typing import TYPE_CHECKING, Any
 
 # Optional vLLM dependencies - gracefully handle if not installed/compiled
 try:
-    from vllm.engine.arg_utils import EngineArgs
+    from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
     from vllm.sampling_params import SamplingParams
 except ImportError as e:
     # vLLM not fully installed (e.g., missing C extensions)
     # Tests can still run with mocked values
-    EngineArgs = None  # type: ignore
+    AsyncEngineArgs = None  # type: ignore
     AsyncLLMEngine = None  # type: ignore
     SamplingParams = None  # type: ignore
     _VLLM_IMPORT_ERROR = e
@@ -67,13 +67,19 @@ class ExecutionCoordinator:
 
         This creates the actual vLLM engine that will be used for inference.
         """
+        if AsyncEngineArgs is None or AsyncLLMEngine is None:
+            raise RuntimeError(
+                "vLLM is not properly installed. "
+                "Please install vLLM to use this functionality."
+            )
+
         try:
-            # Create engine arguments
-            engine_args = EngineArgs(
+            # Create engine arguments using AsyncEngineArgs
+            engine_args = AsyncEngineArgs(
                 model=instance.model_name,
                 tensor_parallel_size=instance.tensor_parallel_size,
                 pipeline_parallel_size=instance.pipeline_parallel_size,
-                max_seq_len_to_capture=2048,
+                max_model_len=2048,
                 gpu_memory_utilization=0.9,
                 enforce_eager=False,
             )
@@ -216,6 +222,12 @@ class ExecutionCoordinator:
                 f"No engine available for instance {instance.instance_id}"
             )
 
+        if SamplingParams is None:
+            raise RuntimeError(
+                "vLLM is not properly installed. "
+                "Please install vLLM to use this functionality."
+            )
+
         # Create sampling parameters
         sampling_params = SamplingParams(
             temperature=request.temperature,
@@ -237,9 +249,7 @@ class ExecutionCoordinator:
         try:
             # Call vLLM engine directly
             # Note: prompt would be extracted from actual request in real scenario
-            prompt = (
-                request.metadata.get("prompt", "Hello") if request.metadata else "Hello"
-            )
+            prompt = request.tags.get("prompt", "Hello") if request.tags else "Hello"
 
             outputs = await engine.generate(
                 prompt=prompt,
@@ -298,6 +308,12 @@ class ExecutionCoordinator:
                 f"No engine available for instance {instance.instance_id}"
             )
 
+        if SamplingParams is None:
+            raise RuntimeError(
+                "vLLM is not properly installed. "
+                "Please install vLLM to use this functionality."
+            )
+
         # Create sampling parameters
         sampling_params = SamplingParams(
             temperature=request.temperature,
@@ -317,9 +333,7 @@ class ExecutionCoordinator:
         request.start_time = datetime.now()
 
         try:
-            prompt = (
-                request.metadata.get("prompt", "Hello") if request.metadata else "Hello"
-            )
+            prompt = request.tags.get("prompt", "Hello") if request.tags else "Hello"
 
             # Stream outputs from vLLM engine
             async for output in engine.generate(

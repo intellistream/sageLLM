@@ -92,7 +92,7 @@ from control_plane import (
     ControlPlaneManager,
     ExecutionInstance,
     ExecutionInstanceType,
-    PreffillingConfig,
+    PrefillingConfig,
     DecodingConfig,
     PDSeparationConfig,
 )
@@ -119,7 +119,7 @@ prefilling_instance = ExecutionInstance(
     tensor_parallel_size=4,
     gpu_count=4,
     instance_type=ExecutionInstanceType.PREFILLING,
-    prefilling_config=PreffillingConfig(
+    prefilling_config=PrefillingConfig(
         target_batch_size=64,
         tensor_parallel_size=4,
         enable_chunked_prefill=True,
