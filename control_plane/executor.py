@@ -256,7 +256,9 @@ class ExecutionCoordinator:
             raise RuntimeError("HTTP session not initialized")
 
         try:
-            async with self.http_session.post(url, json=payload) as response:
+            async with self.http_session.post(
+                url, json=payload, timeout=aiohttp.ClientTimeout(total=self.timeout.total)
+            ) as response:
                 elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
 
                 if response.status == 200:
