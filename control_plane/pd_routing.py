@@ -100,8 +100,9 @@ class PDRoutingStrategy:
 
         Simple heuristic: ~4 characters per token
         """
-        if hasattr(request, "prompt") and isinstance(request.prompt, str):
-            return len(request.prompt) // 4
+        prompt = getattr(request, "prompt", None)
+        if prompt and isinstance(prompt, str):
+            return len(prompt) // 4
         # Conservative estimate
         return 100
 
@@ -124,7 +125,7 @@ class PDRoutingStrategy:
         elif target_type == ExecutionInstanceType.DECODING:
             return [i for i in instances if i.can_accept_decoding_request()]
         else:  # HYBRID
-            return [i for i in instances if i.can_accept_request()]
+            return [i for i in instances if i.can_accept_request]
 
     @staticmethod
     def get_instance_specialization(

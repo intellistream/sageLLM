@@ -375,7 +375,7 @@ class HybridParallelStrategy(ParallelismStrategy):
         }
 
 
-class ParallelismOptimizer:
+class  ParallelismOptimizer:
     """Optimizer that selects the best parallelism strategy."""
 
     def __init__(self):
