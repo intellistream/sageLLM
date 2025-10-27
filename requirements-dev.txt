@@ -2,3 +2,4 @@
 pytest-cov>=4.0.0
 pytest-timeout>=2.1.0
 black>=23.0.0
+aioresponses>=0.7.6  # Mock aiohttp responses for testing

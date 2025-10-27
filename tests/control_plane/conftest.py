@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from aioresponses import aioresponses
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +26,37 @@ def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture
+def mock_aiohttp():
+    """Fixture providing mocked aiohttp responses for vLLM API."""
+    with aioresponses() as m:
+        yield m
+
+
+@pytest.fixture
+def mock_vllm_completion_response():
+    """Fixture providing a sample vLLM completion response."""
+    return {
+        "id": "cmpl-test-123",
+        "object": "text_completion",
+        "created": 1677652288,
+        "model": "meta-llama/Llama-2-7b",
+        "choices": [
+            {
+                "text": " This is a test completion response.",
+                "index": 0,
+                "logprobs": None,
+                "finish_reason": "length",
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+        },
+    }
 
 
 @pytest.fixture

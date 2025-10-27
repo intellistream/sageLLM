@@ -370,15 +370,33 @@ class ExecutionCoordinator:
         success: bool,
     ):
         """Update performance metrics."""
-        if success and request.latency_ms:
-            # Update instance average latency (exponential moving average)
-            if instance.avg_latency_ms == 0:
-                instance.avg_latency_ms = request.latency_ms
-            else:
-                alpha = 0.1  # Smoothing factor
-                instance.avg_latency_ms = (
-                    (1 - alpha) * instance.avg_latency_ms + alpha * request.latency_ms
-                )
+        # Update total requests counter
+        self.metrics.total_requests += 1
+        
+        if success:
+            self.metrics.completed_requests += 1
+            
+            # Update latency metrics
+            if request.latency_ms:
+                # Update instance average latency (exponential moving average)
+                if instance.avg_latency_ms == 0:
+                    instance.avg_latency_ms = request.latency_ms
+                else:
+                    alpha = 0.1  # Smoothing factor
+                    instance.avg_latency_ms = (
+                        (1 - alpha) * instance.avg_latency_ms + alpha * request.latency_ms
+                    )
+                
+                # Update global average latency
+                if self.metrics.avg_latency_ms == 0:
+                    self.metrics.avg_latency_ms = request.latency_ms
+                else:
+                    total_completed = self.metrics.completed_requests
+                    self.metrics.avg_latency_ms = (
+                        (total_completed - 1) * self.metrics.avg_latency_ms + request.latency_ms
+                    ) / total_completed
+        else:
+            self.metrics.failed_requests += 1
 
     def get_metrics(self) -> PerformanceMetrics:
         """Get aggregated performance metrics."""
