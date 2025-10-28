@@ -1,25 +1,38 @@
-# vLLM 部署指南
+# sageLLM vLLM 实例部署指南
 
-本文档说明如何启动 vLLM 服务器实例，以便 Control Plane 进行统一调度。
+本文档说明如何部署 vLLM 服务器实例，以便 Control Plane 进行统一调度和管理。
 
 ## 架构说明
 
-Control Plane 通过 HTTP API 与所有 vLLM 实例通信，因此：
+Control Plane 通过 **HTTP API** 与所有 vLLM 实例通信。每个 vLLM 实例提供 OpenAI-compatible API 端点。
 
-1. **每个 GPU 启动一个独立的 vLLM 服务器**
+### 核心原则
+
+1. **每个 GPU 配置启动一个 vLLM 服务器**（可以是单 GPU 或 TP/PP 多 GPU）
 2. **Control Plane 通过 HTTP 调用 vLLM 的 OpenAI-compatible API**
-3. **本地 GPU 和远程 GPU 对 Control Plane 来说是透明的**
+3. **本地 GPU 和远程 GPU 对 Control Plane 透明**（统一通过 HTTP 访问）
 
 ```
 Control Plane (HTTP 客户端)
     ↓
-    ├── localhost:8000 (GPU 0, 本机)
-    ├── localhost:8001 (GPU 1, 本机)
-    ├── localhost:8002 (GPU 2, 本机)
-    ├── localhost:8003 (GPU 3, 本机)
+    ├── localhost:8000 (GPU 0, 本机, TP=1)
+    ├── localhost:8001 (GPU 1, 本机, TP=1)
+    ├── localhost:8002 (GPU 2, 本机, TP=1)
+    ├── localhost:8003 (GPU 3, 本机, TP=1)
+    ├── localhost:9000 (GPU 0-3, 本机, TP=4)
     ├── 192.168.1.100:8000 (远程机器 A, GPU 0)
     └── 192.168.1.100:8001 (远程机器 A, GPU 1)
 ```
+
+## 部署模式总览
+
+| 部署模式 | 说明 | 适用场景 |
+|---------|------|---------|
+| **单机单卡** | 每个 GPU 一个 vLLM 实例 (TP=1) | 开发、测试、小规模部署 |
+| **单机多卡 TP** | 多个 GPU 组成一个 vLLM 实例 (TP>1) | 大模型推理（70B+） |
+| **单机多实例** | 多个独立 vLLM 实例 | 提高并发、PD 分离 |
+| **多机集群** | 跨机器部署多个实例 | 生产环境、大规模部署 |
+| **PD 分离部署** | 专门的 Prefilling 和 Decoding 实例 | 性能优化、高吞吐+低延迟 |
 
 ---
 
@@ -334,6 +347,7 @@ curl http://localhost:8000/metrics
 
 ## 下一步
 
-- 阅读 [control_plane/README.md](../control_plane/README.md) 了解调度策略
-- 阅读 [control_plane/INTEGRATION.md](../control_plane/INTEGRATION.md) 了解 API 使用
-- 实现自定义调度策略，专注于优化调度算法
+- 阅读 [集成指南](./INTEGRATION.md) 了解 Control Plane API 使用
+- 阅读 [主 README](../README.md) 了解调度策略和核心特性
+- 查看 [示例代码](../control_plane/example.py) 了解完整使用示例
+- 实现自定义调度策略，优化您的特定场景

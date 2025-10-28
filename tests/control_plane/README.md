@@ -267,6 +267,6 @@ python -m pytest -v --timeout=10
 
 ## References
 
-- [Control Plane README](../control_plane/README.md)
-- [Control Plane Integration Guide](../control_plane/INTEGRATION.md)
-- [SAGE Service Integration](../service.py)
+- [sageLLM Main README](../../README.md)
+- [Integration Guide](../../docs/INTEGRATION.md)
+- [Deployment Guide](../../docs/DEPLOYMENT.md)
