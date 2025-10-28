@@ -56,9 +56,11 @@ class RequestMetadata:
 
     request_id: str
     user_id: Optional[str] = None
+    prompt: str = ''
+    key: int = 0
     priority: RequestPriority = RequestPriority.NORMAL
     slo_deadline_ms: Optional[float] = None  # SLO deadline in milliseconds
-    max_tokens: Optional[int] = None
+    max_tokens: Optional[int] = 256
     temperature: float = 1.0
     top_p: float = 1.0
     model_name: Optional[str] = None
@@ -141,10 +143,9 @@ class ExecutionInstance:
     """Represents a vLLM execution instance."""
 
     instance_id: str
-    host: str
-    port: int
     model_name: str
-
+    host: str = '127.0.0.1'
+    port: int = 5050
     # Parallelism configuration
     tensor_parallel_size: int = 1
     pipeline_parallel_size: int = 1
@@ -152,7 +153,7 @@ class ExecutionInstance:
 
     # PD Separation: Instance type and specialized configs
     instance_type: ExecutionInstanceType = ExecutionInstanceType.GENERAL
-    prefilling_config: Optional[PreffillingConfig] = None
+    prefilling_config: Optional[PrefillingConfig] = None
     decoding_config: Optional[DecodingConfig] = None
 
     # Resource information
