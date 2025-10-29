@@ -413,11 +413,8 @@ class ControlPlaneManager:
     ):
         """Execute request and cleanup."""
 
-        success = False
         try:
             await self.executor.execute_request(request, instance, decision)
-
-            success = True
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
