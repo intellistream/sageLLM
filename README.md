@@ -32,10 +32,18 @@ sageLLM/
 ├── control_plane/                 # ⭐ Control Plane 核心组件
 │   ├── manager.py                # 控制平面管理器 - 核心协调层
 │   ├── executor.py               # 执行协调器 - vLLM 实例管理
-│   ├── policies.py               # 调度策略 - FIFO/Priority/SLO/Cost/Adaptive
+│   ├── strategies/               # 调度策略模块
+│   │   ├── base.py              # 策略基类
+│   │   ├── fifo.py              # FIFO 策略
+│   │   ├── priority.py          # 优先级策略
+│   │   ├── slo_aware.py         # SLO 感知策略
+│   │   ├── cost_optimized.py    # 成本优化策略
+│   │   └── adaptive.py          # 自适应策略
 │   ├── pd_routing.py             # PD 分离路由 - Prefilling/Decoding 优化
 │   ├── router.py                 # 请求路由 - 负载均衡/亲和性/局部性
 │   ├── parallelism.py            # 并行策略 - TP/PP/DP/EP/Hybrid
+│   ├── monitoring.py             # 性能监控 - 指标收集与分析
+│   ├── topology.py               # 拓扑检测 - NVLINK/NUMA 感知
 │   ├── types.py                  # 类型定义 - 数据模型和枚举
 │   └── examples/                 # 📖 使用示例
 │       ├── example_http_client.py   # HTTP 客户端模式示例
@@ -44,7 +52,11 @@ sageLLM/
 │
 ├── docs/                          # 📚 文档目录
 │   ├── INTEGRATION.md            # 集成架构文档
-│   └── DEPLOYMENT.md             # 部署指南
+│   ├── DEPLOYMENT.md             # 部署指南
+│   ├── CUSTOM_SCHEDULING.md      # 自定义调度策略开发指南
+│   ├── METRICS.md                # 监控指标文档
+│   ├── TOPOLOGY.md               # 拓扑感知配置文档
+│   └── FAULT_TOLERANCE.md        # 故障容错机制文档
 │
 ├── vendors/vllm/                 # vLLM 源代码 (vendored)
 │   ├── vllm/                     # Python 模块
@@ -538,10 +550,10 @@ python -m pytest --cov=control_plane tests/control_plane/
 - 维护请求队列和运行状态
 - 协调各个子组件工作
 
-#### 2. Scheduling Policies (`policies.py`)
+#### 2. Scheduling Strategies (`strategies/`)
 - 5种调度策略：FIFO、Priority、SLO-Aware、Cost-Optimized、Adaptive
-- 根据请求特征和系统状态选择合适的策略
-- 支持动态策略切换
+- 模块化设计，每个策略独立文件
+- 支持自定义策略开发（参见 `docs/CUSTOM_SCHEDULING.md`）
 
 #### 3. PD Router (`pd_routing.py`)
 - Prefilling/Decoding 分离路由

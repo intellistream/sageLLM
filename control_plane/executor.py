@@ -285,11 +285,11 @@ class ExecutionCoordinator:
 
     async def health_check(self, instance: ExecutionInstance) -> bool:
         """
-        Check health of a vLLM instance via HTTP.
-        
+        Check health of a vLLM instance via HTTP with consecutive failure tracking.
+
         Args:
             instance: Instance to check
-            
+
         Returns:
             True if healthy (HTTP 200), False otherwise
         """
@@ -306,14 +306,29 @@ class ExecutionCoordinator:
             async with self.http_session.get(url, timeout=timeout) as response:
                 is_healthy = response.status == 200
 
-                if not is_healthy:
+                # Update instance health status
+                instance.is_healthy = is_healthy
+
+                if is_healthy:
+                    # Reset consecutive failures on success
+                    instance.metadata["consecutive_failures"] = 0
+                else:
+                    # Increment consecutive failures
+                    instance.metadata["consecutive_failures"] = (
+                        instance.metadata.get("consecutive_failures", 0) + 1
+                    )
                     logger.warning(
-                        "Health check failed for %s at %s:%d (status=%d)",
+                        "Health check failed for %s at %s:%d (status=%d, failures=%d)",
                         instance.instance_id,
                         instance.host,
                         instance.port,
                         response.status,
+                        instance.metadata["consecutive_failures"],
                     )
+
+                # Trigger failure callback if threshold exceeded
+                if instance.metadata.get("consecutive_failures", 0) >= 3:
+                    await self._on_instance_failure(instance)
 
                 return is_healthy
 
@@ -324,7 +339,14 @@ class ExecutionCoordinator:
                 instance.host,
                 instance.port,
             )
+            instance.is_healthy = False
+            instance.metadata["consecutive_failures"] = (
+                instance.metadata.get("consecutive_failures", 0) + 1
+            )
+            if instance.metadata.get("consecutive_failures", 0) >= 3:
+                await self._on_instance_failure(instance)
             return False
+
         except aiohttp.ClientError as e:
             logger.warning(
                 "Health check error for %s at %s:%d: %s",
@@ -333,7 +355,71 @@ class ExecutionCoordinator:
                 instance.port,
                 e,
             )
+            instance.is_healthy = False
+            instance.metadata["consecutive_failures"] = (
+                instance.metadata.get("consecutive_failures", 0) + 1
+            )
+            if instance.metadata.get("consecutive_failures", 0) >= 3:
+                await self._on_instance_failure(instance)
             return False
+
+    async def _on_instance_failure(self, instance: ExecutionInstance):
+        """
+        Handle instance failure after consecutive health check failures.
+
+        Args:
+            instance: Failed instance
+        """
+        logger.critical(
+            "Instance %s marked as FAILED (consecutive failures: %d)",
+            instance.instance_id,
+            instance.metadata.get("consecutive_failures", 0),
+        )
+
+        # Mark instance as unavailable
+        instance.is_available = False
+        instance.is_healthy = False
+
+        # Get requests running on this instance
+        failed_request_ids = [
+            req_id
+            for req_id, inst_id in self.request_to_instance.items()
+            if inst_id == instance.instance_id
+        ]
+
+        if failed_request_ids:
+            logger.warning(
+                "Instance %s failure affects %d running requests: %s",
+                instance.instance_id,
+                len(failed_request_ids),
+                failed_request_ids,
+            )
+
+            # Collect request metadata if available
+            failed_requests = []
+            for req_id in failed_request_ids:
+                if req_id in self.active_requests:
+                    failed_requests.append((req_id, self.active_requests[req_id]))
+
+            # Notify manager callback if set
+            if hasattr(self, "_manager_callback") and self._manager_callback:
+                try:
+                    await self._manager_callback.on_instance_failure(
+                        instance.instance_id, failed_requests
+                    )
+                except Exception as e:
+                    logger.error(
+                        "Error calling manager callback for instance failure: %s", e
+                    )
+
+    def set_manager_callback(self, manager: Any):
+        """
+        Set manager callback for instance failure notifications.
+
+        Args:
+            manager: ControlPlaneManager instance
+        """
+        self._manager_callback = manager
 
     async def get_instance_info(
         self, instance: ExecutionInstance
