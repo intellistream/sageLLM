@@ -11,7 +11,6 @@
 
 import asyncio
 import logging
-from datetime import datetime
 
 from control_plane import (
     ControlPlaneManager,
