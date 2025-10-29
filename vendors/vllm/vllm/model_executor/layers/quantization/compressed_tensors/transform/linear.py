@@ -18,14 +18,14 @@ from vllm.model_executor.layers.linear import (
     LinearMethodBase,
     QKVCrossParallelLinear,
 )
-from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors import (  # noqa: E501
-    CompressedTensorsScheme,
+from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors import (
+    CompressedTensorsScheme,  # noqa: E501
 )
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.module import (  # noqa: E501
-    HadamardTransform,
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.module import (
+    HadamardTransform,  # noqa: E501
 )
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (  # noqa: E501
-    TransformTuple,
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (
+    TransformTuple,  # noqa: E501
 )
 
 

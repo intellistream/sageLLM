@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the SAGE project
 
-"""Tests for Execution Coordinator with vLLM direct integration."""
+"""Tests for Execution Coordinator with HTTP client mode."""
 
 import sys
 from pathlib import Path
@@ -15,6 +15,10 @@ sys.path.insert(0, str(root))
 from control_plane import (  # noqa: E402
     ExecutionCoordinator,
     ExecutionInstance,
+    ParallelismType,
+    RequestMetadata,
+    RequestPriority,
+    SchedulingDecision,
 )
 
 
@@ -25,7 +29,15 @@ async def test_executor_initialization():
 
     assert len(executor.instances) == 0
     assert len(executor.active_requests) == 0
-    assert len(executor.engines) == 0
+    assert executor.http_session is None
+
+    # Test initialization
+    await executor.initialize()
+    assert executor.http_session is not None
+
+    # Cleanup
+    await executor.cleanup()
+    assert executor.http_session is None
 
 
 @pytest.mark.asyncio
@@ -140,3 +152,186 @@ async def test_metrics_collection():
 
     # Verify total GPU memory calculation
     assert metrics.total_gpu_memory_gb >= 0
+
+
+@pytest.mark.asyncio
+async def test_execute_request_http(mock_aiohttp, mock_vllm_completion_response):
+    """Test request execution via HTTP API."""
+    executor = ExecutionCoordinator()
+    await executor.initialize()
+
+    # Register instance
+    instance = ExecutionInstance(
+        instance_id="test-instance-1",
+        host="localhost",
+        port=8000,
+        model_name="meta-llama/Llama-2-7b",
+        tensor_parallel_size=1,
+        gpu_count=1,
+    )
+    executor.register_instance(instance)
+
+    # Create request
+    request = RequestMetadata(
+        request_id="test-req-1",
+        prompt="What is the capital of France?",
+        max_tokens=100,
+        priority=RequestPriority.NORMAL,
+    )
+
+    # Mock HTTP response
+    mock_aiohttp.post(
+        "http://localhost:8000/v1/completions",
+        payload=mock_vllm_completion_response,
+        status=200,
+    )
+
+    # Create scheduling decision
+    decision = SchedulingDecision(
+        request_id=request.request_id,
+        target_instance_id=instance.instance_id,
+        parallelism_strategy=ParallelismType.TENSOR_PARALLEL,
+        estimated_latency_ms=100.0,
+        estimated_cost=0.01,
+        reason="Test execution",
+    )
+
+    # Execute request
+    result = await executor.execute_request(request, instance, decision)
+
+    # Verify result
+    assert result["id"] == "cmpl-test-123"
+    assert result["model"] == "meta-llama/Llama-2-7b"
+    assert result["usage"]["total_tokens"] == 30
+
+    # Verify metrics updated
+    metrics = executor.get_metrics()
+    assert metrics.total_requests == 1
+    assert metrics.completed_requests == 1
+
+    await executor.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_execute_request_failure(mock_aiohttp):
+    """Test request execution failure handling."""
+    executor = ExecutionCoordinator()
+    await executor.initialize()
+
+    instance = ExecutionInstance(
+        instance_id="test-instance-1",
+        host="localhost",
+        port=8000,
+        model_name="llama-7b",
+        tensor_parallel_size=1,
+        gpu_count=1,
+    )
+    executor.register_instance(instance)
+
+    request = RequestMetadata(
+        request_id="test-req-fail",
+        prompt="Test prompt",
+        max_tokens=100,
+        priority=RequestPriority.NORMAL,
+    )
+
+    # Mock HTTP error
+    mock_aiohttp.post(
+        "http://localhost:8000/v1/completions",
+        status=500,
+        body="Internal Server Error",
+    )
+
+    decision = SchedulingDecision(
+        request_id=request.request_id,
+        target_instance_id=instance.instance_id,
+        parallelism_strategy=ParallelismType.TENSOR_PARALLEL,
+        estimated_latency_ms=100.0,
+        estimated_cost=0.01,
+        reason="Test failure",
+    )
+
+    # Expect RuntimeError
+    with pytest.raises(RuntimeError, match="vLLM returned status 500"):
+        await executor.execute_request(request, instance, decision)
+
+    # Verify metrics
+    metrics = executor.get_metrics()
+    assert metrics.total_requests == 1
+    assert metrics.failed_requests == 1
+
+    await executor.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_health_check_http(mock_aiohttp):
+    """Test health check via HTTP."""
+    executor = ExecutionCoordinator()
+    await executor.initialize()
+
+    instance = ExecutionInstance(
+        instance_id="test-instance-1",
+        host="localhost",
+        port=8000,
+        model_name="llama-7b",
+        tensor_parallel_size=1,
+        gpu_count=1,
+    )
+
+    # Mock healthy response
+    mock_aiohttp.get("http://localhost:8000/health", status=200)
+
+    is_healthy = await executor.health_check(instance)
+    assert is_healthy is True
+
+    # Mock unhealthy response
+    mock_aiohttp.get("http://localhost:8000/health", status=503)
+
+    is_healthy = await executor.health_check(instance)
+    assert is_healthy is False
+
+    await executor.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_get_instance_info_http(mock_aiohttp):
+    """Test getting instance info via HTTP."""
+    executor = ExecutionCoordinator()
+    await executor.initialize()
+
+    instance = ExecutionInstance(
+        instance_id="test-instance-1",
+        host="localhost",
+        port=8000,
+        model_name="meta-llama/Llama-2-7b",
+        tensor_parallel_size=1,
+        gpu_count=1,
+    )
+
+    # Mock models endpoint response
+    models_response = {
+        "object": "list",
+        "data": [
+            {
+                "id": "meta-llama/Llama-2-7b",
+                "object": "model",
+                "created": 1677652288,
+                "owned_by": "vllm",
+            }
+        ],
+    }
+
+    mock_aiohttp.get(
+        "http://localhost:8000/v1/models",
+        payload=models_response,
+        status=200,
+    )
+
+    info = await executor.get_instance_info(instance)
+    assert info is not None
+    assert info["object"] == "list"
+    assert len(info["data"]) == 1
+    assert info["data"][0]["id"] == "meta-llama/Llama-2-7b"
+
+    await executor.cleanup()
+

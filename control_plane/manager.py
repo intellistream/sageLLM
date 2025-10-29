@@ -10,9 +10,10 @@ from datetime import datetime
 from typing import Any, Optional
 
 from .executor import ExecutionCoordinator
+from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
-from .policies import (
+from .strategies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
     FIFOPolicy,
@@ -28,6 +29,8 @@ from .types import (
     RequestMetadata,
     RequestStatus,
     SchedulingDecision,
+    SchedulingMetrics,
+    InstanceMetrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,7 +51,7 @@ class ControlPlaneManager:
         enable_auto_scaling: bool = False,
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
-        pd_config: Optional[PDSeparationConfig] = None,
+        pd_config: PDSeparationConfig | None = None,
     ):
         """
         Initialize Control Plane Manager.
@@ -73,10 +76,13 @@ class ControlPlaneManager:
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
 
+        # Set executor callback for failure handling
+        self.executor.set_manager_callback(self)
+
         # PD Separation routing
         self.enable_pd_separation = enable_pd_separation
         self.pd_config = pd_config or PDSeparationConfig()
-        self.pd_router = (
+        self.pd_router: Optional[PDRoutingStrategy] = (
             PDRoutingStrategy(self.pd_config) if enable_pd_separation else None
         )
 
@@ -90,6 +96,9 @@ class ControlPlaneManager:
         # Configuration
         self.enable_auto_scaling = enable_auto_scaling
         self.enable_monitoring = enable_monitoring
+
+        # Monitoring
+        self.metrics_collector = MetricsCollector()
 
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
@@ -183,7 +192,7 @@ class ControlPlaneManager:
 
         return request.request_id
 
-    async def get_request_status(self, request_id: str) -> Optional[RequestStatus]:
+    async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
 
         # Check if running
@@ -201,7 +210,7 @@ class ControlPlaneManager:
         """Cancel a pending request."""
 
         # Remove from pending queue
-        for i, req in enumerate(self.pending_queue):
+        for _i, req in enumerate(self.pending_queue):
             if req.request_id == request_id:
                 self.pending_queue.remove(req)
                 logger.info("Request %s cancelled", request_id)
@@ -210,11 +219,68 @@ class ControlPlaneManager:
         logger.warning("Request %s not found or already running", request_id)
         return False
 
+    async def on_instance_failure(
+        self,
+        instance_id: str,
+        failed_requests: list[tuple[str, RequestMetadata]],
+    ):
+        """
+        Handle instance failure by rescheduling affected requests.
+
+        Args:
+            instance_id: ID of the failed instance
+            failed_requests: List of (request_id, request) tuples that were running
+        """
+        logger.warning(
+            "Handling instance failure for %s, rescheduling %d requests",
+            instance_id,
+            len(failed_requests),
+        )
+
+        # Record failure in metrics
+        self.metrics_collector.record_instance_failure(instance_id)
+
+        # Reschedule each failed request
+        for req_id, request in failed_requests:
+            # Track retry count
+            request.tags["retry_count"] = request.tags.get("retry_count", 0) + 1
+
+            # Check retry limit (max 3 retries)
+            if request.tags["retry_count"] > 3:
+                logger.error(
+                    "Request %s exceeded retry limit, marking as failed", req_id
+                )
+                self.running_requests.pop(req_id, None)
+                continue
+
+            # Re-add to pending queue (at the front for priority)
+            request.queue_time = datetime.now()
+            self.pending_queue.appendleft(request)
+
+            # Remove from running requests
+            self.running_requests.pop(req_id, None)
+
+            logger.info(
+                "Request %s rescheduled (retry: %d/%d)",
+                req_id,
+                request.tags["retry_count"],
+                3,
+            )
+
+        logger.info(
+            "Instance %s failure handled, %d requests rescheduled",
+            instance_id,
+            len(failed_requests),
+        )
+
     async def _scheduling_loop(self):
         """Main scheduling loop."""
 
         while self._running:
             try:
+                # Record queue length for metrics
+                self.metrics_collector.record_queue_length(len(self.pending_queue))
+
                 await self._schedule_pending_requests()
                 await asyncio.sleep(0.1)  # Schedule every 100ms
             except Exception as e:
@@ -251,7 +317,7 @@ class ControlPlaneManager:
         )
 
         # Execute scheduled requests
-        for decision, request in zip(decisions, requests_to_schedule):
+        for decision, request in zip(decisions, requests_to_schedule, strict=False):
             await self._execute_scheduled_request(request, decision)
 
     async def _execute_scheduled_request(
@@ -270,36 +336,38 @@ class ControlPlaneManager:
 
         # PD-aware routing: determine request phase and route to appropriate instance
         if self.enable_pd_separation and self.pd_router:
-            target_phase = self.pd_router.determine_request_phase(request)
+            pd_router = self.pd_router  # Local reference for type checker
+            target_phase = pd_router.determine_request_phase(request)
 
-            logger.debug(
-                "PD routing: request %s routed to phase %s",
-                request.request_id,
-                target_phase.name,
-            )
-
-            # Filter instances by target phase
-            compatible_instances = self.pd_router.filter_instances_by_type(
-                self.executor.get_all_instances(),
-                target_phase,
-            )
-
-            if compatible_instances:
-                # Select best instance based on PD specialization
-                best_instance = max(
-                    compatible_instances,
-                    key=lambda inst: self.pd_router.get_instance_specialization(inst).get(target_phase, 0),
-                )
-                instance = best_instance
+            if target_phase:  # Only proceed if phase was determined
                 logger.debug(
-                    "Selected PD-specialized instance %s for request %s",
-                    instance.instance_id,
+                    "PD routing: request %s routed to phase %s",
                     request.request_id,
+                    target_phase.name,
                 )
+
+                # Filter instances by target phase
+                compatible_instances = pd_router.filter_instances_by_type(
+                    self.executor.get_all_instances(),
+                    target_phase,
+                )
+
+                if compatible_instances:
+                    # Select best instance based on PD specialization
+                    best_instance = max(
+                        compatible_instances,
+                        key=lambda inst: pd_router.get_instance_specialization(inst).get(target_phase.name, 0),
+                    )
+                    instance = best_instance
+                    logger.debug(
+                        "Selected PD-specialized instance %s for request %s",
+                        instance.instance_id,
+                        request.request_id,
+                    )
 
         # Recommend parallelism config based on instance type
         if self.enable_pd_separation and self.pd_router:
-            parallelism_config = self.pd_router.recommend_parallelism_config(instance)
+            parallelism_config = self.pd_router.recommend_parallelism_config(instance, request)
             if parallelism_config:
                 decision.tensor_parallel_size = parallelism_config['tensor_parallel_size']
                 decision.pipeline_parallel_size = (
@@ -347,19 +415,33 @@ class ControlPlaneManager:
 
         try:
             await self.executor.execute_request(request, instance, decision)
-
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
                 request.latency_ms,
             )
 
+            # Record metrics
+            if request.latency_ms:
+                self.metrics_collector.record_request_completion(
+                    request, decision, request.latency_ms, success=True
+                )
+
         except Exception as e:
             logger.error("Request %s failed: %s", request.request_id, e)
+
+            # Record failure
+            if request.latency_ms:
+                self.metrics_collector.record_request_completion(
+                    request, decision, request.latency_ms, success=False
+                )
 
         finally:
             # Cleanup
             self.running_requests.pop(request.request_id, None)
+
+            # Update instance metrics
+            self.metrics_collector.update_instance_metrics(instance)
 
     async def _health_check_loop(self):
         """Periodic health check of instances."""
@@ -400,11 +482,43 @@ class ControlPlaneManager:
         metrics.queued_requests = len(self.pending_queue)
         return metrics
 
+    def get_scheduling_metrics(self) -> "SchedulingMetrics":
+        """
+        Get scheduling-specific metrics.
+
+        Returns:
+            SchedulingMetrics with policy performance data
+        """
+        return self.metrics_collector.get_scheduling_metrics(
+            self.scheduling_policy.name
+        )
+
+    def get_instance_metrics_detailed(self, instance_id: str) -> "InstanceMetrics | None":
+        """
+        Get detailed metrics for a specific instance.
+
+        Args:
+            instance_id: Instance identifier
+
+        Returns:
+            InstanceMetrics or None if not found
+        """
+        return self.metrics_collector.get_instance_metrics(instance_id)
+
+    def get_all_instance_metrics(self) -> dict[str, "InstanceMetrics"]:
+        """
+        Get detailed metrics for all instances.
+
+        Returns:
+            Dictionary mapping instance_id to InstanceMetrics
+        """
+        return self.metrics_collector.get_all_instance_metrics()
+
     def get_instances(self) -> list[ExecutionInstance]:
         """Get all registered instances."""
         return self.executor.get_all_instances()
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
+    def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
         """Get metrics for a specific instance."""
         return self.executor.get_instance_metrics(instance_id)
 

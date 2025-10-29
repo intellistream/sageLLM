@@ -34,9 +34,7 @@ from vllm.distributed.device_communicators.pynccl import (
     PyNcclCommunicator,
     register_nccl_symmetric_ops,
 )
-from vllm.distributed.device_communicators.pynccl_allocator import (
-    set_graph_pool_id,
-)
+from vllm.distributed.device_communicators.pynccl_allocator import set_graph_pool_id
 from vllm.distributed.device_communicators.symm_mem import SymmMemCommunicator
 from vllm.logger import init_logger
 from vllm.utils import FlexibleArgumentParser

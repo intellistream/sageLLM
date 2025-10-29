@@ -86,8 +86,8 @@ else:
     eplb_map_to_physical_and_record = _eplb_map_to_physical_and_record
 
 if is_rocm_aiter_moe_enabled():
-    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa: E501
-        rocm_aiter_grouped_topk as grouped_topk,
+    from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+        rocm_aiter_grouped_topk as grouped_topk,  # noqa: E501
     )
 else:
     from vllm.model_executor.layers.fused_moe.fused_moe import grouped_topk

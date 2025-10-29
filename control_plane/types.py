@@ -6,7 +6,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class RequestPriority(Enum):
@@ -55,41 +55,42 @@ class RequestMetadata:
     """Metadata for an inference request."""
 
     request_id: str
-    user_id: Optional[str] = None
+    prompt: str | None = None  # Prompt text for inference
+    user_id: str | None = None
     priority: RequestPriority = RequestPriority.NORMAL
-    slo_deadline_ms: Optional[float] = None  # SLO deadline in milliseconds
-    max_tokens: Optional[int] = None
+    slo_deadline_ms: float | None = None  # SLO deadline in milliseconds
+    max_tokens: int | None = None
     temperature: float = 1.0
     top_p: float = 1.0
-    model_name: Optional[str] = None
+    model_name: str | None = None
 
     # Timing information
     arrival_time: datetime = field(default_factory=datetime.now)
-    queue_time: Optional[datetime] = None
-    schedule_time: Optional[datetime] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    queue_time: datetime | None = None
+    schedule_time: datetime | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     # Resource preferences
-    preferred_instance_id: Optional[str] = None
-    parallelism_hint: Optional[ParallelismType] = None
+    preferred_instance_id: str | None = None
+    parallelism_hint: ParallelismType | None = None
 
     # Cost and billing
-    cost_budget: Optional[float] = None
+    cost_budget: float | None = None
     billing_tier: str = "standard"
 
     # Additional metadata
     tags: dict[str, Any] = field(default_factory=dict)
 
     @property
-    def latency_ms(self) -> Optional[float]:
+    def latency_ms(self) -> float | None:
         """Calculate end-to-end latency in milliseconds."""
         if self.end_time and self.arrival_time:
             return (self.end_time - self.arrival_time).total_seconds() * 1000
         return None
 
     @property
-    def queue_wait_ms(self) -> Optional[float]:
+    def queue_wait_ms(self) -> float | None:
         """Calculate queue waiting time in milliseconds."""
         if self.schedule_time and self.queue_time:
             return (self.schedule_time - self.queue_time).total_seconds() * 1000
@@ -152,8 +153,8 @@ class ExecutionInstance:
 
     # PD Separation: Instance type and specialized configs
     instance_type: ExecutionInstanceType = ExecutionInstanceType.GENERAL
-    prefilling_config: Optional[PreffillingConfig] = None
-    decoding_config: Optional[DecodingConfig] = None
+    prefilling_config: PrefillingConfig | None = None
+    decoding_config: DecodingConfig | None = None
 
     # Resource information
     gpu_count: int = 1
@@ -176,6 +177,24 @@ class ExecutionInstance:
     # PD Separation: Request type tracking
     prefilling_active_requests: int = 0
     decoding_active_requests: int = 0
+
+    # ============ Topology Information (for scheduling optimization) ============
+    machine_id: str | None = None  # Physical machine identifier (hostname/UUID)
+    rack_id: str | None = None  # Rack identifier (for multi-rack deployments)
+
+    # GPU hardware topology
+    gpu_bus_id: str | None = None  # PCIe bus ID (e.g., "0000:01:00.0")
+    gpu_device_id: int | None = None  # CUDA device ID (0, 1, 2, ...)
+    nvlink_peers: list[str] = field(default_factory=list)  # Instance IDs connected via NVLINK
+    numa_node: int | None = None  # NUMA node number
+
+    # Network topology
+    network_bandwidth_gbps: float = 10.0  # Network bandwidth in Gbps
+    network_latency_ms: float = 0.1  # Network latency to Control Plane
+
+    # Shared resources (for single-machine optimization)
+    shared_memory_pool: bool = False  # Whether sharing system memory pool
+    shared_storage_path: str | None = None  # Shared storage path (NVMe/SSD)
 
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -206,6 +225,38 @@ class ExecutionInstance:
         if self.instance_type == ExecutionInstanceType.PREFILLING:
             return False
         return self.can_accept_request
+
+    def get_affinity_score(self, other: "ExecutionInstance") -> float:
+        """
+        Calculate affinity score with another instance (0.0-1.0).
+
+        Higher score means better affinity (lower communication cost).
+
+        Scoring:
+        - 1.0: Same machine with NVLINK connection
+        - 0.5: Same machine without NVLINK
+        - 0.1: Same rack, different machine
+        - 0.01: Different rack
+
+        Args:
+            other: Another execution instance
+
+        Returns:
+            Affinity score between 0.0 and 1.0
+        """
+        if self.machine_id and self.machine_id == other.machine_id:
+            # Same machine
+            if other.instance_id in self.nvlink_peers:
+                return 1.0  # NVLINK connected
+            return 0.5  # Same machine but no NVLINK
+        elif self.rack_id and self.rack_id == other.rack_id:
+            return 0.1  # Same rack
+        else:
+            return 0.01  # Different rack or no topology info
+
+    def is_local_to(self, other: "ExecutionInstance") -> bool:
+        """Check if this instance is on the same physical machine as another."""
+        return self.machine_id is not None and self.machine_id == other.machine_id
 
 
 @dataclass
@@ -265,6 +316,73 @@ class PerformanceMetrics:
     # SLO metrics
     slo_violations: int = 0
     slo_compliance_rate: float = 1.0
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class SchedulingMetrics:
+    """Scheduling policy performance metrics."""
+
+    timestamp: datetime = field(default_factory=datetime.now)
+    policy_name: str = ""
+
+    # Scheduling decision quality
+    scheduling_latency_us: float = 0.0  # Scheduling decision latency (microseconds)
+    scheduling_throughput: float = 0.0  # Scheduling throughput (decisions/sec)
+
+    # Prediction accuracy
+    latency_prediction_error_avg: float = 0.0  # Average prediction error (ms)
+    latency_prediction_error_p95: float = 0.0  # P95 prediction error
+    prediction_accuracy_rate: float = 1.0  # Accuracy rate (error < 10%)
+
+    # Load balancing quality
+    load_balance_variance: float = 0.0  # Variance of instance loads
+    load_balance_coefficient: float = 1.0  # Load balance coefficient (1.0 = perfect)
+
+    # SLO compliance by priority
+    slo_compliance_by_priority: dict[str, float] = field(default_factory=dict)
+    # Example: {"CRITICAL": 0.99, "HIGH": 0.95, "NORMAL": 0.90}
+
+    # Queue dynamics
+    queue_wait_time_p50: float = 0.0
+    queue_wait_time_p95: float = 0.0
+    queue_wait_time_p99: float = 0.0
+    queue_length_avg: float = 0.0
+    queue_length_max: int = 0
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class InstanceMetrics:
+    """Detailed metrics for a single execution instance."""
+
+    instance_id: str
+    timestamp: datetime = field(default_factory=datetime.now)
+
+    # Request processing
+    total_requests_processed: int = 0
+    active_requests: int = 0
+    failed_requests: int = 0
+
+    # Performance
+    avg_latency_ms: float = 0.0
+    p50_latency_ms: float = 0.0
+    p95_latency_ms: float = 0.0
+    p99_latency_ms: float = 0.0
+    throughput_tokens_per_sec: float = 0.0
+
+    # Resource usage
+    gpu_utilization: float = 0.0
+    gpu_memory_used_gb: float = 0.0
+    gpu_memory_total_gb: float = 0.0
+    current_load: float = 0.0
+
+    # Health status
+    is_healthy: bool = True
+    last_health_check: datetime | None = None
+    consecutive_failures: int = 0
 
     metadata: dict[str, Any] = field(default_factory=dict)
 

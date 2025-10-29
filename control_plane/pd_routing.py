@@ -4,7 +4,6 @@
 """PD-aware routing for Prefilling/Decoding separation."""
 
 import logging
-from typing import Optional
 
 from .types import (
     ExecutionInstance,
@@ -29,7 +28,7 @@ class PDRoutingStrategy:
 
     def determine_request_phase(
         self, request: RequestMetadata, avg_output_tokens: float = 100.0
-    ) -> Optional[ExecutionInstanceType]:
+    ) -> ExecutionInstanceType | None:
         """Determine if request should go to prefilling or decoding phase.
 
         Args:
@@ -101,8 +100,9 @@ class PDRoutingStrategy:
 
         Simple heuristic: ~4 characters per token
         """
-        if hasattr(request, "prompt") and isinstance(request.prompt, str):
-            return len(request.prompt) // 4
+        prompt = getattr(request, "prompt", None)
+        if prompt and isinstance(prompt, str):
+            return len(prompt) // 4
         # Conservative estimate
         return 100
 
@@ -125,7 +125,7 @@ class PDRoutingStrategy:
         elif target_type == ExecutionInstanceType.DECODING:
             return [i for i in instances if i.can_accept_decoding_request()]
         else:  # HYBRID
-            return [i for i in instances if i.can_accept_request()]
+            return [i for i in instances if i.can_accept_request]
 
     @staticmethod
     def get_instance_specialization(
@@ -163,7 +163,7 @@ class PDRoutingStrategy:
         self,
         instance: ExecutionInstance,
         request: RequestMetadata,
-        target_type: Optional[ExecutionInstanceType] = None,
+        target_type: ExecutionInstanceType | None = None,
     ) -> dict[str, int]:
         """Recommend parallelism configuration based on instance type.
 

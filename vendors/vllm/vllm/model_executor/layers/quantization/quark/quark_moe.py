@@ -306,9 +306,7 @@ class QuarkW8A8Fp8MoEMethod(QuarkMoEMethod):
         # Property to determine if AITER is used
         if self.rocm_aiter_moe_enabled:
             from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa E501
-                rocm_aiter_fused_experts,
-                shuffle_weights,
-            )
+                rocm_aiter_fused_experts, shuffle_weights)
 
             # reshaping weights is required for aiter moe kernel.
             shuffled_w13, shuffled_w2 = shuffle_weights(

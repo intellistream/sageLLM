@@ -7,11 +7,7 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from .types import (
-    ExecutionInstance,
-    ParallelismType,
-    RequestMetadata,
-)
+from .types import ExecutionInstance, ParallelismType, RequestMetadata
 
 
 @dataclass
@@ -379,7 +375,7 @@ class HybridParallelStrategy(ParallelismStrategy):
         }
 
 
-class ParallelismOptimizer:
+class  ParallelismOptimizer:
     """Optimizer that selects the best parallelism strategy."""
 
     def __init__(self):

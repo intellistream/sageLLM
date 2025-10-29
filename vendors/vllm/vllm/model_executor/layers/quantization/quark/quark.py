@@ -19,8 +19,8 @@ from vllm.model_executor.layers.quantization.base_config import (  # noqa: E501
     QuantizeMethodBase,
 )
 from vllm.model_executor.layers.quantization.kv_cache import BaseKVCacheMethod
-from vllm.model_executor.layers.quantization.quark.quark_moe import (  # noqa: E501
-    QuarkMoEMethod,
+from vllm.model_executor.layers.quantization.quark.quark_moe import (
+    QuarkMoEMethod,  # noqa: E501
 )
 from vllm.model_executor.layers.quantization.quark.schemes import (
     QuarkScheme,

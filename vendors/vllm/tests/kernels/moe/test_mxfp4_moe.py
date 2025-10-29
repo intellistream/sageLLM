@@ -14,8 +14,8 @@ from vllm.model_executor.layers.quantization.quark.quark import (  # noqa: E501
     QuarkLinearMethod,
     QuarkW4A4MXFP4,
 )
-from vllm.model_executor.layers.quantization.quark.quark_moe import (  # noqa: E501
-    QuarkW4A4MXFp4MoEMethod,
+from vllm.model_executor.layers.quantization.quark.quark_moe import (
+    QuarkW4A4MXFp4MoEMethod,  # noqa: E501
 )
 from vllm.platforms import current_platform
 from vllm.utils.flashinfer import has_flashinfer

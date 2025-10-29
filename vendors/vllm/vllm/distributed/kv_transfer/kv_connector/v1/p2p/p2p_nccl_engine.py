@@ -23,8 +23,8 @@ from vllm.distributed.device_communicators.pynccl_wrapper import (
     ncclComm_t,
     ncclDataTypeEnum,
 )
-from vllm.distributed.kv_transfer.kv_connector.v1.p2p.tensor_memory_pool import (  # noqa: E501
-    TensorMemoryPool,
+from vllm.distributed.kv_transfer.kv_connector.v1.p2p.tensor_memory_pool import (
+    TensorMemoryPool,  # noqa: E501
 )
 from vllm.utils import current_stream, get_ip
 
