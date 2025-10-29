@@ -6,7 +6,6 @@
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any
 
 from .types import (
     ExecutionInstance,
