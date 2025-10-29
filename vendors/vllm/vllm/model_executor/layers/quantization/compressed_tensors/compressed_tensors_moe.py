@@ -177,8 +177,8 @@ class CompressedTensorsMoEMethod(FusedMoEMethodBase):
 
 class CompressedTensorsW4A4MoeMethod(CompressedTensorsMoEMethod):
     def __init__(self, moe: FusedMoEConfig):
-        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import (  # noqa: E501
-            detect_nvfp4_moe_support,
+        from vllm.model_executor.layers.quantization.utils.nvfp4_moe_support import (
+            detect_nvfp4_moe_support,  # noqa: E501
         )
 
         super().__init__(moe)
@@ -502,8 +502,8 @@ class CompressedTensorsW4A4MoeMethod(CompressedTensorsMoEMethod):
 
         # FlashInfer fused experts path
         elif self.allow_flashinfer:
-            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (  # noqa: E501
-                flashinfer_cutlass_moe_fp4,
+            from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
+                flashinfer_cutlass_moe_fp4,  # noqa: E501
             )
 
             assert is_valid_flashinfer_cutlass_fused_moe(
@@ -847,9 +847,7 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
         # Property to determine if AITER is used
         if self.rocm_aiter_moe_enabled:
             from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa E501
-                rocm_aiter_fused_experts,
-                shuffle_weights,
-            )
+                rocm_aiter_fused_experts, shuffle_weights)
 
             # reshaping weights is required for aiter moe kernel.
             shuffled_w13, shuffled_w2 = shuffle_weights(
@@ -969,8 +967,8 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
             return experts
 
         # triton path
-        from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (  # noqa: E501
-            BatchedTritonOrDeepGemmExperts,
+        from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (
+            BatchedTritonOrDeepGemmExperts,  # noqa: E501
         )
         from vllm.model_executor.layers.fused_moe.triton_deep_gemm_moe import (
             TritonOrDeepGemmExperts,
@@ -1086,9 +1084,8 @@ class CompressedTensorsW8A8Fp8MoEMethod(CompressedTensorsMoEMethod):
             )
 
         elif self.rocm_aiter_moe_enabled:
-            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa E501
-                rocm_aiter_fused_experts,
-            )
+            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import \
+                rocm_aiter_fused_experts  # noqa E501
 
             assert per_act_token == per_channel_quant
             assert self.moe_quant_config is not None

@@ -5,13 +5,8 @@
 
 import hashlib
 import random
-from typing import Optional
 
-from .types import (
-    ExecutionInstance,
-    RequestMetadata,
-    SchedulingDecision,
-)
+from .types import ExecutionInstance, RequestMetadata, SchedulingDecision
 
 
 class RequestRouter:
@@ -28,17 +23,19 @@ class RequestRouter:
                 - "random": Random selection
                 - "affinity": User/session affinity based routing
                 - "locality": Prefer instances with cached prefixes
+                - "topology_aware": Topology-aware routing (prefers same machine/NVLINK)
         """
         self.routing_strategy = routing_strategy
         self.round_robin_index = 0
         self.affinity_map: dict[str, str] = {}  # user_id -> instance_id
+        self.last_instance_map: dict[str, str] = {}  # request -> last instance (for topology)
 
     def route(
         self,
         request: RequestMetadata,
         instances: list[ExecutionInstance],
-        decision: Optional[SchedulingDecision] = None,
-    ) -> Optional[ExecutionInstance]:
+        decision: SchedulingDecision | None = None,
+    ) -> ExecutionInstance | None:
         """
         Route a request to an execution instance.
 
@@ -73,6 +70,8 @@ class RequestRouter:
             return self._affinity_route(request, available)
         elif self.routing_strategy == "locality":
             return self._locality_route(request, available)
+        elif self.routing_strategy == "topology_aware":
+            return self._topology_aware_route(request, available)
         else:
             return self._load_balanced_route(available)
 
@@ -137,11 +136,86 @@ class RequestRouter:
         index = int(request_hash[:8], 16) % len(instances)
         return instances[index]
 
+    def _topology_aware_route(
+        self,
+        request: RequestMetadata,
+        instances: list[ExecutionInstance],
+    ) -> ExecutionInstance:
+        """
+        Route based on GPU topology awareness.
+
+        Prefers instances with high affinity (same machine, NVLINK connected).
+        If request has preferred_instance_id or prior instance, tries to route
+        to instances with good topology affinity to minimize communication cost.
+
+        Args:
+            request: Request metadata
+            instances: Available instances
+
+        Returns:
+            Best instance based on topology
+        """
+        # Check if request has a preferred instance or last instance
+        preferred_instance = None
+
+        if request.preferred_instance_id:
+            # Look for the preferred instance
+            for inst in instances:
+                if inst.instance_id == request.preferred_instance_id:
+                    preferred_instance = inst
+                    break
+
+        # If no preferred instance, check if this user/request had a previous instance
+        if not preferred_instance and request.user_id:
+            last_instance_id = self.last_instance_map.get(request.user_id)
+            if last_instance_id:
+                for inst in instances:
+                    if inst.instance_id == last_instance_id:
+                        preferred_instance = inst
+                        break
+
+        # If we have a preferred instance, try to find instances with good affinity
+        if preferred_instance:
+            # Filter instances on the same machine
+            same_machine = [
+                inst
+                for inst in instances
+                if inst.machine_id
+                and inst.machine_id == preferred_instance.machine_id
+            ]
+
+            if same_machine:
+                # Among same-machine instances, prefer NVLINK connected or least loaded
+                nvlink_connected = [
+                    inst
+                    for inst in same_machine
+                    if inst.instance_id in preferred_instance.nvlink_peers
+                ]
+
+                if nvlink_connected:
+                    # Choose least loaded NVLINK-connected instance
+                    selected = min(nvlink_connected, key=lambda i: i.current_load)
+                else:
+                    # Choose least loaded same-machine instance
+                    selected = min(same_machine, key=lambda i: i.current_load)
+            else:
+                # No same-machine instances, fall back to load balancing
+                selected = self._load_balanced_route(instances)
+        else:
+            # No preferred instance, use load balancing
+            selected = self._load_balanced_route(instances)
+
+        # Update last instance for this user
+        if request.user_id:
+            self.last_instance_map[request.user_id] = selected.instance_id
+
+        return selected
+
     def update_affinity(self, user_id: str, instance_id: str):
         """Update user affinity mapping."""
         self.affinity_map[user_id] = instance_id
 
-    def clear_affinity(self, user_id: Optional[str] = None):
+    def clear_affinity(self, user_id: str | None = None):
         """Clear affinity mapping for a user or all users."""
         if user_id:
             self.affinity_map.pop(user_id, None)
@@ -160,7 +234,7 @@ class LoadBalancer:
         self,
         instances: list[ExecutionInstance],
         algorithm: str = "weighted_round_robin",
-    ) -> Optional[ExecutionInstance]:
+    ) -> ExecutionInstance | None:
         """
         Select instance using specified algorithm.
 
@@ -204,7 +278,7 @@ class LoadBalancer:
         rand = random.uniform(0, total_weight)
         cumulative = 0
 
-        for instance, weight in zip(instances, weights):
+        for instance, weight in zip(instances, weights, strict=False):
             cumulative += weight
             if rand <= cumulative:
                 return instance

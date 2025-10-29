@@ -10,8 +10,8 @@ import torch
 from torch import nn
 from transformers import BatchFeature, PretrainedConfig
 from transformers.models.cohere2_vision import Cohere2VisionConfig
-from transformers.models.cohere2_vision.image_processing_cohere2_vision_fast import (  # noqa: E501
-    get_optimal_tiled_canvas,
+from transformers.models.cohere2_vision.image_processing_cohere2_vision_fast import (
+    get_optimal_tiled_canvas,  # noqa: E501
 )
 from transformers.models.cohere2_vision.processing_cohere2_vision import (
     Cohere2VisionProcessor,

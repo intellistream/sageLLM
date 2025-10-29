@@ -15,8 +15,8 @@ from vllm.model_executor.layers.fused_moe.config import (
 from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
     FlashInferExperts,
 )
-from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (  # noqa: E501
-    create_flashinfer_prepare_finalize,
+from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (
+    create_flashinfer_prepare_finalize,  # noqa: E501
 )
 
 logger = init_logger(__name__)

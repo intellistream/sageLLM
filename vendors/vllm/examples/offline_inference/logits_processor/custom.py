@@ -39,10 +39,7 @@ import torch
 
 from vllm import LLM, SamplingParams
 from vllm.config import VllmConfig
-from vllm.v1.sample.logits_processor import (
-    BatchUpdate,
-    LogitsProcessor,
-)
+from vllm.v1.sample.logits_processor import BatchUpdate, LogitsProcessor
 from vllm.v1.sample.logits_processor.builtin import process_dict_updates
 
 

@@ -1174,8 +1174,8 @@ class Fp8MoEMethod(FusedMoEMethodBase):
         topk_weights, topk_ids, zero_expert_result = select_result
 
         if self.rocm_aiter_moe_enabled:
-            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (  # noqa: E501
-                rocm_aiter_fused_experts,
+            from vllm.model_executor.layers.fused_moe.rocm_aiter_fused_moe import (
+                rocm_aiter_fused_experts,  # noqa: E501
             )
 
             assert self.fused_experts is None

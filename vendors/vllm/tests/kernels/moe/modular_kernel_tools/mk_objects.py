@@ -10,8 +10,8 @@ import vllm.model_executor.layers.fused_moe.modular_kernel as mk
 from vllm.model_executor.layers.fused_moe.batched_deep_gemm_moe import (
     BatchedDeepGemmExperts,
 )
-from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (  # noqa: E501
-    BatchedTritonOrDeepGemmExperts,
+from vllm.model_executor.layers.fused_moe.batched_triton_or_deep_gemm_moe import (
+    BatchedTritonOrDeepGemmExperts,  # noqa: E501
 )
 from vllm.model_executor.layers.fused_moe.config import (
     FusedMoEConfig,
@@ -196,11 +196,11 @@ register_experts(
 
 # Disable on blackwell for now
 if has_deep_ep() and not current_platform.has_device_capability(100):
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (  # noqa: E501
-        DeepEPHTPrepareAndFinalize,
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (
+        DeepEPHTPrepareAndFinalize,  # noqa: E501
     )
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (  # noqa: E501
-        DeepEPLLPrepareAndFinalize,
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (
+        DeepEPLLPrepareAndFinalize,  # noqa: E501
     )
 
     register_prepare_and_finalize(
@@ -233,8 +233,8 @@ if has_pplx():
     )
 
 if has_flashinfer_cutlass_fused_moe() and current_platform.has_device_capability(100):
-    from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (  # noqa: E501
-        FlashInferExperts,
+    from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_moe import (
+        FlashInferExperts,  # noqa: E501
     )
     from vllm.model_executor.layers.fused_moe.flashinfer_cutlass_prepare_finalize import (  # noqa: E501
         FlashInferCutlassMoEPrepareAndFinalize,

@@ -30,11 +30,11 @@ from .parallel_utils import ProcessGroupInfo, parallel_launch
 from .utils import make_test_weights
 
 if has_deep_ep():
-    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (  # noqa: E501
-        DeepEPHTPrepareAndFinalize,
+    from vllm.model_executor.layers.fused_moe.deepep_ht_prepare_finalize import (
+        DeepEPHTPrepareAndFinalize,  # noqa: E501
     )
-    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (  # noqa: E501
-        DeepEPLLPrepareAndFinalize,
+    from vllm.model_executor.layers.fused_moe.deepep_ll_prepare_finalize import (
+        DeepEPLLPrepareAndFinalize,  # noqa: E501
     )
 
     from .parallel_utils import DeepEPHTArgs, DeepEPLLArgs, make_deepep_a2a

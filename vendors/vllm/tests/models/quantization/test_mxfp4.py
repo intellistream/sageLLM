@@ -4,7 +4,6 @@
 """Tests Quark mxfp4 models against ground truth generation"""
 
 import pytest
-
 from vllm import LLM, SamplingParams
 
 MODELS = ["amd/Llama-2-7b-chat-hf-wmxfp4-amxfp4-kvfp8-scale-uint8"]

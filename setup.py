@@ -3,7 +3,7 @@ sageLLM Control Plane
 A high-performance request scheduling and routing layer for vLLM
 """
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="sage-control-plane",

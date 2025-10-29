@@ -18,10 +18,10 @@ import torch
 import yaml
 import zmq
 from transformers import AutoTokenizer
-from vllm_test_utils.monitor import monitor
-
 from vllm.config import ParallelConfig, VllmConfig, set_current_vllm_config
-from vllm.transformers_utils.detokenizer_utils import convert_ids_list_to_tokens
+from vllm.transformers_utils.detokenizer_utils import \
+    convert_ids_list_to_tokens
+from vllm_test_utils.monitor import monitor
 
 # isort: off
 from vllm.utils import (
@@ -425,7 +425,8 @@ def test_supports_kw(
 def test_memory_profiling():
     # Fake out some model loading + inference memory usage to test profiling
     # Memory used by other processes will show up as cuda usage outside of torch
-    from vllm.distributed.device_communicators.cuda_wrapper import CudaRTLibrary
+    from vllm.distributed.device_communicators.cuda_wrapper import \
+        CudaRTLibrary
 
     lib = CudaRTLibrary()
     # 512 MiB allocation outside of this instance

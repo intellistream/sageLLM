@@ -15,8 +15,8 @@ from torch import Tensor
 import vllm._custom_ops as ops
 from vllm.distributed.parallel_state import get_tensor_model_parallel_world_size
 from vllm.model_executor.layers.linear import LinearBase
-from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (  # noqa: E501
-    TransformTuple,
+from vllm.model_executor.layers.quantization.compressed_tensors.transform.utils import (
+    TransformTuple,  # noqa: E501
 )
 from vllm.model_executor.layers.utils import dispatch_unquantized_gemm
 from vllm.model_executor.layers.vocab_parallel_embedding import VocabParallelEmbedding

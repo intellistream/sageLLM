@@ -2,15 +2,15 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 from .hasher import MultiModalHasher
 from .inputs import (
-    BatchedTensorInputs,
-    ModalityData,
-    MultiModalDataBuiltins,
-    MultiModalDataDict,
-    MultiModalKwargs,
-    MultiModalKwargsItems,
-    MultiModalPlaceholderDict,
-    MultiModalUUIDDict,
-    NestedTensors,
+                     BatchedTensorInputs,
+                     ModalityData,
+                     MultiModalDataBuiltins,
+                     MultiModalDataDict,
+                     MultiModalKwargs,
+                     MultiModalKwargsItems,
+                     MultiModalPlaceholderDict,
+                     MultiModalUUIDDict,
+                     NestedTensors,
 )
 from .registry import MultiModalRegistry
 

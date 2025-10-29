@@ -6,11 +6,7 @@ from typing import Any, NamedTuple, Optional, Union
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-from bench_utils import (
-    TEXT_SEPARATOR,
-    Color,
-    logger,
-)
+from bench_utils import TEXT_SEPARATOR, Color, logger
 from transformers import AutoTokenizer  # type: ignore
 
 # Conversation ID is a string (e.g: "UzTK34D")

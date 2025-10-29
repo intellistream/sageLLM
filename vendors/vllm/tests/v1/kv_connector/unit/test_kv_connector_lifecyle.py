@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
-from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import (  # noqa: E501
-    SharedStorageConnectorMetadata,
+from vllm.distributed.kv_transfer.kv_connector.v1.shared_storage_connector import (
+    SharedStorageConnectorMetadata,  # noqa: E501
 )
 from vllm.distributed.kv_transfer.kv_transfer_state import (
     ensure_kv_transfer_initialized,

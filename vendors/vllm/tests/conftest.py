@@ -30,27 +30,21 @@ import torch.nn as nn
 import torch.nn.functional as F
 from huggingface_hub import snapshot_download
 from PIL import Image
-from transformers import (
-    AutoConfig,
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BatchEncoding,
-    BatchFeature,
-)
+from tests.models.utils import (TokensTextLogprobs,
+                                TokensTextLogprobsPromptLogprobs)
+from transformers import (AutoConfig, AutoModelForCausalLM, AutoTokenizer,
+                          BatchEncoding, BatchFeature)
 from transformers.models.auto.auto_factory import _BaseAutoModelClass
-
-from tests.models.utils import TokensTextLogprobs, TokensTextLogprobsPromptLogprobs
 from vllm import LLM, SamplingParams
 from vllm.assets.audio import AudioAsset
 from vllm.assets.image import ImageAsset
 from vllm.assets.video import VideoAsset
-from vllm.config.model import ConvertOption, RunnerOption, _get_and_verify_dtype
+from vllm.config.model import (ConvertOption, RunnerOption,
+                               _get_and_verify_dtype)
 from vllm.connections import global_http_connection
-from vllm.distributed import (
-    cleanup_dist_env_and_memory,
-    init_distributed_environment,
-    initialize_model_parallel,
-)
+from vllm.distributed import (cleanup_dist_env_and_memory,
+                              init_distributed_environment,
+                              initialize_model_parallel)
 from vllm.logger import init_logger
 from vllm.logprobs import Logprob
 from vllm.multimodal.utils import fetch_image

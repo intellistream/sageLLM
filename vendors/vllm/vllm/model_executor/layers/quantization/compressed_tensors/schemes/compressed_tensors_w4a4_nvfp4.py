@@ -11,8 +11,8 @@ from vllm.logger import init_logger
 from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
     CompressedTensorsScheme,
 )
-from vllm.model_executor.layers.quantization.utils.nvfp4_emulation_utils import (  # noqa: E501
-    run_nvfp4_emulations,
+from vllm.model_executor.layers.quantization.utils.nvfp4_emulation_utils import (
+    run_nvfp4_emulations,  # noqa: E501
 )
 from vllm.model_executor.layers.quantization.utils.quant_utils import swizzle_blockscale
 from vllm.model_executor.parameter import (

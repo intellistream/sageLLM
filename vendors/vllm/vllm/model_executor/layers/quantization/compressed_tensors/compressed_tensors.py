@@ -30,8 +30,8 @@ from vllm.model_executor.layers.quantization.base_config import (  # noqa: E501
     QuantizationConfig,
     QuantizeMethodBase,
 )
-from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors_moe import (  # noqa: E501
-    CompressedTensorsMoEMethod,
+from vllm.model_executor.layers.quantization.compressed_tensors.compressed_tensors_moe import (
+    CompressedTensorsMoEMethod,  # noqa: E501
 )
 from vllm.model_executor.layers.quantization.compressed_tensors.schemes import (
     W4A16SPARSE24_SUPPORTED_BITS,

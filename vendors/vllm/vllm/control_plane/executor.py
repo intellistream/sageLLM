@@ -5,8 +5,9 @@
 
 import asyncio
 import logging
+from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any, AsyncGenerator, Optional
+from typing import Any, Optional
 
 import aiohttp
 
@@ -180,7 +181,8 @@ class ExecutionCoordinator:
 
             # Extract completion data from vLLM response
             completion = result.get("choices", [{}])[0]
-            tokens_generated = completion.get("finish_reason") == "length"
+            # Check if completion was truncated due to length
+            _ = completion.get("finish_reason") == "length"
             
             latency_ms = (datetime.now() - start_time).total_seconds() * 1000
 
@@ -195,7 +197,11 @@ class ExecutionCoordinator:
             }
 
         except asyncio.TimeoutError:
-            logger.error("Timeout executing request %s on %s", request.request_id, instance.instance_id)
+            logger.error(
+                "Timeout executing request %s on %s",
+                request.request_id,
+                instance.instance_id,
+            )
             raise
 
         except Exception as e:
@@ -332,8 +338,9 @@ class ExecutionCoordinator:
 
         try:
             url = f"http://{instance.host}:{instance.port}/health"
+            timeout = aiohttp.ClientTimeout(total=5)
             
-            async with self.session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+            async with self.session.get(url, timeout=timeout) as response:
                 if response.status == 200:
                     instance.is_healthy = True
                     logger.debug("Health check passed for %s", instance_id)
