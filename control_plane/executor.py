@@ -9,7 +9,6 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
-from control_plane.ThreadedEngine import ThreadedLLMEngine
 
 # Optional vLLM dependencies - gracefully handle if not installed/compiled
 try:
@@ -79,12 +78,13 @@ class ExecutionCoordinator:
                 model=instance.model_name,
                 tensor_parallel_size=instance.tensor_parallel_size,
                 pipeline_parallel_size=instance.pipeline_parallel_size,
-                gpu_memory_utilization=0.9,
+                gpu_memory_utilization=0.7,
                 enforce_eager=False,
+                max_model_len=512,
             )
 
             # Create async engine
-            engine = ThreadedLLMEngine(engine_args)
+            engine = AsyncLLMEngine.from_engine_args(engine_args)
             self.engines[instance.model_name] = engine
             logger.info(
                 "Initialized vLLM engine for instance %s",
@@ -149,7 +149,18 @@ class ExecutionCoordinator:
             raise ValueError(f"No engine found for model: {model_name}")
 
         # 调用对应引擎单元的 submit_request 方法
-        return await engine.submit_request(request_id, prompt, sampling_params)
+        results_generator = engine.generate(prompt, sampling_params, request_id)
+
+        final_output: RequestOutput = None
+        async for request_output in results_generator:
+
+            final_output = request_output
+
+        if final_output is None:
+            return ""
+
+        final_text = final_output.outputs[0].text
+        return final_text
 
     def _update_metrics(
         self,

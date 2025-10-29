@@ -194,7 +194,7 @@ class ControlPlaneManager:
             request.priority.name,
             len(self.pending_queue),
         )
-
+   
         try:
             return await future
         finally:
@@ -365,7 +365,7 @@ class ControlPlaneManager:
         try:
             future = self.request_futures.get(request.key)
             res_str = await self.executor.add_request(request.model_name,
-                                                      request.id,
+                                                      request.request_id,
                                                       request.prompt,
                                                       SamplingParams(temperature=request.temperature,
                                                                      top_p=request.top_p,
