@@ -189,8 +189,16 @@ class ControlPlaneManager:
             request.priority.name,
             len(self.pending_queue),
         )
+<<<<<<< HEAD
 
         return request.request_id
+=======
+   
+        try:
+            return await future
+        finally:
+            self.request_futures.pop(key, None)
+>>>>>>> 0fb9f96 (complete local mode and test)
 
     async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
@@ -414,7 +422,23 @@ class ControlPlaneManager:
         """Execute request and cleanup."""
 
         try:
+<<<<<<< HEAD
             await self.executor.execute_request(request, instance, decision)
+=======
+            future = self.request_futures.get(request.key)
+            res_str = await self.executor.add_request(request.model_name,
+                                                      request.request_id,
+                                                      request.prompt,
+                                                      SamplingParams(temperature=request.temperature,
+                                                                     top_p=request.top_p,
+                                                                     max_tokens=request.max_tokens,
+                                                                     ),
+                                                      )
+
+            if not future.done():
+                future.set_result(res_str)
+
+>>>>>>> 0fb9f96 (complete local mode and test)
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
