@@ -836,4 +836,6 @@ A: 不一定。PD 分离在以下场景最有效：
 - **[sageLLM 主 README](../README.md)** - 项目概述
 - **[部署指南](./DEPLOYMENT.md)** - vLLM 实例部署
 - **[vLLM 文档](https://docs.vllm.ai/)** - vLLM 官方文档
-- **[示例代码](../control_plane/example.py)** - 完整使用示例
+- **[示例代码](../control_plane/examples/)** - 完整使用示例
+  - [HTTP 客户端模式](../control_plane/examples/example_http_client.py) - 实际部署场景
+  - [完整演示](../control_plane/examples/demo_control_plane.py) - 功能演示

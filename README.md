@@ -37,8 +37,10 @@ sageLLM/
 │   ├── router.py                 # 请求路由 - 负载均衡/亲和性/局部性
 │   ├── parallelism.py            # 并行策略 - TP/PP/DP/EP/Hybrid
 │   ├── types.py                  # 类型定义 - 数据模型和枚举
-│   ├── example.py                # 使用示例 - 完整的使用示范
-│   └── example_http_client.py    # HTTP 客户端示例
+│   └── examples/                 # 📖 使用示例
+│       ├── example_http_client.py   # HTTP 客户端模式示例
+│       ├── demo_control_plane.py    # 完整演示（无需 vLLM 实例）
+│       └── README.md                # 示例文档
 │
 ├── docs/                          # 📚 文档目录
 │   ├── INTEGRATION.md            # 集成架构文档
@@ -338,8 +340,9 @@ if __name__ == "__main__":
 ### 高级使用示例
 
 更详细的使用示例，请查看：
-- **[基础示例](./control_plane/example.py)** - 完整的多实例、多策略示例
-- **[HTTP 客户端](./control_plane/example_http_client.py)** - HTTP API 调用示例
+- **[HTTP 客户端模式](./control_plane/examples/example_http_client.py)** - 实际部署场景示例（单机、多机、混合部署）
+- **[完整演示](./control_plane/examples/demo_control_plane.py)** - 功能演示（无需 vLLM 实例）
+- **[示例文档](./control_plane/examples/README.md)** - 示例说明和使用指南
 - **[集成指南](./docs/INTEGRATION.md)** - 与应用集成的详细步骤
 
 ### 运行测试
@@ -407,7 +410,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-更详细的使用示例，请查看 [`control_plane/example.py`](./control_plane/example.py)
+更详细的使用示例，请查看 [`control_plane/examples/`](./control_plane/examples/) 目录。
 
 ### 运行测试
 
