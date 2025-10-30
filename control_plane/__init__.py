@@ -18,6 +18,9 @@ from .executor import ExecutionCoordinator
 # Import manager
 from .manager import ControlPlaneManager
 
+# Import monitoring
+from .monitoring import MetricsCollector
+
 # Import parallelism strategies
 from .parallelism import (
                           DataParallelStrategy,
@@ -33,8 +36,8 @@ from .parallelism import (
 # Import PD separation routing
 from .pd_routing import PDRoutingStrategy
 
-# Import policies
-from .policies import (
+# Import scheduling strategies
+from .strategies import (
                           AdaptivePolicy,
                           CostOptimizedPolicy,
                           FIFOPolicy,
@@ -45,10 +48,15 @@ from .policies import (
 
 # Import router and coordinator
 from .router import LoadBalancer, RequestRouter
+
+# Import topology detection
+from .topology import TopologyDetector
+
 from .types import (
                           DecodingConfig,
                           ExecutionInstance,
                           ExecutionInstanceType,
+                          InstanceMetrics,
                           ParallelismType,
                           PDMetrics,
                           PDSeparationConfig,
@@ -58,6 +66,7 @@ from .types import (
                           RequestPriority,
                           RequestStatus,
                           SchedulingDecision,
+                          SchedulingMetrics,
 )
 
 __all__ = [
@@ -69,6 +78,8 @@ __all__ = [
     "ExecutionInstance",
     "SchedulingDecision",
     "PerformanceMetrics",
+    "SchedulingMetrics",
+    "InstanceMetrics",
     # Types - PD Separation
     "ExecutionInstanceType",
     "PrefillingConfig",
@@ -95,6 +106,10 @@ __all__ = [
     "RequestRouter",
     "LoadBalancer",
     "ExecutionCoordinator",
+    # Topology
+    "TopologyDetector",
+    # Monitoring
+    "MetricsCollector",
     # PD Routing
     "PDRoutingStrategy",
     # Manager

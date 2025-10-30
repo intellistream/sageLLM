@@ -10,9 +10,10 @@ from datetime import datetime
 from typing import Any, Optional
 
 from .executor import ExecutionCoordinator
+from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
-from .policies import (
+from .strategies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
     FIFOPolicy,
@@ -28,6 +29,8 @@ from .types import (
     RequestMetadata,
     RequestStatus,
     SchedulingDecision,
+    SchedulingMetrics,
+    InstanceMetrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -73,6 +76,9 @@ class ControlPlaneManager:
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
 
+        # Set executor callback for failure handling
+        self.executor.set_manager_callback(self)
+
         # PD Separation routing
         self.enable_pd_separation = enable_pd_separation
         self.pd_config = pd_config or PDSeparationConfig()
@@ -90,6 +96,9 @@ class ControlPlaneManager:
         # Configuration
         self.enable_auto_scaling = enable_auto_scaling
         self.enable_monitoring = enable_monitoring
+
+        # Monitoring
+        self.metrics_collector = MetricsCollector()
 
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
@@ -210,11 +219,68 @@ class ControlPlaneManager:
         logger.warning("Request %s not found or already running", request_id)
         return False
 
+    async def on_instance_failure(
+        self,
+        instance_id: str,
+        failed_requests: list[tuple[str, RequestMetadata]],
+    ):
+        """
+        Handle instance failure by rescheduling affected requests.
+
+        Args:
+            instance_id: ID of the failed instance
+            failed_requests: List of (request_id, request) tuples that were running
+        """
+        logger.warning(
+            "Handling instance failure for %s, rescheduling %d requests",
+            instance_id,
+            len(failed_requests),
+        )
+
+        # Record failure in metrics
+        self.metrics_collector.record_instance_failure(instance_id)
+
+        # Reschedule each failed request
+        for req_id, request in failed_requests:
+            # Track retry count
+            request.tags["retry_count"] = request.tags.get("retry_count", 0) + 1
+
+            # Check retry limit (max 3 retries)
+            if request.tags["retry_count"] > 3:
+                logger.error(
+                    "Request %s exceeded retry limit, marking as failed", req_id
+                )
+                self.running_requests.pop(req_id, None)
+                continue
+
+            # Re-add to pending queue (at the front for priority)
+            request.queue_time = datetime.now()
+            self.pending_queue.appendleft(request)
+
+            # Remove from running requests
+            self.running_requests.pop(req_id, None)
+
+            logger.info(
+                "Request %s rescheduled (retry: %d/%d)",
+                req_id,
+                request.tags["retry_count"],
+                3,
+            )
+
+        logger.info(
+            "Instance %s failure handled, %d requests rescheduled",
+            instance_id,
+            len(failed_requests),
+        )
+
     async def _scheduling_loop(self):
         """Main scheduling loop."""
 
         while self._running:
             try:
+                # Record queue length for metrics
+                self.metrics_collector.record_queue_length(len(self.pending_queue))
+
                 await self._schedule_pending_requests()
                 await asyncio.sleep(0.1)  # Schedule every 100ms
             except Exception as e:
@@ -349,19 +415,33 @@ class ControlPlaneManager:
 
         try:
             await self.executor.execute_request(request, instance, decision)
-
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
                 request.latency_ms,
             )
 
+            # Record metrics
+            if request.latency_ms:
+                self.metrics_collector.record_request_completion(
+                    request, decision, request.latency_ms, success=True
+                )
+
         except Exception as e:
             logger.error("Request %s failed: %s", request.request_id, e)
+
+            # Record failure
+            if request.latency_ms:
+                self.metrics_collector.record_request_completion(
+                    request, decision, request.latency_ms, success=False
+                )
 
         finally:
             # Cleanup
             self.running_requests.pop(request.request_id, None)
+
+            # Update instance metrics
+            self.metrics_collector.update_instance_metrics(instance)
 
     async def _health_check_loop(self):
         """Periodic health check of instances."""
@@ -401,6 +481,38 @@ class ControlPlaneManager:
         metrics = self.executor.get_metrics()
         metrics.queued_requests = len(self.pending_queue)
         return metrics
+
+    def get_scheduling_metrics(self) -> "SchedulingMetrics":
+        """
+        Get scheduling-specific metrics.
+
+        Returns:
+            SchedulingMetrics with policy performance data
+        """
+        return self.metrics_collector.get_scheduling_metrics(
+            self.scheduling_policy.name
+        )
+
+    def get_instance_metrics_detailed(self, instance_id: str) -> "InstanceMetrics | None":
+        """
+        Get detailed metrics for a specific instance.
+
+        Args:
+            instance_id: Instance identifier
+
+        Returns:
+            InstanceMetrics or None if not found
+        """
+        return self.metrics_collector.get_instance_metrics(instance_id)
+
+    def get_all_instance_metrics(self) -> dict[str, "InstanceMetrics"]:
+        """
+        Get detailed metrics for all instances.
+
+        Returns:
+            Dictionary mapping instance_id to InstanceMetrics
+        """
+        return self.metrics_collector.get_all_instance_metrics()
 
     def get_instances(self) -> list[ExecutionInstance]:
         """Get all registered instances."""

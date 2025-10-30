@@ -349,5 +349,7 @@ curl http://localhost:8000/metrics
 
 - 阅读 [集成指南](./INTEGRATION.md) 了解 Control Plane API 使用
 - 阅读 [主 README](../README.md) 了解调度策略和核心特性
-- 查看 [示例代码](../control_plane/example.py) 了解完整使用示例
+- 查看 [示例代码](../control_plane/examples/) 了解完整使用示例
+  - [HTTP 客户端模式](../control_plane/examples/example_http_client.py) - 实际部署场景
+  - [完整演示](../control_plane/examples/demo_control_plane.py) - 功能演示
 - 实现自定义调度策略，优化您的特定场景
