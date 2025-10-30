@@ -1,47 +1,26 @@
-# SPDX-License-Identifier: Apache-2.0
-# SPDX-FileCopyrightText: Copyright contributors to the SAGE project
-
-"""Execution coordinator for managing vLLM instances via HTTP API."""
+"""HTTP-based ExecutionCoordinator implementation.
+"""
+from __future__ import annotations
 
 import asyncio
 import logging
 from datetime import datetime
 from typing import Any
 
-<<<<<<< HEAD
 import aiohttp
-=======
 
-# Optional vLLM dependencies - gracefully handle if not installed/compiled
-try:
-    from vllm.engine.arg_utils import EngineArgs, AsyncEngineArgs
-    from vllm.engine.async_llm_engine import AsyncLLMEngine
-    from vllm.sampling_params import SamplingParams
-except ImportError as e:
-    # vLLM not fully installed (e.g., missing C extensions)
-    # Tests can still run with mocked values
-    EngineArgs = None  # type: ignore
-    AsyncLLMEngine = None  # type: ignore
-    SamplingParams = None  # type: ignore
-    _VLLM_IMPORT_ERROR = e
-else:
-    _VLLM_IMPORT_ERROR = None
-
-if TYPE_CHECKING:
-    from vllm.engine.async_llm_engine import AsyncLLMEngine
->>>>>>> 0fb9f96 (complete local mode and test)
-
-from .types import (
+from ..types import (
     ExecutionInstance,
     PerformanceMetrics,
     RequestMetadata,
     SchedulingDecision,
 )
+from .base import ExecutionCoordinatorBase
 
 logger = logging.getLogger(__name__)
 
 
-class ExecutionCoordinator:
+class HttpExecutionCoordinator(ExecutionCoordinatorBase):
     """
     Coordinates execution across multiple vLLM instances via HTTP API.
     
@@ -56,35 +35,20 @@ class ExecutionCoordinator:
     - Scheduling focused: Control Plane only implements scheduling strategies
     - Simple implementation: Single HTTP client path, no local/remote branches
     """
-
     def __init__(self, timeout: int = 300):
-        """
-        Initialize execution coordinator.
-        
-        Args:
-            timeout: HTTP request timeout in seconds (default: 5 minutes)
-        """
-        self.instances: dict[str, ExecutionInstance] = {}
-        self.active_requests: dict[str, RequestMetadata] = {}
-        self.request_to_instance: dict[str, str] = {}  # request_id -> instance_id
-
-        # HTTP session for all vLLM communication
+        super().__init__()
         self.http_session: aiohttp.ClientSession | None = None
         self.timeout = aiohttp.ClientTimeout(total=timeout)
-
-        # Monitoring
-        self.metrics = PerformanceMetrics()
-        
+ 
         logger.info("ExecutionCoordinator initialized in HTTP client mode")
 
-    async def initialize(self):
-        """Initialize HTTP session for vLLM communication."""
+
+    async def initialize(self) -> None:
         if not self.http_session:
             self.http_session = aiohttp.ClientSession(timeout=self.timeout)
             logger.info("HTTP session initialized for vLLM communication")
 
-    async def cleanup(self):
-        """Cleanup HTTP session."""
+    async def cleanup(self) -> None:
         if self.http_session:
             await self.http_session.close()
             self.http_session = None
@@ -133,81 +97,6 @@ class ExecutionCoordinator:
             instance.gpu_count,
         )
 
-<<<<<<< HEAD
-=======
-    def initialize_instance_engine(self, instance: ExecutionInstance):
-        """Initialize the vLLM AsyncLLMEngine for an instance.
-
-        This creates the actual vLLM engine that will be used for inference.
-        """
-        try:
-            # Create engine arguments
-            engine_args = AsyncEngineArgs(
-                model=instance.model_name,
-                tensor_parallel_size=instance.tensor_parallel_size,
-                pipeline_parallel_size=instance.pipeline_parallel_size,
-                gpu_memory_utilization=0.7,
-                enforce_eager=False,
-                max_model_len=512,
-            )
-
-            # Create async engine
-            engine = AsyncLLMEngine.from_engine_args(engine_args)
-            self.engines[instance.model_name] = engine
-            logger.info(
-                "Initialized vLLM engine for instance %s",
-                instance.instance_id,
-            )
-
-            return engine
-
-        except Exception as e:
-            logger.error(
-                "Failed to initialize engine for %s: %s",
-                instance.instance_id,
-                str(e),
-            )
-            instance.is_healthy = False
-            raise
-
-    async def get_engine(self, instance_id: str) -> Optional[Any]:
-        """Get the vLLM engine for an instance, initializing if needed."""
-
-        return self.engines.get(instance_id)
-
-    async def shutdown_engine(self, instance_id: str):
-        """Shutdown the vLLM engine for an instance."""
-        if instance_id in self.engines:
-            self.engines.pop(instance_id)
-            try:
-                # Engine cleanup handled by context manager or explicit call
-                logger.info("Shutdown vLLM engine for instance %s", instance_id)
-            except Exception as e:
-                logger.error("Error shutting down engine %s: %s", instance_id, str(e))
-
->>>>>>> 0fb9f96 (complete local mode and test)
-    def unregister_instance(self, instance_id: str):
-        """Unregister an instance."""
-        if instance_id in self.instances:
-            del self.instances[instance_id]
-            logger.info("Unregistered instance: %s", instance_id)
-
-    def get_instance(self, instance_id: str) -> ExecutionInstance | None:
-        """Get instance by ID."""
-        return self.instances.get(instance_id)
-
-    def get_available_instances(self) -> list[ExecutionInstance]:
-        """Get all available instances that can accept requests."""
-        return [
-            instance
-            for instance in self.instances.values()
-            if instance.can_accept_request
-        ]
-
-    def get_all_instances(self) -> list[ExecutionInstance]:
-        """Get all registered instances."""
-        return list(self.instances.values())
-
     async def execute_request(
         self,
         request: RequestMetadata,
@@ -217,7 +106,6 @@ class ExecutionCoordinator:
         """
         Execute a request on a vLLM instance via HTTP API.
 
-<<<<<<< HEAD
         Args:
             request: Request metadata with prompt and parameters
             instance: Target vLLM instance (can be local or remote)
@@ -534,21 +422,6 @@ class ExecutionCoordinator:
                 e,
             )
             return None
-=======
-        # 调用对应引擎单元的 submit_request 方法
-        results_generator = engine.generate(prompt, sampling_params, request_id)
-
-        final_output: RequestOutput = None
-        async for request_output in results_generator:
-
-            final_output = request_output
-
-        if final_output is None:
-            return ""
-
-        final_text = final_output.outputs[0].text
-        return final_text
->>>>>>> 0fb9f96 (complete local mode and test)
 
     def _update_metrics(
         self,
