@@ -1,7 +1,6 @@
-# SPDX-License-Identifier: Apache-2.0
-# SPDX-FileCopyrightText: Copyright contributors to the SAGE project
-
-"""Execution coordinator for managing vLLM instances via HTTP API."""
+"""HTTP-based ExecutionCoordinator implementation.
+"""
+from __future__ import annotations
 
 import asyncio
 import logging
@@ -10,17 +9,18 @@ from typing import Any
 
 import aiohttp
 
-from .types import (
+from ..types import (
     ExecutionInstance,
     PerformanceMetrics,
     RequestMetadata,
     SchedulingDecision,
 )
+from .base import ExecutionCoordinatorBase
 
 logger = logging.getLogger(__name__)
 
 
-class ExecutionCoordinator:
+class HttpExecutionCoordinator(ExecutionCoordinatorBase):
     """
     Coordinates execution across multiple vLLM instances via HTTP API.
     
@@ -35,41 +35,24 @@ class ExecutionCoordinator:
     - Scheduling focused: Control Plane only implements scheduling strategies
     - Simple implementation: Single HTTP client path, no local/remote branches
     """
-
     def __init__(self, timeout: int = 300):
-        """
-        Initialize execution coordinator.
-        
-        Args:
-            timeout: HTTP request timeout in seconds (default: 5 minutes)
-        """
-        self.instances: dict[str, ExecutionInstance] = {}
-        self.active_requests: dict[str, RequestMetadata] = {}
-        self.request_to_instance: dict[str, str] = {}  # request_id -> instance_id
-
-
-        # HTTP session for all vLLM communication
+        super().__init__()
         self.http_session: aiohttp.ClientSession | None = None
         self.timeout = aiohttp.ClientTimeout(total=timeout)
-
-        # Monitoring
-        self.metrics = PerformanceMetrics()
-        
+ 
         logger.info("ExecutionCoordinator initialized in HTTP client mode")
 
-    async def initialize(self):
-        """Initialize HTTP session for vLLM communication."""
+
+    async def initialize(self) -> None:
         if not self.http_session:
             self.http_session = aiohttp.ClientSession(timeout=self.timeout)
             logger.info("HTTP session initialized for vLLM communication")
 
-    async def cleanup(self):
-        """Cleanup HTTP session."""
+    async def cleanup(self) -> None:
         if self.http_session:
             await self.http_session.close()
             self.http_session = None
             logger.info("HTTP session closed")
-
 
     def register_instance(self, instance: ExecutionInstance):
         """
@@ -105,7 +88,6 @@ class ExecutionCoordinator:
             coordinator.register_instance(instance)
         """
         self.instances[instance.instance_id] = instance
-        self.initialize_instance_engine(instance)
         logger.info(
             "Registered vLLM instance: %s at %s:%d (model=%s, GPUs=%d)",
             instance.instance_id,
@@ -114,28 +96,6 @@ class ExecutionCoordinator:
             instance.model_name,
             instance.gpu_count,
         )
-
-    def unregister_instance(self, instance_id: str):
-        """Unregister an instance."""
-        if instance_id in self.instances:
-            del self.instances[instance_id]
-            logger.info("Unregistered instance: %s", instance_id)
-
-    def get_instance(self, instance_id: str) -> ExecutionInstance | None:
-        """Get instance by ID."""
-        return self.instances.get(instance_id)
-
-    def get_available_instances(self) -> list[ExecutionInstance]:
-        """Get all available instances that can accept requests."""
-        return [
-            instance
-            for instance in self.instances.values()
-            if instance.can_accept_request
-        ]
-
-    def get_all_instances(self) -> list[ExecutionInstance]:
-        """Get all registered instances."""
-        return list(self.instances.values())
 
     async def execute_request(
         self,

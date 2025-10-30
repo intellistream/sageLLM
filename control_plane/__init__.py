@@ -13,7 +13,7 @@ The Control Plane sits between users and vLLM execution instances, providing:
 """
 
 # Import types
-from .executor import ExecutionCoordinator
+from .executors import ExecutionCoordinatorBase
 
 # Import manager
 from .manager import ControlPlaneManager

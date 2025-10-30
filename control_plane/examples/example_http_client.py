@@ -60,7 +60,7 @@ async def example_local_single_machine():
     )
     
     # Register 4 local GPU instances
-    for gpu_id in range(4):
+    for gpu_id in range(1):
         instance = ExecutionInstance(
             instance_id=f"local-gpu-{gpu_id}",
             host="localhost",

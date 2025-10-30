@@ -7,12 +7,16 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
 from sympy.physics.units import temperature
 from vllm import SamplingParams
 
-from .executor import ExecutionCoordinator
+from .executors import (
+    ExecutionCoordinatorBase,
+    HttpExecutionCoordinator,
+    LocalAsyncExecutionCoordinator,
+)
 from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
@@ -55,6 +59,7 @@ class ControlPlaneManager:
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
         pd_config: PDSeparationConfig | None = None,
+        mode: Literal['http', 'local'] = 'http',
     ):
         """
         Initialize Control Plane Manager.
@@ -74,7 +79,18 @@ class ControlPlaneManager:
         """
 
         # Core components
-        self.executor = ExecutionCoordinator()
+        # Choose executor implementation based on mode ('http' or 'local')
+        self.mode = mode
+        if mode == "http":
+            self.executor: ExecutionCoordinatorBase = HttpExecutionCoordinator()
+        elif mode == "local":
+            self.executor: ExecutionCoordinatorBase = LocalAsyncExecutionCoordinator()
+        else:
+            logger.warning(
+                "Unknown mode '%s' for ControlPlaneManager, defaulting to 'http'",
+                mode,
+            )
+            self.executor = HttpExecutionCoordinator()
         self.router = RequestRouter(routing_strategy)
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
@@ -106,10 +122,6 @@ class ControlPlaneManager:
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
         self._running = False
-
-        #Future dict
-        self.request_futures: dict[int, asyncio.Future] = {}
-        self.future_key = 0
 
         logger.info(
             "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s",
@@ -190,13 +202,6 @@ class ControlPlaneManager:
         request.queue_time = datetime.now()
         self.pending_queue.append(request)
 
-        loop = asyncio.get_running_loop()
-        future = loop.create_future()
-        key = self.future_key
-        self.request_futures[key] = future
-        self.future_key += 1
-        request.key = key
-
         logger.info(
             "Request %s submitted (priority=%s, queue_size=%d)",
             request.request_id,
@@ -204,10 +209,7 @@ class ControlPlaneManager:
             len(self.pending_queue),
         )
    
-        try:
-            return await future
-        finally:
-            self.request_futures.pop(key, None)
+        return request.request_id
 
     async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
