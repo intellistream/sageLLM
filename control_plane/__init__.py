@@ -10,7 +10,14 @@ The Control Plane sits between users and vLLM execution instances, providing:
 - Dynamic parallelism strategy selection and optimization
 - Multi-instance management and coordination
 - Performance monitoring and adaptive optimization
+- SLA-based autoscaling for Prefill/Decode instances
 """
+
+# Import autoscaling components
+from .autoscaler import Autoscaler, AutoscalerConfig
+from .load_predictor import LoadPredictor
+from .metrics_collector import MetricsCollector, SystemMetrics
+from .performance_interpolator import DecodeInterpolator, PrefillInterpolator
 
 # Import types
 from .executor import ExecutionCoordinator
@@ -65,6 +72,7 @@ from .types import (
                           RequestMetadata,
                           RequestPriority,
                           RequestStatus,
+                          ScalingDecision,
                           SchedulingDecision,
                           SchedulingMetrics,
 )
@@ -80,12 +88,21 @@ __all__ = [
     "PerformanceMetrics",
     "SchedulingMetrics",
     "InstanceMetrics",
+    "ScalingDecision",
     # Types - PD Separation
     "ExecutionInstanceType",
     "PrefillingConfig",
     "DecodingConfig",
     "PDSeparationConfig",
     "PDMetrics",
+    # Autoscaling
+    "Autoscaler",
+    "AutoscalerConfig",
+    "LoadPredictor",
+    "MetricsCollector",
+    "SystemMetrics",
+    "PrefillInterpolator",
+    "DecodeInterpolator",
     # Policies
     "SchedulingPolicy",
     "FIFOPolicy",

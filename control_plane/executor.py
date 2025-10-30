@@ -134,6 +134,65 @@ class ExecutionCoordinator:
         """Get all registered instances."""
         return list(self.instances.values())
 
+    async def add_instance(self, instance: ExecutionInstance):
+        """
+        Dynamically add a new instance to the pool.
+
+        Args:
+            instance: New ExecutionInstance to add
+        """
+        self.register_instance(instance)
+        # Optionally initialize or health check
+        logger.info(f"Dynamically added instance: {instance.instance_id}")
+
+    async def remove_instance_gracefully(self, instance_id: str, max_wait_sec: int = 300):
+        """
+        Gracefully remove an instance from the pool.
+
+        This method:
+        1. Marks the instance as unavailable (stops accepting new requests)
+        2. Waits for active requests to complete (up to max_wait_sec)
+        3. Removes the instance from the registry
+
+        Args:
+            instance_id: ID of instance to remove
+            max_wait_sec: Maximum time to wait for requests to complete (seconds)
+        """
+        instance = self.get_instance(instance_id)
+        if not instance:
+            logger.warning(f"Instance {instance_id} not found for removal")
+            return
+
+        logger.info(f"Gracefully removing instance {instance_id}")
+
+        # Step 1: Mark as unavailable
+        instance.is_available = False
+        logger.info(f"Instance {instance_id} marked unavailable")
+
+        # Step 2: Wait for active requests to complete
+        wait_interval = 5  # seconds
+        elapsed = 0
+
+        while instance.active_requests > 0 and elapsed < max_wait_sec:
+            logger.info(
+                f"Waiting for {instance.active_requests} requests to complete "
+                f"on instance {instance_id} ({elapsed}/{max_wait_sec}s)"
+            )
+            await asyncio.sleep(wait_interval)
+            elapsed += wait_interval
+
+        if instance.active_requests > 0:
+            logger.warning(
+                f"Force removing instance {instance_id} with "
+                f"{instance.active_requests} active requests after {max_wait_sec}s timeout"
+            )
+        else:
+            logger.info(f"All requests completed on instance {instance_id}")
+
+        # Step 3: Remove from registry
+        self.unregister_instance(instance_id)
+        logger.info(f"Instance {instance_id} removed from registry")
+
     async def execute_request(
         self,
         request: RequestMetadata,

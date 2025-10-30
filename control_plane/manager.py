@@ -1,15 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the SAGE project
 
-"""Main Control Plane Manager."""
+"""Control Plane Manager - orchestrates scheduling, routing, and execution."""
 
 import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
+from .autoscaler import Autoscaler, AutoscalerConfig
 from .executor import ExecutionCoordinator
+from .metrics_collector import MetricsCollector as AutoscalerMetricsCollector
 from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
@@ -52,6 +54,7 @@ class ControlPlaneManager:
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
         pd_config: PDSeparationConfig | None = None,
+        autoscaler_config: AutoscalerConfig | None = None,
     ):
         """
         Initialize Control Plane Manager.
@@ -68,6 +71,7 @@ class ControlPlaneManager:
             enable_monitoring: Enable performance monitoring
             enable_pd_separation: Enable Prefilling/Decoding separation
             pd_config: PD separation configuration
+            autoscaler_config: Autoscaler configuration
         """
 
         # Core components
@@ -97,15 +101,29 @@ class ControlPlaneManager:
         self.enable_auto_scaling = enable_auto_scaling
         self.enable_monitoring = enable_monitoring
 
-        # Monitoring
+        # Monitoring (from original code for scheduling metrics)
         self.metrics_collector = MetricsCollector()
+
+        # Autoscaler (SLA-based dynamic scaling)
+        self.autoscaler: Optional[Autoscaler] = None
+        self.autoscaler_metrics_collector: Optional[AutoscalerMetricsCollector] = None
+        if enable_auto_scaling:
+            self.autoscaler_metrics_collector = AutoscalerMetricsCollector(
+                executor_coordinator=self.executor
+            )
+            self.autoscaler = Autoscaler(
+                config=autoscaler_config or AutoscalerConfig(),
+                metrics_collector=self.autoscaler_metrics_collector,
+                executor_callback=self._handle_scaling_decision,
+            )
+            logger.info("Autoscaler enabled")
 
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
         self._running = False
 
         logger.info(
-            "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s",
+            "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s, autoscaling=%s",
             scheduling_policy,
             routing_strategy,
             enable_pd_separation,
@@ -125,35 +143,52 @@ class ControlPlaneManager:
         return policies.get(policy_name, AdaptivePolicy())
 
     async def start(self):
-        """Start the Control Plane background tasks."""
-
+        """Start the control plane background tasks."""
         if self._running:
-            logger.warning("Control Plane already running")
+            logger.warning("Control plane already running")
             return
 
         self._running = True
+        logger.info("Starting Control Plane...")
 
-        # Start background tasks
-        self.background_tasks = [
-            asyncio.create_task(self._scheduling_loop()),
-            asyncio.create_task(self._health_check_loop()),
-        ]
+        # Start scheduling loop
+        task = asyncio.create_task(self._scheduling_loop())
+        self.background_tasks.append(task)
 
+        # Start health check loop
+        task = asyncio.create_task(self._health_check_loop())
+        self.background_tasks.append(task)
+
+        # Start autoscaler if enabled
+        if self.autoscaler:
+            await self.autoscaler.start()
+            logger.info("Autoscaler started")
+
+        # Start monitoring loop if enabled
         if self.enable_monitoring:
-            self.background_tasks.append(asyncio.create_task(self._monitoring_loop()))
+            task = asyncio.create_task(self._monitoring_loop())
+            self.background_tasks.append(task)
 
-        logger.info("Control Plane started")
+        logger.info("Control Plane started successfully")
 
     async def stop(self):
-        """Stop the Control Plane."""
+        """Stop the control plane."""
+        if not self._running:
+            return
 
+        logger.info("Stopping Control Plane...")
         self._running = False
+
+        # Stop autoscaler
+        if self.autoscaler:
+            await self.autoscaler.stop()
 
         # Cancel background tasks
         for task in self.background_tasks:
             task.cancel()
 
         await asyncio.gather(*self.background_tasks, return_exceptions=True)
+        self.background_tasks.clear()
 
         logger.info("Control Plane stopped")
 
@@ -475,6 +510,158 @@ class ControlPlaneManager:
                 await asyncio.sleep(5)  # Monitor every 5 seconds
             except Exception as e:
                 logger.error("Monitoring loop error: %s", e)
+
+    async def _handle_scaling_decision(self, decision):
+        """
+        Handle autoscaling decision from Autoscaler.
+
+        This callback is invoked by the Autoscaler when it determines
+        that instances need to be scaled up or down.
+
+        Args:
+            decision: ScalingDecision with target instance counts
+        """
+        from .types import ExecutionInstanceType
+
+        # Get current instance counts
+        instances = self.executor.get_all_instances()
+        current_prefill = sum(
+            1 for i in instances if i.instance_type == ExecutionInstanceType.PREFILLING
+        )
+        current_decode = sum(
+            1 for i in instances if i.instance_type == ExecutionInstanceType.DECODING
+        )
+
+        # Calculate deltas
+        prefill_delta = decision.num_prefill_instances - current_prefill
+        decode_delta = decision.num_decode_instances - current_decode
+
+        logger.info(
+            f"Autoscaling decision: prefill {current_prefill} -> "
+            f"{decision.num_prefill_instances} (delta={prefill_delta}), "
+            f"decode {current_decode} -> {decision.num_decode_instances} "
+            f"(delta={decode_delta})"
+        )
+
+        # Apply scaling changes
+        try:
+            # Scale prefill instances
+            if prefill_delta > 0:
+                await self._scale_up_prefill(prefill_delta)
+            elif prefill_delta < 0:
+                await self._scale_down_prefill(abs(prefill_delta))
+
+            # Scale decode instances
+            if decode_delta > 0:
+                await self._scale_up_decode(decode_delta)
+            elif decode_delta < 0:
+                await self._scale_down_decode(abs(decode_delta))
+
+            logger.info("Autoscaling completed successfully")
+
+        except Exception as e:
+            logger.error(f"Failed to apply autoscaling decision: {e}", exc_info=True)
+
+    async def _scale_up_prefill(self, count: int):
+        """
+        Scale up prefill instances.
+
+        Args:
+            count: Number of instances to add
+
+        Note: This is a placeholder. Actual implementation depends on
+        deployment environment (Kubernetes, cloud APIs, etc.)
+        """
+        logger.info(f"Scaling up {count} prefill instances")
+        # TODO: Implement instance creation
+        # - For Kubernetes: create new pods
+        # - For cloud: launch new VMs/containers
+        # - For local: start new processes
+        #
+        # Example Kubernetes approach:
+        # await kubernetes_client.scale_deployment(
+        #     deployment_name="prefill-worker",
+        #     replicas=current + count
+        # )
+
+    async def _scale_down_prefill(self, count: int):
+        """
+        Scale down prefill instances.
+
+        Args:
+            count: Number of instances to remove
+
+        Note: Should gracefully drain instances before removal.
+        """
+        logger.info(f"Scaling down {count} prefill instances")
+        # TODO: Implement graceful instance removal
+        # 1. Select instances to remove (prefer least loaded)
+        # 2. Mark as unavailable (stop accepting new requests)
+        # 3. Wait for active requests to complete
+        # 4. Shutdown and remove
+        from .types import ExecutionInstanceType
+
+        instances = [
+            i
+            for i in self.executor.get_all_instances()
+            if i.instance_type == ExecutionInstanceType.PREFILLING
+        ]
+
+        # Sort by load (ascending) to remove least loaded first
+        instances.sort(key=lambda x: x.active_requests)
+
+        for i in range(min(count, len(instances))):
+            instance = instances[i]
+            logger.info(f"Removing prefill instance {instance.instance_id}")
+            await self.executor.remove_instance_gracefully(instance.instance_id)
+
+    async def _scale_up_decode(self, count: int):
+        """
+        Scale up decode instances.
+
+        Args:
+            count: Number of instances to add
+        """
+        logger.info(f"Scaling up {count} decode instances")
+        # TODO: Implement instance creation (similar to prefill)
+
+    async def _scale_down_decode(self, count: int):
+        """
+        Scale down decode instances.
+
+        Args:
+            count: Number of instances to remove
+        """
+        logger.info(f"Scaling down {count} decode instances")
+        from .types import ExecutionInstanceType
+
+        instances = [
+            i
+            for i in self.executor.get_all_instances()
+            if i.instance_type == ExecutionInstanceType.DECODING
+        ]
+
+        instances.sort(key=lambda x: x.active_requests)
+
+        for i in range(min(count, len(instances))):
+            instance = instances[i]
+            logger.info(f"Removing decode instance {instance.instance_id}")
+            await self.executor.remove_instance_gracefully(instance.instance_id)
+
+    def get_metrics(self) -> PerformanceMetrics:
+        """Get current performance metrics."""
+        # TODO: Implement metrics aggregation
+        return PerformanceMetrics()
+
+    def get_autoscaler_status(self) -> dict:
+        """Get autoscaler status."""
+        if not self.autoscaler:
+            return {"enabled": False}
+
+        return {
+            "enabled": True,
+            **self.autoscaler.get_status(),
+        }
 
     def get_metrics(self) -> PerformanceMetrics:
         """Get current performance metrics."""
