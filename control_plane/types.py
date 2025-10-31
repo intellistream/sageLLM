@@ -142,10 +142,9 @@ class ExecutionInstance:
     """Represents a vLLM execution instance."""
 
     instance_id: str
-    host: str
-    port: int
     model_name: str
-
+    host: str = '127.0.0.1'
+    port: int = 5050
     # Parallelism configuration
     tensor_parallel_size: int = 1
     pipeline_parallel_size: int = 1
