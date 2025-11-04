@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-| <a href="#概述"><b>概述</b></a> | <a href="#核心特性"><b>核心特性</b></a> | <a href="#快速开始"><b>快速开始</b></a> | <a href="#开发设置"><b>开发设置</b></a> | <a href="#架构"><b>架构</b></a> | <a href="./docs/INTEGRATION.md"><b>集成指南</b></a> | <a href="./docs/DEPLOYMENT.md"><b>部署指南</b></a> |
+| <a href="#概述"><b>概述</b></a> | <a href="#核心特性"><b>核心特性</b></a> | <a href="#快速开始"><b>快速开始</b></a> | <a href="#开发设置"><b>开发设置</b></a> | <a href="#架构"><b>架构</b></a> | <a href="./dev-notes/INTEGRATION.md"><b>集成指南</b></a> | <a href="./dev-notes/DEPLOYMENT.md"><b>部署指南</b></a> |
 </p>
 
 ______________________________________________________________________
@@ -59,7 +59,7 @@ pre-commit run --all-files
 - ✅ 安装 pre-commit hooks
 - ✅ 可选：运行代码质量检查
 
-详见 [DEVELOPMENT.md](./DEVELOPMENT.md) 了解完整开发指南。
+详见 [DEVELOPMENT.md](./dev-notes/DEVELOPMENT.md) 了解完整开发指南。
 
 ## 📦 项目结构
 
@@ -391,7 +391,7 @@ if __name__ == "__main__":
 - **[HTTP 客户端模式](./control_plane/examples/example_http_client.py)** - 实际部署场景示例（单机、多机、混合部署）
 - **[完整演示](./control_plane/examples/demo_control_plane.py)** - 功能演示（无需 vLLM 实例）
 - **[示例文档](./control_plane/examples/README.md)** - 示例说明和使用指南
-- **[集成指南](./docs/INTEGRATION.md)** - 与应用集成的详细步骤
+- **[集成指南](./dev-notes/INTEGRATION.md)** - 与应用集成的详细步骤
 
 ### 运行测试
 
@@ -625,8 +625,8 @@ python -m pytest --cov=control_plane tests/control_plane/
 
 ## 📚 文档
 
-- **[集成指南](./docs/INTEGRATION.md)** - Control Plane 集成架构和使用指南
-- **[部署指南](./docs/DEPLOYMENT.md)** - vLLM 实例部署配置
+- **[集成指南](./dev-notes/INTEGRATION.md)** - Control Plane 集成架构和使用指南
+- **[部署指南](./dev-notes/DEPLOYMENT.md)** - vLLM 实例部署配置
 - **[项目结构](./STRUCTURE.md)** - 详细的目录结构说明
 - **[测试文档](./tests/control_plane/README.md)** - 测试套件说明
 
@@ -694,7 +694,7 @@ python -m control_plane.example
 
 ### 生产环境
 
-参考 [部署指南](./docs/DEPLOYMENT.md) 了解：
+参考 [部署指南](./dev-notes/DEPLOYMENT.md) 了解：
 
 - 多实例部署
 - PD 分离配置
