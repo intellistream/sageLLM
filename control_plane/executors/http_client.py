@@ -1,5 +1,7 @@
-"""HTTP-based ExecutionCoordinator implementation.
-"""
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright contributors to the SAGE project
+
+"""Execution coordinator for managing vLLM instances via HTTP API."""
 from __future__ import annotations
 
 import asyncio
