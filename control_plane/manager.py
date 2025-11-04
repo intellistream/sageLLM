@@ -7,23 +7,17 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional, Literal
-
-<<<<<<< HEAD
-from .executor import ExecutionCoordinator
-=======
-from sympy.physics.units import temperature
-from vllm import SamplingParams
+from typing import Any, Literal
 
 from .executors import (
     ExecutionCoordinatorBase,
     HttpExecutionCoordinator,
     LocalAsyncExecutionCoordinator,
 )
->>>>>>> a1eb56f (Add http mode and local mode executor)
 from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
+from .router import LoadBalancer, RequestRouter
 from .strategies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
@@ -32,16 +26,15 @@ from .strategies import (
     SchedulingPolicy,
     SLOAwarePolicy,
 )
-from .router import LoadBalancer, RequestRouter
 from .types import (
     ExecutionInstance,
+    InstanceMetrics,
     PDSeparationConfig,
     PerformanceMetrics,
     RequestMetadata,
     RequestStatus,
     SchedulingDecision,
     SchedulingMetrics,
-    InstanceMetrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -63,7 +56,7 @@ class ControlPlaneManager:
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
         pd_config: PDSeparationConfig | None = None,
-        mode: Literal['http', 'local'] = 'http',
+        mode: Literal["http", "local"] = "http",
     ):
         """
         Initialize Control Plane Manager.
@@ -85,16 +78,18 @@ class ControlPlaneManager:
         # Core components
         # Choose executor implementation based on mode ('http' or 'local')
         self.mode = mode
+        executor: ExecutionCoordinatorBase
         if mode == "http":
-            self.executor: ExecutionCoordinatorBase = HttpExecutionCoordinator()
+            executor = HttpExecutionCoordinator()
         elif mode == "local":
-            self.executor: ExecutionCoordinatorBase = LocalAsyncExecutionCoordinator()
+            executor = LocalAsyncExecutionCoordinator()
         else:
             logger.warning(
                 "Unknown mode '%s' for ControlPlaneManager, defaulting to 'http'",
                 mode,
             )
-            self.executor = HttpExecutionCoordinator()
+            executor = HttpExecutionCoordinator()
+        self.executor = executor
         self.router = RequestRouter(routing_strategy)
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
@@ -105,7 +100,7 @@ class ControlPlaneManager:
         # PD Separation routing
         self.enable_pd_separation = enable_pd_separation
         self.pd_config = pd_config or PDSeparationConfig()
-        self.pd_router: Optional[PDRoutingStrategy] = (
+        self.pd_router: PDRoutingStrategy | None = (
             PDRoutingStrategy(self.pd_config) if enable_pd_separation else None
         )
 
@@ -212,20 +207,8 @@ class ControlPlaneManager:
             request.priority.name,
             len(self.pending_queue),
         )
-<<<<<<< HEAD
 
         return request.request_id
-=======
-   
-<<<<<<< HEAD
-        try:
-            return await future
-        finally:
-            self.request_futures.pop(key, None)
->>>>>>> 0fb9f96 (complete local mode and test)
-=======
-        return request.request_id
->>>>>>> a1eb56f (Add http mode and local mode executor)
 
     async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
@@ -282,9 +265,7 @@ class ControlPlaneManager:
 
             # Check retry limit (max 3 retries)
             if request.tags["retry_count"] > 3:
-                logger.error(
-                    "Request %s exceeded retry limit, marking as failed", req_id
-                )
+                logger.error("Request %s exceeded retry limit, marking as failed", req_id)
                 self.running_requests.pop(req_id, None)
                 continue
 
@@ -334,9 +315,7 @@ class ControlPlaneManager:
 
         # Get requests to schedule (up to available capacity)
         requests_to_schedule = []
-        max_schedule = sum(
-            max(0, i.max_concurrent_requests - i.active_requests) for i in instances
-        )
+        max_schedule = sum(max(0, i.max_concurrent_requests - i.active_requests) for i in instances)
 
         for _ in range(min(len(self.pending_queue), max_schedule)):
             if self.pending_queue:
@@ -391,7 +370,9 @@ class ControlPlaneManager:
                     # Select best instance based on PD specialization
                     best_instance = max(
                         compatible_instances,
-                        key=lambda inst: pd_router.get_instance_specialization(inst).get(target_phase.name, 0),
+                        key=lambda inst: pd_router.get_instance_specialization(inst).get(
+                            target_phase.name, 0
+                        ),
                     )
                     instance = best_instance
                     logger.debug(
@@ -404,10 +385,8 @@ class ControlPlaneManager:
         if self.enable_pd_separation and self.pd_router:
             parallelism_config = self.pd_router.recommend_parallelism_config(instance, request)
             if parallelism_config:
-                decision.tensor_parallel_size = parallelism_config['tensor_parallel_size']
-                decision.pipeline_parallel_size = (
-                    parallelism_config['pipeline_parallel_size']
-                )
+                decision.tensor_parallel_size = parallelism_config["tensor_parallel_size"]
+                decision.pipeline_parallel_size = parallelism_config["pipeline_parallel_size"]
 
         # Otherwise optimize parallelism strategy
         else:
@@ -432,9 +411,7 @@ class ControlPlaneManager:
             instance.instance_id,
             decision.tensor_parallel_size,
             decision.pipeline_parallel_size,
-            instance.instance_type.name
-            if hasattr(instance, "instance_type")
-            else "unknown",
+            instance.instance_type.name if hasattr(instance, "instance_type") else "unknown",
         )
 
         # Execute asynchronously
@@ -449,23 +426,8 @@ class ControlPlaneManager:
         """Execute request and cleanup."""
 
         try:
-<<<<<<< HEAD
             await self.executor.execute_request(request, instance, decision)
-=======
-            future = self.request_futures.get(request.key)
-            res_str = await self.executor.add_request(request.model_name,
-                                                      request.request_id,
-                                                      request.prompt,
-                                                      SamplingParams(temperature=request.temperature,
-                                                                     top_p=request.top_p,
-                                                                     max_tokens=request.max_tokens,
-                                                                     ),
-                                                      )
 
-            if not future.done():
-                future.set_result(res_str)
-
->>>>>>> 0fb9f96 (complete local mode and test)
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
@@ -540,9 +502,7 @@ class ControlPlaneManager:
         Returns:
             SchedulingMetrics with policy performance data
         """
-        return self.metrics_collector.get_scheduling_metrics(
-            self.scheduling_policy.name
-        )
+        return self.metrics_collector.get_scheduling_metrics(self.scheduling_policy.name)
 
     def get_instance_metrics_detailed(self, instance_id: str) -> "InstanceMetrics | None":
         """

@@ -12,7 +12,6 @@ from .types import (
     InstanceMetrics,
     PerformanceMetrics,
     RequestMetadata,
-    RequestPriority,
     SchedulingDecision,
     SchedulingMetrics,
 )
@@ -44,11 +43,11 @@ class MetricsCollector:
 
         # SLO tracking by priority
         self.slo_compliance_by_priority: dict[str, deque[bool]] = {
-            "CRITICAL": deque(maxlen=window_size),  # type: ignore
-            "HIGH": deque(maxlen=window_size),  # type: ignore
-            "NORMAL": deque(maxlen=window_size),  # type: ignore
-            "LOW": deque(maxlen=window_size),  # type: ignore
-            "BACKGROUND": deque(maxlen=window_size),  # type: ignore
+            "CRITICAL": deque(maxlen=window_size),
+            "HIGH": deque(maxlen=window_size),
+            "NORMAL": deque(maxlen=window_size),
+            "LOW": deque(maxlen=window_size),
+            "BACKGROUND": deque(maxlen=window_size),
         }
 
         # Counters
@@ -144,9 +143,7 @@ class MetricsCollector:
         metrics.current_load = instance.current_load
         metrics.is_healthy = instance.is_healthy
         metrics.last_health_check = datetime.now()
-        metrics.consecutive_failures = instance.metadata.get(
-            "consecutive_failures", 0
-        )
+        metrics.consecutive_failures = instance.metadata.get("consecutive_failures", 0)
 
         # Update latency statistics if provided
         if latencies and len(latencies) > 0:
@@ -194,12 +191,12 @@ class MetricsCollector:
 
         # Calculate prediction accuracy
         accurate_predictions = sum(
-            1 for err in self.prediction_errors if err < 10.0  # < 10ms error
+            1
+            for err in self.prediction_errors
+            if err < 10.0  # < 10ms error
         )
         accuracy_rate = (
-            accurate_predictions / len(self.prediction_errors)
-            if self.prediction_errors
-            else 1.0
+            accurate_predictions / len(self.prediction_errors) if self.prediction_errors else 1.0
         )
 
         return SchedulingMetrics(
@@ -210,9 +207,7 @@ class MetricsCollector:
             latency_prediction_error_p95=self._percentile(self.prediction_errors, 95),
             prediction_accuracy_rate=accuracy_rate,
             load_balance_variance=load_variance,
-            load_balance_coefficient=self._calculate_load_balance_coefficient(
-                load_variance
-            ),
+            load_balance_coefficient=self._calculate_load_balance_coefficient(load_variance),
             slo_compliance_by_priority=slo_by_priority,
             queue_wait_time_p50=self._percentile(self.queue_wait_times, 50),
             queue_wait_time_p95=self._percentile(self.queue_wait_times, 95),
@@ -302,7 +297,7 @@ class MetricsCollector:
     @staticmethod
     def _mean(values: deque | list) -> float:
         """Calculate mean of values."""
-        return sum(values) / len(values) if values else 0.0
+        return float(sum(values) / len(values)) if values else 0.0
 
     @staticmethod
     def _percentile(values: deque | list, p: int) -> float:
@@ -311,7 +306,7 @@ class MetricsCollector:
             return 0.0
         sorted_values = sorted(values)
         index = int(len(sorted_values) * p / 100)
-        return sorted_values[min(index, len(sorted_values) - 1)]
+        return float(sorted_values[min(index, len(sorted_values) - 1)])
 
     @staticmethod
     def _percentile_from_list(sorted_values: list[float], p: int) -> float:
@@ -331,7 +326,7 @@ class MetricsCollector:
         self.instance_metrics.clear()
 
         for priority in self.slo_compliance_by_priority:
-            self.slo_compliance_by_priority[priority].clear()  # type: ignore
+            self.slo_compliance_by_priority[priority].clear()
 
         self.total_requests = 0
         self.completed_requests = 0

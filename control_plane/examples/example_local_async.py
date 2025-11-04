@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the SAGE project
-import os
-import sys
 
-
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, project_root)
 """
 Minimal example demonstrating local async execution coordinator usage.
 
@@ -23,7 +18,13 @@ Notes:
 
 import asyncio
 import logging
+import os
+import sys
 
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+# flake8: noqa: E402
 from control_plane import (
     ControlPlaneManager,
     ExecutionInstance,

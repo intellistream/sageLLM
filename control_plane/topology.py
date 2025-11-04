@@ -252,8 +252,7 @@ class TopologyDetector:
         # Convert GPU IDs to instance IDs (assuming naming pattern)
         # This is a simple heuristic - in production, you'd need a registry
         nvlink_peers = [
-            f"{instance_id.rsplit('-', 1)[0]}-{peer_id}"
-            for peer_id in nvlink_peers_ids
+            f"{instance_id.rsplit('-', 1)[0]}-{peer_id}" for peer_id in nvlink_peers_ids
         ]
 
         # Detect NUMA node
@@ -308,7 +307,7 @@ class TopologyDetector:
         Returns:
             List of ExecutionInstances with topology information
         """
-        instances = []
+        instances: list[ExecutionInstance] = []
 
         try:
             # Get GPU count

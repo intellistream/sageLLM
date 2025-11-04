@@ -4,6 +4,7 @@
 """Base scheduling policy interface."""
 
 from abc import ABC, abstractmethod
+
 from control_plane.types import (
     ExecutionInstance,
     RequestMetadata,

@@ -129,9 +129,7 @@ class RequestRouter:
 
         # Hash request to determine preferred instance
         # This helps with prefix caching - similar requests go to same instance
-        request_hash = hashlib.md5(
-            f"{request.model_name}:{request.user_id}".encode()
-        ).hexdigest()
+        request_hash = hashlib.md5(f"{request.model_name}:{request.user_id}".encode()).hexdigest()
 
         index = int(request_hash[:8], 16) % len(instances)
         return instances[index]
@@ -180,8 +178,7 @@ class RequestRouter:
             same_machine = [
                 inst
                 for inst in instances
-                if inst.machine_id
-                and inst.machine_id == preferred_instance.machine_id
+                if inst.machine_id and inst.machine_id == preferred_instance.machine_id
             ]
 
             if same_machine:
@@ -276,7 +273,7 @@ class LoadBalancer:
 
         # Random selection weighted by capacity
         rand = random.uniform(0, total_weight)
-        cumulative = 0
+        cumulative = 0.0
 
         for instance, weight in zip(instances, weights, strict=False):
             cumulative += weight
@@ -332,10 +329,7 @@ class LoadBalancer:
     def get_stats(self, instance_id: str) -> dict[str, float]:
         """Get statistics for an instance."""
         latencies = self.latency_history.get(instance_id, [])
-        if latencies:
-            avg_latency = sum(latencies) / len(latencies)
-        else:
-            avg_latency = 0.0
+        avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
         return {
             "request_count": self.request_counts.get(instance_id, 0),
             "avg_latency_ms": avg_latency,

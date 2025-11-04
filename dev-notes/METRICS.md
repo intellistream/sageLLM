@@ -4,14 +4,14 @@
 
 ## 目录
 
-- [架构概览](#架构概览)
-- [指标类型](#指标类型)
+- [架构概览](#%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88)
+- [指标类型](#%E6%8C%87%E6%A0%87%E7%B1%BB%E5%9E%8B)
 - [MetricsCollector API](#metricscollector-api)
-- [调度指标](#调度指标)
-- [实例指标](#实例指标)
-- [使用示例](#使用示例)
-- [可视化和告警](#可视化和告警)
-- [性能优化](#性能优化)
+- [调度指标](#%E8%B0%83%E5%BA%A6%E6%8C%87%E6%A0%87)
+- [实例指标](#%E5%AE%9E%E4%BE%8B%E6%8C%87%E6%A0%87)
+- [使用示例](#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B)
+- [可视化和告警](#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%92%8C%E5%91%8A%E8%AD%A6)
+- [性能优化](#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96)
 
 ## 架构概览
 
@@ -28,16 +28,19 @@
 ### 核心组件
 
 1. **MetricsCollector** (`control_plane/monitoring.py`)
+
    - 指标收集和聚合
    - 滑动窗口管理（默认1000个样本）
    - 实时统计计算
 
-2. **SchedulingMetrics** (`control_plane/types.py`)
+1. **SchedulingMetrics** (`control_plane/types.py`)
+
    - 调度质量指标
    - SLO合规性
    - 队列动态
 
-3. **InstanceMetrics** (`control_plane/types.py`)
+1. **InstanceMetrics** (`control_plane/types.py`)
+
    - 实例性能指标
    - 健康状态
    - 资源利用率
@@ -48,41 +51,41 @@
 
 衡量调度策略的效果：
 
-| 指标名称 | 类型 | 单位 | 说明 |
-|---------|------|------|------|
-| `scheduling_latency_us` | 延迟 | 微秒 | 调度决策耗时 |
-| `prediction_accuracy_rate` | 比率 | 0.0-1.0 | 延迟预测准确率 |
-| `load_balance_variance` | 方差 | - | 实例间负载方差 |
-| `slo_compliance_by_priority` | 字典 | % | 各优先级的SLO合规率 |
-| `avg_queue_length` | 平均值 | 请求数 | 平均队列长度 |
-| `max_queue_length` | 最大值 | 请求数 | 峰值队列长度 |
-| `total_scheduled_requests` | 计数 | 请求数 | 总调度请求数 |
+| 指标名称                     | 类型   | 单位    | 说明                |
+| ---------------------------- | ------ | ------- | ------------------- |
+| `scheduling_latency_us`      | 延迟   | 微秒    | 调度决策耗时        |
+| `prediction_accuracy_rate`   | 比率   | 0.0-1.0 | 延迟预测准确率      |
+| `load_balance_variance`      | 方差   | -       | 实例间负载方差      |
+| `slo_compliance_by_priority` | 字典   | %       | 各优先级的SLO合规率 |
+| `avg_queue_length`           | 平均值 | 请求数  | 平均队列长度        |
+| `max_queue_length`           | 最大值 | 请求数  | 峰值队列长度        |
+| `total_scheduled_requests`   | 计数   | 请求数  | 总调度请求数        |
 
 ### 2. 实例性能指标
 
 衡量单个vLLM实例的性能：
 
-| 指标名称 | 类型 | 单位 | 说明 |
-|---------|------|------|------|
-| `avg_latency_ms` | 延迟 | 毫秒 | 平均响应延迟 |
-| `p50_latency_ms` | 分位数 | 毫秒 | 中位延迟 |
-| `p95_latency_ms` | 分位数 | 毫秒 | 95分位延迟 |
-| `p99_latency_ms` | 分位数 | 毫秒 | 99分位延迟 |
-| `error_rate` | 比率 | 0.0-1.0 | 错误率 |
-| `throughput_rps` | 吞吐量 | 请求/秒 | 每秒处理请求数 |
-| `total_requests` | 计数 | 请求数 | 总处理请求数 |
-| `failed_requests` | 计数 | 请求数 | 失败请求数 |
-| `current_load` | 负载 | 请求数 | 当前运行中请求数 |
-| `slo_violations` | 计数 | 次数 | SLO违反次数 |
+| 指标名称          | 类型   | 单位    | 说明             |
+| ----------------- | ------ | ------- | ---------------- |
+| `avg_latency_ms`  | 延迟   | 毫秒    | 平均响应延迟     |
+| `p50_latency_ms`  | 分位数 | 毫秒    | 中位延迟         |
+| `p95_latency_ms`  | 分位数 | 毫秒    | 95分位延迟       |
+| `p99_latency_ms`  | 分位数 | 毫秒    | 99分位延迟       |
+| `error_rate`      | 比率   | 0.0-1.0 | 错误率           |
+| `throughput_rps`  | 吞吐量 | 请求/秒 | 每秒处理请求数   |
+| `total_requests`  | 计数   | 请求数  | 总处理请求数     |
+| `failed_requests` | 计数   | 请求数  | 失败请求数       |
+| `current_load`    | 负载   | 请求数  | 当前运行中请求数 |
+| `slo_violations`  | 计数   | 次数    | SLO违反次数      |
 
 ### 3. 队列动态指标
 
 衡量请求队列的状态：
 
-| 指标名称 | 类型 | 单位 | 说明 |
-|---------|------|------|------|
-| `queue_wait_time_ms` | 延迟 | 毫秒 | 请求在队列中的等待时间 |
-| `queue_length_samples` | 时间序列 | 请求数 | 队列长度历史记录 |
+| 指标名称               | 类型     | 单位   | 说明                   |
+| ---------------------- | -------- | ------ | ---------------------- |
+| `queue_wait_time_ms`   | 延迟     | 毫秒   | 请求在队列中的等待时间 |
+| `queue_length_samples` | 时间序列 | 请求数 | 队列长度历史记录       |
 
 ## MetricsCollector API
 
@@ -114,6 +117,7 @@ await collector.record_request_completion(
 ```
 
 **参数说明**：
+
 - `request`: 完成的请求元数据
 - `instance_id`: 执行该请求的实例ID
 - `latency_ms`: 端到端延迟（从提交到完成）
@@ -121,6 +125,7 @@ await collector.record_request_completion(
 - `error_message`: 失败时的错误信息
 
 **自动计算指标**：
+
 - 延迟分位数（p50, p95, p99）
 - 吞吐量（基于时间窗口）
 - 错误率
@@ -136,10 +141,12 @@ await collector.record_scheduling_decision(
 ```
 
 **参数说明**：
+
 - `decision_latency_us`: 策略的`get_next_request()`耗时
 - `queue_length`: 调度时的队列长度
 
 **自动计算指标**：
+
 - 平均调度延迟
 - 队列长度统计
 
@@ -153,10 +160,12 @@ await collector.update_instance_metrics(
 ```
 
 **参数说明**：
+
 - `instance_id`: 实例唯一标识
 - `instance`: 实例对象（包含current_load等字段）
 
 **同步字段**：
+
 - `current_load`: 当前负载
 - `avg_latency_ms`: 平均延迟（从实例对象）
 
@@ -178,6 +187,7 @@ for priority, compliance in metrics.slo_compliance_by_priority.items():
 ```
 
 **返回的 SchedulingMetrics 结构**：
+
 ```python
 @dataclass
 class SchedulingMetrics:
@@ -204,6 +214,7 @@ print(f"当前负载: {metrics.current_load}")
 ```
 
 **返回的 InstanceMetrics 结构**：
+
 ```python
 @dataclass
 class InstanceMetrics:
@@ -238,11 +249,13 @@ for instance_id, metrics in all_metrics.items():
 
 **定义**: 调度策略做出决策的平均耗时（微秒）
 
-**重要性**: 
+**重要性**:
+
 - 调度延迟直接影响系统响应性
 - 目标: < 1000μs (1ms)
 
 **优化建议**:
+
 ```python
 # ❌ 避免复杂计算
 def get_next_request(self, pending_queue, available_instances):
@@ -263,6 +276,7 @@ def get_next_request(self, pending_queue, available_instances):
 ```
 
 **监控示例**:
+
 ```python
 metrics = await collector.get_scheduling_metrics()
 if metrics.scheduling_latency_us > 1000:
@@ -274,6 +288,7 @@ if metrics.scheduling_latency_us > 1000:
 **定义**: 按优先级统计的SLO满足率
 
 **计算公式**:
+
 ```
 SLO合规率 = (满足SLO的请求数) / (总请求数) × 100%
 
@@ -282,6 +297,7 @@ SLO合规率 = (满足SLO的请求数) / (总请求数) × 100%
 ```
 
 **使用示例**:
+
 ```python
 metrics = await collector.get_scheduling_metrics()
 
@@ -295,6 +311,7 @@ if high_priority_compliance < 0.95:  # 目标95%
 ```
 
 **优化策略**:
+
 ```python
 # 使用 SLOAwarePolicy 提高合规率
 from control_plane.strategies import SLOAwarePolicy
@@ -306,15 +323,18 @@ manager = ControlPlaneManager(scheduling_policy=SLOAwarePolicy())
 **定义**: 实例间负载分布的方差
 
 **计算公式**:
+
 ```
 variance = Σ(instance.current_load - mean_load)² / N
 ```
 
 **重要性**:
+
 - 低方差 → 负载均衡良好
 - 高方差 → 负载倾斜严重
 
 **使用示例**:
+
 ```python
 metrics = await collector.get_scheduling_metrics()
 
@@ -326,10 +346,10 @@ if metrics.load_balance_variance > 100:
 
 ### 队列长度指标
 
-**avg_queue_length**: 平均队列长度
-**max_queue_length**: 峰值队列长度
+**avg_queue_length**: 平均队列长度 **max_queue_length**: 峰值队列长度
 
 **使用示例**:
+
 ```python
 metrics = await collector.get_scheduling_metrics()
 
@@ -347,10 +367,10 @@ if metrics.max_queue_length > 100:
 
 ### 延迟指标
 
-**avg_latency_ms**: 平均延迟
-**p50/p95/p99_latency_ms**: 延迟分位数
+**avg_latency_ms**: 平均延迟 **p50/p95/p99_latency_ms**: 延迟分位数
 
 **使用示例**:
+
 ```python
 instance_metrics = await collector.get_instance_metrics("inst-1")
 
@@ -367,6 +387,7 @@ if instance_metrics.p99_latency_ms > 2 * instance_metrics.p95_latency_ms:
 ```
 
 **分位数解读**:
+
 - **P50**: 中位数，50%请求的延迟 ≤ 此值
 - **P95**: 95%请求的延迟 ≤ 此值（常用SLA指标）
 - **P99**: 99%请求的延迟 ≤ 此值（长尾检测）
@@ -376,11 +397,13 @@ if instance_metrics.p99_latency_ms > 2 * instance_metrics.p95_latency_ms:
 **定义**: 失败请求占总请求的比例
 
 **计算公式**:
+
 ```
 error_rate = failed_requests / total_requests
 ```
 
 **使用示例**:
+
 ```python
 instance_metrics = await collector.get_instance_metrics("inst-1")
 
@@ -401,6 +424,7 @@ if instance_metrics.error_rate > 0.01:
 **计算方法**: 基于滑动窗口的时间范围
 
 **使用示例**:
+
 ```python
 instance_metrics = await collector.get_instance_metrics("inst-1")
 
@@ -419,6 +443,7 @@ if instance_metrics.throughput_rps > max_expected_rps * 0.8:
 **定义**: 实际延迟超过SLO要求的请求数
 
 **使用示例**:
+
 ```python
 instance_metrics = await collector.get_instance_metrics("inst-1")
 
@@ -444,7 +469,7 @@ from control_plane.monitoring import MetricsCollector
 async def monitor_control_plane(manager: ControlPlaneManager):
     """定期监控 Control Plane 指标"""
     logger = logging.getLogger(__name__)
-    
+
     while True:
         try:
             # 获取调度指标
@@ -454,17 +479,17 @@ async def monitor_control_plane(manager: ControlPlaneManager):
                 f"queue_avg={sched_metrics.avg_queue_length}, "
                 f"queue_max={sched_metrics.max_queue_length}"
             )
-            
+
             # 检查SLO合规性
             for priority, compliance in sched_metrics.slo_compliance_by_priority.items():
                 if compliance < 0.95:
                     logger.warning(
                         f"SLO compliance low for {priority}: {compliance*100:.2f}%"
                     )
-            
+
             # 获取所有实例指标
             all_metrics = await manager.get_all_instance_metrics()
-            
+
             for instance_id, inst_metrics in all_metrics.items():
                 logger.info(
                     f"Instance {instance_id}: "
@@ -473,31 +498,31 @@ async def monitor_control_plane(manager: ControlPlaneManager):
                     f"error_rate={inst_metrics.error_rate*100:.2f}%, "
                     f"load={inst_metrics.current_load}"
                 )
-                
+
                 # 健康检查
                 if inst_metrics.error_rate > 0.05:
                     logger.error(f"Instance {instance_id} unhealthy: high error rate")
-                
+
                 if inst_metrics.p95_latency_ms > 1000:
                     logger.warning(f"Instance {instance_id} slow: high P95 latency")
-            
+
         except Exception as e:
             logger.error(f"Monitoring error: {e}")
-        
+
         # 每30秒监控一次
         await asyncio.sleep(30)
 
 # 启动监控
 async def main():
     manager = ControlPlaneManager()
-    
+
     # 注册实例...
-    
+
     # 启动监控任务
     monitor_task = asyncio.create_task(monitor_control_plane(manager))
-    
+
     # 运行 Control Plane...
-    
+
     await monitor_task
 
 asyncio.run(main())
@@ -512,7 +537,7 @@ from control_plane.strategies import SchedulingPolicy, FIFOPolicy, SLOAwarePolic
 
 class MetricsAdaptivePolicy(SchedulingPolicy):
     """基于指标自适应切换策略"""
-    
+
     def __init__(self, metrics_collector):
         self.metrics = metrics_collector
         self.fifo_policy = FIFOPolicy()
@@ -520,24 +545,24 @@ class MetricsAdaptivePolicy(SchedulingPolicy):
         self.current_policy = self.fifo_policy
         self.check_interval = 100  # 每100次检查一次
         self.decision_count = 0
-    
+
     async def get_next_request(self, pending_queue, available_instances):
         # 定期检查指标并切换策略
         if self.decision_count % self.check_interval == 0:
             await self._adapt_based_on_metrics()
-        
+
         self.decision_count += 1
         return self.current_policy.get_next_request(pending_queue, available_instances)
-    
+
     async def _adapt_based_on_metrics(self):
         """基于指标调整策略"""
         sched_metrics = await self.metrics.get_scheduling_metrics()
-        
+
         # 计算总体SLO合规率
         total_compliance = sum(sched_metrics.slo_compliance_by_priority.values()) / max(
             len(sched_metrics.slo_compliance_by_priority), 1
         )
-        
+
         # SLO合规率低 → 切换到SLO优先策略
         if total_compliance < 0.90:
             if not isinstance(self.current_policy, SLOAwarePolicy):
@@ -555,19 +580,19 @@ class MetricsAdaptivePolicy(SchedulingPolicy):
 ```python
 async def tune_instance_based_on_metrics(manager, instance_id):
     """基于指标调整实例配置"""
-    
+
     metrics = await manager.get_instance_metrics_detailed(instance_id)
-    
+
     # 吞吐量不足 → 增加并发度
     if metrics.throughput_rps < 50 and metrics.current_load < metrics.max_concurrency * 0.5:
         logger.info(f"Instance {instance_id} underutilized, consider reducing TP size")
         # 建议：降低TP以增加可部署实例数
-    
+
     # 延迟过高 → 增加TP
     if metrics.p95_latency_ms > 1000:
         logger.info(f"Instance {instance_id} slow, consider increasing TP size")
         # 建议：增加TP以提升单请求性能
-    
+
     # 错误率高 → 检查实例健康
     if metrics.error_rate > 0.05:
         logger.error(f"Instance {instance_id} unhealthy, triggering health check")
@@ -609,10 +634,10 @@ async def export_metrics_to_prometheus(manager):
         # 获取调度指标
         sched_metrics = await manager.get_scheduling_metrics()
         scheduling_latency.observe(sched_metrics.scheduling_latency_us / 1_000_000)
-        
+
         for priority, compliance in sched_metrics.slo_compliance_by_priority.items():
             slo_compliance.labels(priority=priority).set(compliance)
-        
+
         # 获取实例指标
         all_metrics = await manager.get_all_instance_metrics()
         for instance_id, metrics in all_metrics.items():
@@ -625,7 +650,7 @@ async def export_metrics_to_prometheus(manager):
             instance_latency.labels(instance_id=instance_id, percentile='p99').set(
                 metrics.p99_latency_ms
             )
-        
+
         await asyncio.sleep(10)  # 每10秒导出一次
 
 # 启动 Prometheus HTTP 服务器
@@ -633,6 +658,7 @@ start_http_server(9090)
 ```
 
 **Grafana 面板示例查询**:
+
 ```promql
 # 平均调度延迟
 rate(sagellm_scheduling_latency_seconds_sum[5m]) / rate(sagellm_scheduling_latency_seconds_count[5m])
@@ -651,13 +677,13 @@ sagellm_slo_compliance_ratio{priority="HIGH"}
 ```python
 async def setup_alerting(manager):
     """设置告警规则"""
-    
+
     async def check_alerts():
         while True:
             # 获取指标
             sched_metrics = await manager.get_scheduling_metrics()
             all_metrics = await manager.get_all_instance_metrics()
-            
+
             # 告警1: 队列积压
             if sched_metrics.avg_queue_length > 100:
                 await send_alert(
@@ -665,7 +691,7 @@ async def setup_alerting(manager):
                     title="Queue Backlog",
                     message=f"Average queue length: {sched_metrics.avg_queue_length}"
                 )
-            
+
             # 告警2: SLO违反
             for priority, compliance in sched_metrics.slo_compliance_by_priority.items():
                 if compliance < 0.90:
@@ -674,7 +700,7 @@ async def setup_alerting(manager):
                         title=f"Low SLO Compliance - {priority}",
                         message=f"Compliance: {compliance*100:.2f}%"
                     )
-            
+
             # 告警3: 实例异常
             for instance_id, metrics in all_metrics.items():
                 if metrics.error_rate > 0.10:
@@ -683,9 +709,9 @@ async def setup_alerting(manager):
                         title=f"High Error Rate - {instance_id}",
                         message=f"Error rate: {metrics.error_rate*100:.2f}%"
                     )
-            
+
             await asyncio.sleep(60)  # 每分钟检查一次
-    
+
     asyncio.create_task(check_alerts())
 
 async def send_alert(severity, title, message):
@@ -710,6 +736,7 @@ collector = MetricsCollector(window_size=10000)
 ```
 
 **选择建议**:
+
 - 开发/测试环境: 100-500
 - 生产环境: 1000-5000
 - 高流量环境: 5000-10000
@@ -749,17 +776,17 @@ async def on_request_done(request, instance_id, latency_ms, success):
 ## 最佳实践总结
 
 1. **合理设置窗口大小**：根据流量选择1000-5000
-2. **定期导出指标**：集成Prometheus/Grafana
-3. **设置告警阈值**：
+1. **定期导出指标**：集成Prometheus/Grafana
+1. **设置告警阈值**：
    - 调度延迟 < 1ms
    - SLO合规率 > 95%
    - 错误率 < 1%
    - P95延迟 < 1000ms
-4. **基于指标优化**：
+1. **基于指标优化**：
    - 高延迟 → 增加TP或增加实例
    - 低吞吐 → 降低TP以增加并发
    - SLO违反 → 切换SLO优先策略
-5. **避免过度监控**：指标查询频率 ≥ 10秒
+1. **避免过度监控**：指标查询频率 ≥ 10秒
 
 ## 相关文档
 

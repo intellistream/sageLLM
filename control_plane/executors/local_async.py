@@ -1,12 +1,12 @@
-"""Local async execution coordinator.
-"""
+"""Local async execution coordinator."""
+
 from __future__ import annotations
 
-import time
 import asyncio
 import logging
+import time
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from ..types import (
     ExecutionInstance,
@@ -16,21 +16,50 @@ from ..types import (
 )
 from .base import ExecutionCoordinatorBase
 
-# Optional vLLM dependencies - gracefully handle if not installed/compiled
-from vllm.outputs import RequestOutput
-try:
-    from vllm.engine.arg_utils import EngineArgs, AsyncEngineArgs
+# Module-level flags for vLLM availability
+VLLM_AVAILABLE: bool = False
+_VLLM_IMPORT_ERROR: Exception | None = None
+
+if TYPE_CHECKING:
+    # Type-checking imports - these are always available during type checking
+    from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
+    from vllm.outputs import RequestOutput
     from vllm.sampling_params import SamplingParams
-except ImportError as e:
-    # vLLM not fully installed (e.g., missing C extensions)
-    # Tests can still run with mocked values
-    EngineArgs = None  # type: ignore
-    AsyncLLMEngine = None  # type: ignore
-    SamplingParams = None  # type: ignore
-    _VLLM_IMPORT_ERROR = e
 else:
-    _VLLM_IMPORT_ERROR = None
+    # Runtime imports - handle gracefully if vLLM not installed
+    try:
+        from vllm.engine.arg_utils import AsyncEngineArgs
+        from vllm.engine.async_llm_engine import AsyncLLMEngine
+        from vllm.outputs import RequestOutput
+        from vllm.sampling_params import SamplingParams
+
+        VLLM_AVAILABLE = True
+    except ImportError as e:
+        # vLLM not fully installed (e.g., missing C extensions)
+        # Create minimal stubs for runtime
+        _VLLM_IMPORT_ERROR = e
+
+        # Stub classes - won't be instantiated when VLLM_AVAILABLE is False
+        class AsyncEngineArgs:  # type: ignore[no-redef]
+            def __init__(self, **kwargs):
+                pass
+
+        class AsyncLLMEngine:  # type: ignore[no-redef]
+            @classmethod
+            def from_engine_args(cls, args):
+                pass
+
+            async def generate(self, prompt, sampling_params, request_id):
+                pass
+
+        class RequestOutput:  # type: ignore[no-redef]
+            pass
+
+        class SamplingParams:  # type: ignore[no-redef]
+            def __init__(self, **kwargs):
+                pass
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +75,16 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
         """Initialize the vLLM AsyncLLMEngine for an instance.
 
         This creates the actual vLLM engine that will be used for inference.
+
+        Raises:
+            RuntimeError: If vLLM is not properly installed
         """
+        if not VLLM_AVAILABLE:
+            raise RuntimeError(
+                f"vLLM is not properly installed or compiled. "
+                f"Cannot initialize local async engine. Error: {_VLLM_IMPORT_ERROR}"
+            )
+
         try:
             # Create engine arguments
             engine_args = AsyncEngineArgs(
@@ -77,7 +115,6 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             instance.is_healthy = False
             raise
 
-
     def register_instance(self, instance: ExecutionInstance):
         """Register a new vLLM execution instance and create its engine."""
         self.instances[instance.instance_id] = instance
@@ -90,7 +127,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             instance.pipeline_parallel_size,
         )
 
-    async def get_engine(self, instance_id: str) -> Optional[Any]:
+    async def get_engine(self, instance_id: str) -> Any | None:
         """Get the vLLM engine for an instance, initializing if needed."""
 
         return self.engines.get(instance_id)
@@ -105,7 +142,6 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             except Exception as e:
                 logger.error("Error shutting down engine %s: %s", instance_id, str(e))
 
-
     async def cleanup(self) -> None:
         raise NotImplementedError
 
@@ -114,6 +150,9 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
     ) -> dict[str, Any]:
         """Execute a request on a vLLM instance asynchronously."""
         engine = await self.get_engine(instance.instance_id)
+
+        if engine is None:
+            raise RuntimeError(f"No engine found for instance {instance.instance_id}")
 
         sampling_params = SamplingParams(
             temperature=request.temperature,
@@ -127,23 +166,23 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             instance.model_name,
             request.max_tokens or 512,
         )
-        
+
         start_time = datetime.now()
 
         results_generator = engine.generate(request.prompt, sampling_params, request.request_id)
-        
-        final_output: RequestOutput = None
+
+        final_output: RequestOutput | None = None
         async for result in results_generator:
             final_output = result
 
         elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
 
-        if not final_output or final_output.finished == False:
+        if not final_output or not final_output.finished:
             raise RuntimeError("Generation failed or was interrupted.")
 
-        prompt_tokens = len(final_output.prompt_token_ids)
+        prompt_tokens = len(final_output.prompt_token_ids or [])
         completion_tokens = len(final_output.outputs[0].token_ids)
-        
+
         result_dict = {
             "id": request.request_id,
             "object": "text_completion",
@@ -153,7 +192,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
                 {
                     "text": final_output.outputs[0].text,
                     "index": 0,
-                    "logprobs": None, 
+                    "logprobs": None,
                     "finish_reason": final_output.outputs[0].finish_reason,
                 }
             ],
@@ -163,27 +202,26 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
                 "total_tokens": prompt_tokens + completion_tokens,
             },
         }
-        
+
         logger.info(
             "Request %s completed in %.2fms (tokens: %d)",
             request.request_id,
             elapsed_ms,
-            result_dict["usage"]["total_tokens"],
+            result_dict["usage"]["total_tokens"],  # type: ignore[index]
         )
         request.end_time = datetime.now()
         return result_dict
 
-    async def health_check(self, instance_id: str) -> bool:
+    async def health_check(self, instance: ExecutionInstance) -> bool:
         """Perform health check on a vLLM instance by testing the engine.
 
         This directly tests the vLLM engine availability.
         """
-        instance = self.get_instance(instance_id)
         if not instance:
             return False
 
         try:
-            engine = await self.get_engine(instance_id)
+            engine = await self.get_engine(instance.instance_id)
             if not engine:
                 instance.is_healthy = False
                 instance.is_available = False
@@ -191,17 +229,17 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
 
             # Try a simple health check with the engine
             instance.is_healthy = True
-            logger.debug("Health check passed for %s", instance_id)
+            logger.debug("Health check passed for %s", instance.instance_id)
             return True
 
         except asyncio.TimeoutError:
-            logger.error("Health check timeout for %s", instance_id)
+            logger.error("Health check timeout for %s", instance.instance_id)
             instance.is_healthy = False
             instance.is_available = False
             return False
 
         except Exception as e:
-            logger.error("Health check error for %s: %s", instance_id, str(e))
+            logger.error("Health check error for %s: %s", instance.instance_id, str(e))
             instance.is_healthy = False
             instance.is_available = False
             return False
@@ -210,22 +248,29 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
         """Health check all instances."""
 
         results = {}
-        for instance_id in self.instances:
-            results[instance_id] = await self.health_check(instance_id)
+        for instance_id, instance in self.instances.items():
+            results[instance_id] = await self.health_check(instance)
 
         return results
 
     async def get_instance_info(self, instance: ExecutionInstance) -> dict[str, Any] | None:
-        info = getattr(self.engine_client, "get_instance_info", None)
-        if info is None:
+        """Get instance information from the engine."""
+        engine = self.engines.get(instance.instance_id)
+        if engine is None:
             return None
 
-        maybe = info(instance.instance_id)
-        if asyncio.iscoroutine(maybe):
-            return await maybe
-        return maybe
+        # Try to get info from engine if method exists
+        info_method = getattr(engine, "get_instance_info", None)
+        if info_method is None:
+            return None
 
-    def get_instance_metrics(self, instance_id: str) -> Optional[dict[str, Any]]:
+        maybe = info_method()
+        if asyncio.iscoroutine(maybe):
+            result: dict[str, Any] | None = await maybe
+            return result
+        return maybe  # type: ignore[no-any-return]
+
+    def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
         """Get metrics for a specific instance."""
 
         instance = self.get_instance(instance_id)

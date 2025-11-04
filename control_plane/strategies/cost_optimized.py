@@ -3,13 +3,14 @@
 
 """Cost-optimized scheduling strategy."""
 
-from .base import SchedulingPolicy
 from control_plane.types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,
     SchedulingDecision,
 )
+
+from .base import SchedulingPolicy
 
 
 class CostOptimizedPolicy(SchedulingPolicy):
@@ -61,9 +62,7 @@ class CostOptimizedPolicy(SchedulingPolicy):
 
     def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
         """Prioritize by cost budget and priority."""
-        return sorted(
-            requests, key=lambda r: (r.priority.value, r.cost_budget or float("inf"))
-        )
+        return sorted(requests, key=lambda r: (r.priority.value, r.cost_budget or float("inf")))
 
     def _estimate_cost(
         self,

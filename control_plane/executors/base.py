@@ -3,6 +3,7 @@
 Duplicate of `control_plane.executor.base` living under `executors` to
 support both import paths during refactor.
 """
+
 from __future__ import annotations
 
 import abc
@@ -54,11 +55,22 @@ class ExecutionCoordinatorBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def health_check_all(self) -> None:
+    async def health_check_all(self) -> dict[str, bool]:
         raise NotImplementedError
 
     def get_metrics(self) -> PerformanceMetrics:
         return self.metrics
+
+    def set_manager_callback(self, manager: Any) -> None:  # noqa: B027
+        """Set the manager callback for coordination.
+
+        Args:
+            manager: The ControlPlaneManager instance
+
+        Note:
+            Subclasses can override this if they need manager callbacks.
+            Default implementation does nothing.
+        """
 
     @abc.abstractmethod
     async def get_instance_info(self, instance: ExecutionInstance) -> dict[str, Any] | None:

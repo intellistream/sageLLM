@@ -178,24 +178,15 @@ class PDRoutingStrategy:
         if target_type is None:
             target_type = instance.instance_type
 
-        if (
-            target_type == ExecutionInstanceType.PREFILLING
-            and instance.prefilling_config
-        ):
+        if target_type == ExecutionInstanceType.PREFILLING and instance.prefilling_config:
             return {
-                "tensor_parallel_size": (
-                    instance.prefilling_config.tensor_parallel_size
-                ),
-                "pipeline_parallel_size": (
-                    instance.prefilling_config.pipeline_parallel_size
-                ),
+                "tensor_parallel_size": (instance.prefilling_config.tensor_parallel_size),
+                "pipeline_parallel_size": (instance.prefilling_config.pipeline_parallel_size),
             }
         elif target_type == ExecutionInstanceType.DECODING and instance.decoding_config:
             return {
                 "tensor_parallel_size": (instance.decoding_config.tensor_parallel_size),
-                "pipeline_parallel_size": (
-                    instance.decoding_config.pipeline_parallel_size
-                ),
+                "pipeline_parallel_size": (instance.decoding_config.pipeline_parallel_size),
             }
         else:
             # Default: use instance's general parallelism config

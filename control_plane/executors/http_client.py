@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the SAGE project
 
 """Execution coordinator for managing vLLM instances via HTTP API."""
+
 from __future__ import annotations
 
 import asyncio
@@ -25,25 +26,25 @@ logger = logging.getLogger(__name__)
 class HttpExecutionCoordinator(ExecutionCoordinatorBase):
     """
     Coordinates execution across multiple vLLM instances via HTTP API.
-    
+
     All vLLM instances are accessed uniformly through OpenAI-compatible API,
     regardless of whether they are local or remote. This enables location-
     transparent scheduling where the Control Plane focuses purely on
     scheduling policies without caring about instance deployment.
-    
+
     Design Philosophy:
     - Unified abstraction: All vLLM instances are "remote resources"
     - Location transparent: localhost:8000 and 192.168.1.100:8000 are treated the same
     - Scheduling focused: Control Plane only implements scheduling strategies
     - Simple implementation: Single HTTP client path, no local/remote branches
     """
+
     def __init__(self, timeout: int = 300):
         super().__init__()
         self.http_session: aiohttp.ClientSession | None = None
         self.timeout = aiohttp.ClientTimeout(total=timeout)
- 
-        logger.info("ExecutionCoordinator initialized in HTTP client mode")
 
+        logger.info("ExecutionCoordinator initialized in HTTP client mode")
 
     async def initialize(self) -> None:
         if not self.http_session:
@@ -59,15 +60,15 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
     def register_instance(self, instance: ExecutionInstance):
         """
         Register a vLLM execution instance.
-        
+
         The instance must be a running vLLM server started with:
             python -m vllm.entrypoints.openai.api_server --model <model> --port <port>
-        
+
         Args:
             instance: ExecutionInstance with host:port of a running vLLM server.
                      Can be localhost (e.g., localhost:8000) for local GPUs,
                      or remote IP (e.g., 192.168.1.100:8000) for remote machines.
-        
+
         Example:
             # Local GPU 0
             instance = ExecutionInstance(
@@ -78,7 +79,7 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
                 gpu_count=1,
             )
             coordinator.register_instance(instance)
-            
+
             # Remote GPU on another machine
             instance = ExecutionInstance(
                 instance_id="remote-gpu-0",
@@ -171,19 +172,19 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
     ) -> dict[str, Any]:
         """
         Execute request via vLLM's OpenAI-compatible HTTP API.
-        
+
         This is the unified execution path for all instances (local and remote).
         vLLM exposes OpenAI-compatible endpoints:
         - POST /v1/completions - Text completion
         - POST /v1/chat/completions - Chat completion
         - GET /health - Health check
         - GET /v1/models - List models
-        
+
         Args:
             request: Request metadata
             instance: Target instance
             decision: Scheduling decision
-            
+
         Returns:
             vLLM response in OpenAI format
         """
@@ -234,19 +235,15 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
                         elapsed_ms,
                         result.get("usage", {}).get("total_tokens", 0),
                     )
-                    return result
+                    return result  # type: ignore[no-any-return]
                 else:
                     error_text = await response.text()
-                    raise RuntimeError(
-                        f"vLLM returned status {response.status}: {error_text}"
-                    )
+                    raise RuntimeError(f"vLLM returned status {response.status}: {error_text}")
 
         except aiohttp.ClientError as e:
             raise RuntimeError(f"HTTP error calling {url}: {e}")
         except asyncio.TimeoutError:
-            raise RuntimeError(
-                f"Request timeout calling {url} (timeout={self.timeout.total}s)"
-            )
+            raise RuntimeError(f"Request timeout calling {url} (timeout={self.timeout.total}s)")
 
     async def health_check(self, instance: ExecutionInstance) -> bool:
         """
@@ -295,7 +292,7 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
                 if instance.metadata.get("consecutive_failures", 0) >= 3:
                     await self._on_instance_failure(instance)
 
-                return is_healthy
+                return bool(is_healthy)
 
         except asyncio.TimeoutError:
             logger.warning(
@@ -373,9 +370,7 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
                         instance.instance_id, failed_requests
                     )
                 except Exception as e:
-                    logger.error(
-                        "Error calling manager callback for instance failure: %s", e
-                    )
+                    logger.error("Error calling manager callback for instance failure: %s", e)
 
     def set_manager_callback(self, manager: Any):
         """
@@ -386,15 +381,13 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
         """
         self._manager_callback = manager
 
-    async def get_instance_info(
-        self, instance: ExecutionInstance
-    ) -> dict[str, Any] | None:
+    async def get_instance_info(self, instance: ExecutionInstance) -> dict[str, Any] | None:
         """
         Get instance information via HTTP (optional, if vLLM exposes it).
-        
+
         Args:
             instance: Instance to query
-            
+
         Returns:
             Instance info dict or None if not available
         """
@@ -410,11 +403,10 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
 
             async with self.http_session.get(url, timeout=timeout) as response:
                 if response.status == 200:
-                    return await response.json()
+                    result: dict[str, Any] = await response.json()
+                    return result
                 else:
-                    logger.debug(
-                        "Instance info not available for %s", instance.instance_id
-                    )
+                    logger.debug("Instance info not available for %s", instance.instance_id)
                     return None
 
         except Exception as e:
@@ -434,10 +426,10 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
         """Update performance metrics."""
         # Update total requests counter
         self.metrics.total_requests += 1
-        
+
         if success:
             self.metrics.completed_requests += 1
-            
+
             # Update latency metrics
             if request.latency_ms:
                 # Update instance average latency (exponential moving average)
@@ -446,9 +438,9 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
                 else:
                     alpha = 0.1  # Smoothing factor
                     instance.avg_latency_ms = (
-                        (1 - alpha) * instance.avg_latency_ms + alpha * request.latency_ms
-                    )
-                
+                        1 - alpha
+                    ) * instance.avg_latency_ms + alpha * request.latency_ms
+
                 # Update global average latency
                 if self.metrics.avg_latency_ms == 0:
                     self.metrics.avg_latency_ms = request.latency_ms
@@ -464,43 +456,44 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
         """Get aggregated performance metrics."""
         return self.metrics
 
-    async def health_check_all(self):
+    async def health_check_all(self) -> dict[str, bool]:
         """
         Check health of all registered instances.
-        
+
         Updates the is_healthy status for each instance.
+        Returns a dict mapping instance_id to health status.
         """
         if not self.instances:
-            return
+            return {}
 
         # Check all instances in parallel
-        tasks = [
-            self.health_check(instance) 
-            for instance in self.instances.values()
-        ]
+        tasks = [self.health_check(instance) for instance in self.instances.values()]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Update instance health status
-        for instance, result in zip(self.instances.values(), results):
+        # Update instance health status and collect results
+        health_status: dict[str, bool] = {}
+        for instance, result in zip(self.instances.values(), results, strict=False):
             if isinstance(result, Exception):
-                logger.error(
-                    "Health check exception for %s: %s", 
-                    instance.instance_id, 
-                    result
-                )
+                logger.error("Health check exception for %s: %s", instance.instance_id, result)
                 instance.is_healthy = False
+                health_status[instance.instance_id] = False
             elif isinstance(result, bool):
                 instance.is_healthy = result
+                health_status[instance.instance_id] = result
             else:
+                # Shouldn't happen, but handle it gracefully
                 instance.is_healthy = False
+                health_status[instance.instance_id] = False
+
+        return health_status
 
     def get_instance_metrics(self, instance_id: str) -> dict[str, Any] | None:
         """
         Get metrics for a specific instance.
-        
+
         Args:
             instance_id: ID of the instance
-            
+
         Returns:
             Dictionary with instance metrics or None if not found
         """

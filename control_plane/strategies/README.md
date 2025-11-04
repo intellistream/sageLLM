@@ -25,10 +25,12 @@ strategies/
 **Use Case**: Fair scheduling without special requirements
 
 **Behavior**:
+
 - Schedules requests in arrival order
 - Selects least loaded instance for each request
 
 **Example**:
+
 ```python
 from control_plane.strategies import FIFOPolicy
 manager = ControlPlaneManager(scheduling_policy=FIFOPolicy())
@@ -41,11 +43,13 @@ manager = ControlPlaneManager(scheduling_policy=FIFOPolicy())
 **Use Case**: Systems with clear priority levels
 
 **Behavior**:
+
 - Schedules high-priority requests first
 - Uses fastest instances for CRITICAL/HIGH priority
 - Uses least loaded instances for NORMAL/LOW priority
 
 **Example**:
+
 ```python
 from control_plane.strategies import PriorityPolicy
 manager = ControlPlaneManager(scheduling_policy=PriorityPolicy())
@@ -58,11 +62,13 @@ manager = ControlPlaneManager(scheduling_policy=PriorityPolicy())
 **Use Case**: Production systems with strict latency requirements
 
 **Behavior**:
+
 - Calculates urgency score based on remaining time
 - Prioritizes requests approaching their SLO deadline
 - Uses fastest instances for urgent requests
 
 **Example**:
+
 ```python
 from control_plane.strategies import SLOAwarePolicy
 manager = ControlPlaneManager(scheduling_policy=SLOAwarePolicy())
@@ -75,11 +81,13 @@ manager = ControlPlaneManager(scheduling_policy=SLOAwarePolicy())
 **Use Case**: Budget-constrained environments with variable instance types
 
 **Behavior**:
+
 - Estimates cost per request based on GPU usage
 - Selects cheapest instance that can meet requirements
 - Considers token count and instance GPU count
 
 **Example**:
+
 ```python
 from control_plane.strategies import CostOptimizedPolicy
 policy = CostOptimizedPolicy(price_per_gpu_hour=2.5)
@@ -93,6 +101,7 @@ manager = ControlPlaneManager(scheduling_policy=policy)
 **Use Case**: Dynamic workloads with changing characteristics
 
 **Behavior**:
+
 - Monitors system metrics (load, SLO requests, priorities)
 - Switches to PriorityPolicy when high-priority requests present
 - Switches to SLOAwarePolicy under high load with SLO requests
@@ -100,6 +109,7 @@ manager = ControlPlaneManager(scheduling_policy=policy)
 - Defaults to SLOAwarePolicy
 
 **Example**:
+
 ```python
 from control_plane.strategies import AdaptivePolicy
 manager = ControlPlaneManager(scheduling_policy=AdaptivePolicy())
@@ -139,18 +149,18 @@ class MyCustomPolicy(SchedulingPolicy):
     ) -> list[SchedulingDecision]:
         """Schedule requests with custom logic."""
         decisions = []
-        
+
         # Your scheduling logic here
         sorted_requests = self.prioritize(requests)
-        
+
         for request in sorted_requests:
             available = [i for i in instances if i.can_accept_request]
             if not available:
                 continue
-            
+
             # Select instance based on your criteria
             target = min(available, key=lambda i: i.current_load)
-            
+
             decision = SchedulingDecision(
                 request_id=request.request_id,
                 target_instance_id=target.instance_id,
@@ -162,7 +172,7 @@ class MyCustomPolicy(SchedulingPolicy):
                 reason="My custom scheduling logic",
             )
             decisions.append(decision)
-        
+
         return decisions
 
     def prioritize(self, requests: list[RequestMetadata]) -> list[RequestMetadata]:
@@ -202,12 +212,14 @@ All strategies must implement the `SchedulingPolicy` interface defined in `base.
 Main scheduling logic that assigns requests to instances.
 
 **Parameters**:
+
 - `requests`: List of pending requests to schedule
 - `instances`: List of available execution instances
 
 **Returns**: List of scheduling decisions
 
 **Constraints**:
+
 - Do NOT modify input lists
 - Return empty list if no scheduling is possible
 - Each decision must reference a valid request and instance
@@ -217,6 +229,7 @@ Main scheduling logic that assigns requests to instances.
 Sorts requests by priority for scheduling order.
 
 **Parameters**:
+
 - `requests`: List of requests to prioritize
 
 **Returns**: Sorted list of requests
@@ -224,6 +237,7 @@ Sorts requests by priority for scheduling order.
 ### Request Information
 
 Each `RequestMetadata` provides:
+
 - `request_id`: Unique identifier
 - `prompt`: Input text
 - `max_tokens`: Maximum generation length
@@ -237,6 +251,7 @@ Each `RequestMetadata` provides:
 ### Instance Information
 
 Each `ExecutionInstance` provides:
+
 - `instance_id`: Unique identifier
 - `host`, `port`: Network address
 - `model_name`: Deployed model
@@ -301,6 +316,7 @@ def test_prioritize(policy, sample_requests):
 ```
 
 Run tests:
+
 ```bash
 pytest tests/control_plane/test_my_strategy.py -v
 ```
@@ -308,21 +324,25 @@ pytest tests/control_plane/test_my_strategy.py -v
 ## Best Practices
 
 1. **Performance**: Keep `schedule()` fast (< 1ms per decision)
+
    - Avoid O(n²) loops
    - Cache expensive calculations
    - Use list comprehensions
 
-2. **Robustness**: Handle edge cases
+1. **Robustness**: Handle edge cases
+
    - Empty request/instance lists
    - No compatible instances
    - Already failed requests
 
-3. **Observability**: Add logging
+1. **Observability**: Add logging
+
    - Log scheduling decisions
    - Track strategy metrics
    - Include reasoning in decisions
 
-4. **Configurability**: Support parameters
+1. **Configurability**: Support parameters
+
    - Allow threshold tuning
    - Expose weight configurations
    - Document parameter effects

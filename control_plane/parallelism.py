@@ -375,7 +375,7 @@ class HybridParallelStrategy(ParallelismStrategy):
         }
 
 
-class  ParallelismOptimizer:
+class ParallelismOptimizer:
     """Optimizer that selects the best parallelism strategy."""
 
     def __init__(self):
@@ -426,7 +426,7 @@ class  ParallelismOptimizer:
         for strategy_type, strategy in self.strategies.items():
             config = strategy.optimize(request, instance, available_gpus)
             perf = strategy.estimate_performance(config, request)
-            perf["config"] = config
+            perf["config"] = config  # type: ignore[assignment]
             results[strategy_type] = perf
 
         return results

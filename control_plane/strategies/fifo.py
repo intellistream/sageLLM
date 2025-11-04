@@ -3,13 +3,14 @@
 
 """FIFO (First-In-First-Out) scheduling strategy."""
 
-from .base import SchedulingPolicy
 from control_plane.types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,
     SchedulingDecision,
 )
+
+from .base import SchedulingPolicy
 
 
 class FIFOPolicy(SchedulingPolicy):

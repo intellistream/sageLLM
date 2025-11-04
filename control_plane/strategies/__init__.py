@@ -14,12 +14,12 @@ Available strategies:
 - AdaptivePolicy: Adaptive strategy selection
 """
 
+from .adaptive import AdaptivePolicy
 from .base import SchedulingPolicy
+from .cost_optimized import CostOptimizedPolicy
 from .fifo import FIFOPolicy
 from .priority import PriorityPolicy
 from .slo_aware import SLOAwarePolicy
-from .cost_optimized import CostOptimizedPolicy
-from .adaptive import AdaptivePolicy
 
 __all__ = [
     "SchedulingPolicy",

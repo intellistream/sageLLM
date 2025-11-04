@@ -12,14 +12,15 @@ import pytest
 root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root))
 
-from control_plane import (  # noqa: E402
-    ExecutionCoordinator,
+# flake8: noqa: E402
+from control_plane import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,
     RequestPriority,
     SchedulingDecision,
 )
+from control_plane.executors.http_client import HttpExecutionCoordinator as ExecutionCoordinator
 
 
 @pytest.mark.asyncio
@@ -334,4 +335,3 @@ async def test_get_instance_info_http(mock_aiohttp):
     assert info["data"][0]["id"] == "meta-llama/Llama-2-7b"
 
     await executor.cleanup()
-
