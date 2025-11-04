@@ -7,9 +7,20 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
+<<<<<<< HEAD
 from .executor import ExecutionCoordinator
+=======
+from sympy.physics.units import temperature
+from vllm import SamplingParams
+
+from .executors import (
+    ExecutionCoordinatorBase,
+    HttpExecutionCoordinator,
+    LocalAsyncExecutionCoordinator,
+)
+>>>>>>> a1eb56f (Add http mode and local mode executor)
 from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
@@ -52,6 +63,7 @@ class ControlPlaneManager:
         enable_monitoring: bool = True,
         enable_pd_separation: bool = True,
         pd_config: PDSeparationConfig | None = None,
+        mode: Literal['http', 'local'] = 'http',
     ):
         """
         Initialize Control Plane Manager.
@@ -71,7 +83,18 @@ class ControlPlaneManager:
         """
 
         # Core components
-        self.executor = ExecutionCoordinator()
+        # Choose executor implementation based on mode ('http' or 'local')
+        self.mode = mode
+        if mode == "http":
+            self.executor: ExecutionCoordinatorBase = HttpExecutionCoordinator()
+        elif mode == "local":
+            self.executor: ExecutionCoordinatorBase = LocalAsyncExecutionCoordinator()
+        else:
+            logger.warning(
+                "Unknown mode '%s' for ControlPlaneManager, defaulting to 'http'",
+                mode,
+            )
+            self.executor = HttpExecutionCoordinator()
         self.router = RequestRouter(routing_strategy)
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
@@ -189,8 +212,20 @@ class ControlPlaneManager:
             request.priority.name,
             len(self.pending_queue),
         )
+<<<<<<< HEAD
 
         return request.request_id
+=======
+   
+<<<<<<< HEAD
+        try:
+            return await future
+        finally:
+            self.request_futures.pop(key, None)
+>>>>>>> 0fb9f96 (complete local mode and test)
+=======
+        return request.request_id
+>>>>>>> a1eb56f (Add http mode and local mode executor)
 
     async def get_request_status(self, request_id: str) -> RequestStatus | None:
         """Get status of a request."""
@@ -414,7 +449,23 @@ class ControlPlaneManager:
         """Execute request and cleanup."""
 
         try:
+<<<<<<< HEAD
             await self.executor.execute_request(request, instance, decision)
+=======
+            future = self.request_futures.get(request.key)
+            res_str = await self.executor.add_request(request.model_name,
+                                                      request.request_id,
+                                                      request.prompt,
+                                                      SamplingParams(temperature=request.temperature,
+                                                                     top_p=request.top_p,
+                                                                     max_tokens=request.max_tokens,
+                                                                     ),
+                                                      )
+
+            if not future.done():
+                future.set_result(res_str)
+
+>>>>>>> 0fb9f96 (complete local mode and test)
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
