@@ -39,6 +39,7 @@ class TestMetricsCollector:
         )
         # Set queue times for queue_wait_ms calculation
         from datetime import datetime, timedelta
+
         request.queue_time = datetime.now() - timedelta(milliseconds=50)
         request.schedule_time = datetime.now()
 
@@ -74,9 +75,7 @@ class TestMetricsCollector:
             estimated_cost=0.01,
         )
 
-        collector.record_request_completion(
-            request, decision, actual_latency_ms=0.0, success=False
-        )
+        collector.record_request_completion(request, decision, actual_latency_ms=0.0, success=False)
 
         assert collector.total_requests == 1
         assert collector.completed_requests == 0

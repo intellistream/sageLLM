@@ -13,9 +13,7 @@ from control_plane import ControlPlaneManager, ExecutionInstance, RequestMetadat
 class TestFaultTolerance:
     """Test fault tolerance and recovery."""
 
-    async def test_instance_health_check_failure_detection(
-        self, mock_aiohttp: aioresponses
-    ):
+    async def test_instance_health_check_failure_detection(self, mock_aiohttp: aioresponses):
         """Test detection of consecutive health check failures."""
         manager = ControlPlaneManager()
 
@@ -45,9 +43,7 @@ class TestFaultTolerance:
         assert instance.is_available is False
         assert instance.metadata.get("consecutive_failures", 0) >= 3
 
-    async def test_instance_health_check_recovery(
-        self, mock_aiohttp: aioresponses
-    ):
+    async def test_instance_health_check_recovery(self, mock_aiohttp: aioresponses):
         """Test instance recovery after failures."""
         manager = ControlPlaneManager()
 
@@ -123,10 +119,7 @@ class TestFaultTolerance:
         manager = ControlPlaneManager()
 
         # Create multiple requests
-        requests = [
-            RequestMetadata(request_id=f"req-{i}", prompt=f"prompt-{i}")
-            for i in range(5)
-        ]
+        requests = [RequestMetadata(request_id=f"req-{i}", prompt=f"prompt-{i}") for i in range(5)]
 
         # Simulate all running on failed instance
         for req in requests:
@@ -153,17 +146,13 @@ class TestFaultTolerance:
         await manager.on_instance_failure("failed-instance", [])
 
         # Failure should be recorded in metrics collector
-        instance_metrics = manager.metrics_collector.get_instance_metrics(
-            "failed-instance"
-        )
+        _ = manager.metrics_collector.get_instance_metrics("failed-instance")
 
         # Note: instance might not exist in metrics yet, which is OK
         # The important thing is that the failure was logged
 
 
-@pytest.mark.skipif(
-    True, reason="Requires real vLLM instances - enable for integration testing"
-)
+@pytest.mark.skipif(True, reason="Requires real vLLM instances - enable for integration testing")
 @pytest.mark.asyncio
 class TestFaultToleranceIntegration:
     """Integration tests requiring real vLLM instances."""

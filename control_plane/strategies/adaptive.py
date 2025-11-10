@@ -3,16 +3,17 @@
 
 """Adaptive scheduling strategy that switches between strategies based on conditions."""
 
-from .base import SchedulingPolicy
-from .slo_aware import SLOAwarePolicy
-from .cost_optimized import CostOptimizedPolicy
-from .priority import PriorityPolicy
 from control_plane.types import (
     ExecutionInstance,
     RequestMetadata,
     RequestPriority,
     SchedulingDecision,
 )
+
+from .base import SchedulingPolicy
+from .cost_optimized import CostOptimizedPolicy
+from .priority import PriorityPolicy
+from .slo_aware import SLOAwarePolicy
 
 
 class AdaptivePolicy(SchedulingPolicy):
@@ -36,18 +37,15 @@ class AdaptivePolicy(SchedulingPolicy):
         """Adaptively choose scheduling strategy."""
 
         # Calculate system metrics
-        avg_load = (
-            sum(i.current_load for i in instances) / len(instances) if instances else 0
-        )
+        avg_load = sum(i.current_load for i in instances) / len(instances) if instances else 0
         has_slo_requests = any(r.slo_deadline_ms for r in requests)
         has_high_priority = any(
-            r.priority in [RequestPriority.CRITICAL, RequestPriority.HIGH]
-            for r in requests
+            r.priority in [RequestPriority.CRITICAL, RequestPriority.HIGH] for r in requests
         )
 
         # Choose policy based on conditions
         if has_high_priority:
-            policy = self.priority_policy
+            policy: SchedulingPolicy = self.priority_policy
             reason = "high priority requests detected"
         elif has_slo_requests and avg_load > self.high_load_threshold:
             policy = self.slo_policy

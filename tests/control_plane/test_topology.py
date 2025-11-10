@@ -159,9 +159,7 @@ class TestTopologyDetector:
         assert instance1.is_local_to(instance3) is False
 
 
-@pytest.mark.skipif(
-    True, reason="Requires nvidia-smi - enable for real GPU testing"
-)
+@pytest.mark.skipif(True, reason="Requires nvidia-smi - enable for real GPU testing")
 class TestTopologyDetectionReal:
     """Tests that require real GPU hardware (optional)."""
 

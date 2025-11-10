@@ -7,14 +7,19 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from .autoscaler import Autoscaler, AutoscalerConfig
-from .executor import ExecutionCoordinator
+from .executors import (
+    ExecutionCoordinatorBase,
+    HttpExecutionCoordinator,
+    LocalAsyncExecutionCoordinator,
+)
 from .metrics_collector import MetricsCollector as AutoscalerMetricsCollector
 from .monitoring import MetricsCollector
 from .parallelism import ParallelismOptimizer
 from .pd_routing import PDRoutingStrategy
+from .router import LoadBalancer, RequestRouter
 from .strategies import (
     AdaptivePolicy,
     CostOptimizedPolicy,
@@ -23,16 +28,15 @@ from .strategies import (
     SchedulingPolicy,
     SLOAwarePolicy,
 )
-from .router import LoadBalancer, RequestRouter
 from .types import (
     ExecutionInstance,
+    InstanceMetrics,
     PDSeparationConfig,
     PerformanceMetrics,
     RequestMetadata,
     RequestStatus,
     SchedulingDecision,
     SchedulingMetrics,
-    InstanceMetrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -55,6 +59,7 @@ class ControlPlaneManager:
         enable_pd_separation: bool = True,
         pd_config: PDSeparationConfig | None = None,
         autoscaler_config: AutoscalerConfig | None = None,
+        mode: Literal["http", "local"] = "http",
     ):
         """
         Initialize Control Plane Manager.
@@ -75,7 +80,20 @@ class ControlPlaneManager:
         """
 
         # Core components
-        self.executor = ExecutionCoordinator()
+        # Choose executor implementation based on mode ('http' or 'local')
+        self.mode = mode
+        executor: ExecutionCoordinatorBase
+        if mode == "http":
+            executor = HttpExecutionCoordinator()
+        elif mode == "local":
+            executor = LocalAsyncExecutionCoordinator()
+        else:
+            logger.warning(
+                "Unknown mode '%s' for ControlPlaneManager, defaulting to 'http'",
+                mode,
+            )
+            executor = HttpExecutionCoordinator()
+        self.executor = executor
         self.router = RequestRouter(routing_strategy)
         self.load_balancer = LoadBalancer()
         self.parallelism_optimizer = ParallelismOptimizer()
@@ -86,7 +104,7 @@ class ControlPlaneManager:
         # PD Separation routing
         self.enable_pd_separation = enable_pd_separation
         self.pd_config = pd_config or PDSeparationConfig()
-        self.pd_router: Optional[PDRoutingStrategy] = (
+        self.pd_router: PDRoutingStrategy | None = (
             PDRoutingStrategy(self.pd_config) if enable_pd_separation else None
         )
 
@@ -283,9 +301,7 @@ class ControlPlaneManager:
 
             # Check retry limit (max 3 retries)
             if request.tags["retry_count"] > 3:
-                logger.error(
-                    "Request %s exceeded retry limit, marking as failed", req_id
-                )
+                logger.error("Request %s exceeded retry limit, marking as failed", req_id)
                 self.running_requests.pop(req_id, None)
                 continue
 
@@ -335,9 +351,7 @@ class ControlPlaneManager:
 
         # Get requests to schedule (up to available capacity)
         requests_to_schedule = []
-        max_schedule = sum(
-            max(0, i.max_concurrent_requests - i.active_requests) for i in instances
-        )
+        max_schedule = sum(max(0, i.max_concurrent_requests - i.active_requests) for i in instances)
 
         for _ in range(min(len(self.pending_queue), max_schedule)):
             if self.pending_queue:
@@ -392,7 +406,9 @@ class ControlPlaneManager:
                     # Select best instance based on PD specialization
                     best_instance = max(
                         compatible_instances,
-                        key=lambda inst: pd_router.get_instance_specialization(inst).get(target_phase.name, 0),
+                        key=lambda inst: pd_router.get_instance_specialization(inst).get(
+                            target_phase.name, 0
+                        ),
                     )
                     instance = best_instance
                     logger.debug(
@@ -405,10 +421,8 @@ class ControlPlaneManager:
         if self.enable_pd_separation and self.pd_router:
             parallelism_config = self.pd_router.recommend_parallelism_config(instance, request)
             if parallelism_config:
-                decision.tensor_parallel_size = parallelism_config['tensor_parallel_size']
-                decision.pipeline_parallel_size = (
-                    parallelism_config['pipeline_parallel_size']
-                )
+                decision.tensor_parallel_size = parallelism_config["tensor_parallel_size"]
+                decision.pipeline_parallel_size = parallelism_config["pipeline_parallel_size"]
 
         # Otherwise optimize parallelism strategy
         else:
@@ -433,9 +447,7 @@ class ControlPlaneManager:
             instance.instance_id,
             decision.tensor_parallel_size,
             decision.pipeline_parallel_size,
-            instance.instance_type.name
-            if hasattr(instance, "instance_type")
-            else "unknown",
+            instance.instance_type.name if hasattr(instance, "instance_type") else "unknown",
         )
 
         # Execute asynchronously
@@ -451,6 +463,7 @@ class ControlPlaneManager:
 
         try:
             await self.executor.execute_request(request, instance, decision)
+
             logger.info(
                 "Request %s completed (latency=%.2fms)",
                 request.request_id,
@@ -677,9 +690,7 @@ class ControlPlaneManager:
         Returns:
             SchedulingMetrics with policy performance data
         """
-        return self.metrics_collector.get_scheduling_metrics(
-            self.scheduling_policy.name
-        )
+        return self.metrics_collector.get_scheduling_metrics(self.scheduling_policy.name)
 
     def get_instance_metrics_detailed(self, instance_id: str) -> "InstanceMetrics | None":
         """

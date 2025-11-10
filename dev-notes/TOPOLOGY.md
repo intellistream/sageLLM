@@ -4,14 +4,14 @@
 
 ## 目录
 
-- [什么是拓扑感知](#什么是拓扑感知)
-- [拓扑信息字段](#拓扑信息字段)
-- [自动拓扑检测](#自动拓扑检测)
-- [拓扑感知路由](#拓扑感知路由)
-- [部署场景](#部署场景)
-- [配置指南](#配置指南)
-- [性能优化](#性能优化)
-- [故障排查](#故障排查)
+- [什么是拓扑感知](#%E4%BB%80%E4%B9%88%E6%98%AF%E6%8B%93%E6%89%91%E6%84%9F%E7%9F%A5)
+- [拓扑信息字段](#%E6%8B%93%E6%89%91%E4%BF%A1%E6%81%AF%E5%AD%97%E6%AE%B5)
+- [自动拓扑检测](#%E8%87%AA%E5%8A%A8%E6%8B%93%E6%89%91%E6%A3%80%E6%B5%8B)
+- [拓扑感知路由](#%E6%8B%93%E6%89%91%E6%84%9F%E7%9F%A5%E8%B7%AF%E7%94%B1)
+- [部署场景](#%E9%83%A8%E7%BD%B2%E5%9C%BA%E6%99%AF)
+- [配置指南](#%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)
+- [性能优化](#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96)
+- [故障排查](#%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5)
 
 ## 什么是拓扑感知
 
@@ -19,14 +19,15 @@
 
 在多机多卡环境中，不同GPU/实例之间的通信性能差异巨大：
 
-| 连接类型 | 带宽 | 延迟 | 适用场景 |
-|---------|------|------|---------|
-| **NVLINK** | 600 GB/s | < 1μs | 同GPU卡间通信 |
-| **PCIe 4.0** | 64 GB/s | 1-5μs | 同机器内跨NUMA通信 |
-| **10GbE网络** | 1.25 GB/s | 100-500μs | 跨机器通信 |
-| **1GbE网络** | 125 MB/s | 1-5ms | 远程数据中心 |
+| 连接类型      | 带宽      | 延迟      | 适用场景           |
+| ------------- | --------- | --------- | ------------------ |
+| **NVLINK**    | 600 GB/s  | < 1μs     | 同GPU卡间通信      |
+| **PCIe 4.0**  | 64 GB/s   | 1-5μs     | 同机器内跨NUMA通信 |
+| **10GbE网络** | 1.25 GB/s | 100-500μs | 跨机器通信         |
+| **1GbE网络**  | 125 MB/s  | 1-5ms     | 远程数据中心       |
 
 **拓扑感知的核心目标**：
+
 - 优先调度到**同机器**实例（避免网络延迟）
 - 优先调度到**NVLINK连接**的实例（共享KV缓存）
 - 考虑**NUMA亲和性**（避免跨NUMA访问内存）
@@ -64,24 +65,24 @@ instance = ExecutionInstance(
     host="192.168.1.10",
     port=8000,
     model_name="llama-2-7b",
-    
+
     # 拓扑字段
     machine_id="node1",              # 机器唯一标识
     rack_id="rack-a",                # 机架标识（可选）
     datacenter_id="dc-us-west",      # 数据中心（可选，暂未使用）
-    
+
     # GPU 拓扑
     gpu_bus_id="0000:17:00.0",       # GPU PCI 总线 ID
     gpu_device_id=0,                 # GPU 设备编号（0-7）
     nvlink_peers=["gpu-node1-1", "gpu-node1-2"],  # NVLINK 连接的其他实例
-    
+
     # NUMA 拓扑
     numa_node=0,                     # NUMA 节点编号
-    
+
     # 网络拓扑（可选）
     network_bandwidth_gbps=100,      # 网络带宽（Gbps）
     network_latency_ms=0.5,          # 网络延迟（毫秒）
-    
+
     # 共享资源（可选）
     shared_memory_pool="node1-shm",  # 共享内存池标识
     shared_storage_path="/mnt/nvme/node1",  # 共享存储路径
@@ -97,6 +98,7 @@ instance = ExecutionInstance(
 **格式**: 字符串，建议使用主机名或UUID
 
 **示例**:
+
 ```python
 machine_id = "gpu-server-01"
 machine_id = socket.gethostname()  # 自动获取
@@ -112,6 +114,7 @@ machine_id = "node-" + os.environ.get("SLURM_NODEID")  # Slurm 集群
 **格式**: 字符串
 
 **示例**:
+
 ```python
 rack_id = "rack-a-01"
 rack_id = f"rack-{int(machine_id.split('-')[1]) // 4}"  # 每4台机器一个机架
@@ -126,12 +129,14 @@ rack_id = f"rack-{int(machine_id.split('-')[1]) // 4}"  # 每4台机器一个机
 **格式**: PCI总线地址（"domain:bus:device.function"）
 
 **获取方法**:
+
 ```bash
 nvidia-smi --query-gpu=gpu_bus_id --format=csv,noheader
 # 输出: 0000:17:00.0
 ```
 
 **Python获取**:
+
 ```python
 from control_plane.topology import TopologyDetector
 
@@ -148,6 +153,7 @@ bus_id = detector.get_gpu_bus_id(gpu_device_id=0)
 **格式**: 字符串列表
 
 **自动检测**:
+
 ```python
 from control_plane.topology import TopologyDetector
 
@@ -162,6 +168,7 @@ topology = detector.detect_nvlink_topology()
 ```
 
 **手动配置**:
+
 ```python
 # GPU 0 实例
 instance_0 = ExecutionInstance(
@@ -180,12 +187,14 @@ instance_0 = ExecutionInstance(
 **格式**: 整数（通常0-1或0-3）
 
 **获取方法**:
+
 ```bash
 # 查看 GPU 0 的 NUMA 节点
 cat /sys/bus/pci/devices/0000:17:00.0/numa_node
 ```
 
 **Python获取**:
+
 ```python
 detector = TopologyDetector()
 numa_node = detector.detect_numa_nodes().get(0)  # GPU 0的NUMA节点
@@ -331,11 +340,13 @@ if is_local:
 ### 场景1: 单机8卡部署
 
 **硬件配置**:
+
 - 1台服务器，8块 A100 80GB GPU
 - NVLINK: 全连接拓扑（每个GPU连接其他所有GPU）
 - NUMA: 2个节点，每个节点4块GPU
 
 **实例配置**:
+
 ```python
 from control_plane.topology import TopologyDetector
 
@@ -352,6 +363,7 @@ for inst in instances:
 ```
 
 **拓扑示意**:
+
 ```
 NUMA 0: GPU 0, 1, 2, 3  ──┐
                           ├─ NVLINK 全连接
@@ -359,17 +371,20 @@ NUMA 1: GPU 4, 5, 6, 7  ──┘
 ```
 
 **路由策略**: `topology_aware`
+
 - 优先调度到同一 NUMA 节点的 GPU
 - 充分利用 NVLINK 共享 KV 缓存
 
 ### 场景2: 4机32卡集群
 
 **硬件配置**:
+
 - 4台服务器，每台8块 A100 GPU
 - 网络: 100 Gbps InfiniBand
 - 机架: 全部在同一机架
 
 **实例配置**:
+
 ```python
 # 在每台机器上运行
 import socket
@@ -398,6 +413,7 @@ for inst in instances:
 ```
 
 **拓扑示意**:
+
 ```
 ┌─ node1 ─────────┐  ┌─ node2 ─────────┐
 │ GPU 0-7 NVLINK  │  │ GPU 8-15 NVLINK │
@@ -409,17 +425,20 @@ for inst in instances:
 ```
 
 **路由策略**: `topology_aware` + 用户亲和性
+
 - 同一用户的连续请求调度到同一机器
 - 避免跨机通信
 
 ### 场景3: 跨机架高可用部署
 
 **硬件配置**:
+
 - 8台服务器，分布在2个机架
 - 每机架4台服务器，每台8卡
 - 网络: 200 Gbps 跨机架链路
 
 **实例配置**:
+
 ```python
 # rack-a 机器配置
 instances_rack_a = []
@@ -429,7 +448,7 @@ for node_id in ["node1", "node2", "node3", "node4"]:
         base_port=8000,
         model_name="llama-2-70b"
     )
-    
+
     # 添加机架信息
     for inst in local_instances:
         inst.rack_id = "rack-a"
@@ -441,31 +460,34 @@ instances_rack_b = [...]  # rack_id = "rack-b"
 ```
 
 **容灾策略**:
+
 ```python
 # 自定义策略：避免单机架故障
 class RackAwarePolicy(SchedulingPolicy):
     def get_next_request(self, pending_queue, available_instances):
         if not pending_queue or not available_instances:
             return None
-        
+
         request = pending_queue[0]
-        
+
         # 检查机架分布
         racks = {inst.rack_id for inst in available_instances if inst.available}
-        
+
         if len(racks) < 2:
             logger.warning("Only one rack available, high availability at risk")
-        
+
         return request
 ```
 
 ### 场景4: PD分离 + 拓扑优化
 
 **硬件配置**:
+
 - Prefilling实例: 4机，每机4卡 A100（TP=4）
 - Decoding实例: 8机，每机1卡 A100（TP=1）
 
 **配置示例**:
+
 ```python
 from control_plane.types import ExecutionInstanceType
 
@@ -477,7 +499,7 @@ for node in ["pf-node1", "pf-node2", "pf-node3", "pf-node4"]:
         model_name="llama-2-70b",
         tensor_parallel_size=4  # 使用4卡并行
     )
-    
+
     for inst in instances:
         inst.instance_type = ExecutionInstanceType.PREFILLING
         inst.machine_id = node
@@ -491,7 +513,7 @@ for node in ["dec-node1", ..., "dec-node8"]:
         model_name="llama-2-70b",
         tensor_parallel_size=1  # 单卡
     )
-    
+
     for inst in instances:
         inst.instance_type = ExecutionInstanceType.DECODING
         inst.machine_id = node
@@ -551,21 +573,21 @@ instance = ExecutionInstance(
     host="192.168.1.10",
     port=8000,
     model_name="llama-2-70b",
-    
+
     # 机器拓扑
     machine_id="node-1",
     rack_id="rack-a",
-    
+
     # GPU 拓扑（自动检测）
     gpu_bus_id="0000:17:00.0",
     gpu_device_id=0,
     nvlink_peers=["gpu-rack-a-node-1-1", "gpu-rack-a-node-1-2"],
     numa_node=0,
-    
+
     # 网络拓扑（手动配置）
     network_bandwidth_gbps=100,  # IB带宽
     network_latency_ms=0.5,      # 同机架延迟
-    
+
     # 共享资源
     shared_memory_pool="node-1-shm",
     shared_storage_path="/mnt/nvme-shared",
@@ -637,10 +659,10 @@ class BalancedTopologyRouter(Router):
             i for i in instances
             if i.machine_id == self.preferred_machine_id
         ]
-        
+
         if not local_instances:
             local_instances = instances  # 降级到全局
-        
+
         # 2. 在本地实例中选择负载最低的
         return min(local_instances, key=lambda i: i.current_load)
 ```
@@ -650,6 +672,7 @@ class BalancedTopologyRouter(Router):
 ### 问题1: NVLINK 检测失败
 
 **症状**:
+
 ```python
 detector = TopologyDetector()
 topology = detector.detect_nvlink_topology()
@@ -657,11 +680,13 @@ topology = detector.detect_nvlink_topology()
 ```
 
 **原因**:
+
 - `nvidia-smi` 不可用
 - GPU 驱动版本过低
 - 机器上确实没有 NVLINK
 
 **解决方法**:
+
 ```bash
 # 检查 nvidia-smi
 nvidia-smi topo -m
@@ -679,6 +704,7 @@ nvidia-smi topo -m
 ### 问题2: 跨机调度延迟高
 
 **症状**:
+
 ```
 实例 inst-node1-0 的 P95 延迟: 2000ms
 实例 inst-node2-0 的 P95 延迟: 150ms
@@ -687,6 +713,7 @@ nvidia-smi topo -m
 **原因**: 路由器未启用拓扑感知，随机跨机调度
 
 **解决方法**:
+
 ```python
 # 检查路由策略
 print(manager.router.strategy)  # 应为 "topology_aware"
@@ -701,6 +728,7 @@ manager = ControlPlaneManager(routing_strategy="topology_aware")
 ### 问题3: machine_id 不一致
 
 **症状**:
+
 ```python
 # node1 上的实例
 instance1.machine_id = "node1"
@@ -714,6 +742,7 @@ instance2.machine_id = "gpu-server-1"
 **原因**: `machine_id` 命名不一致
 
 **解决方法**: 统一使用主机名
+
 ```python
 import socket
 
@@ -725,6 +754,7 @@ machine_id = socket.gethostname()  # 在所有实例中使用
 **症状**: 性能低于预期，内存带宽低
 
 **调试**:
+
 ```bash
 # 检查 GPU 0 的 NUMA 节点
 cat /sys/bus/pci/devices/$(nvidia-smi --query-gpu=gpu_bus_id --format=csv,noheader -i 0 | tr '[:upper:]' '[:lower:]')/numa_node
@@ -747,8 +777,8 @@ numactl --cpunodebind=0 --membind=0 python -m vllm.entrypoints.openai.api_server
 拓扑感知是 sageLLM 在多机多卡环境下实现高性能的关键技术：
 
 1. **自动检测**: 使用 `TopologyDetector` 自动发现 NVLINK、NUMA 拓扑
-2. **核心字段**: 最重要的是 `machine_id` 和 `nvlink_peers`
-3. **路由优化**: 启用 `topology_aware` 路由策略
-4. **性能提升**: 同机 NVLINK 调度可降低 50-80% 延迟
+1. **核心字段**: 最重要的是 `machine_id` 和 `nvlink_peers`
+1. **路由优化**: 启用 `topology_aware` 路由策略
+1. **性能提升**: 同机 NVLINK 调度可降低 50-80% 延迟
 
 开始配置您的拓扑感知部署吧！

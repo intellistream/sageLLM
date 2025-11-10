@@ -1,28 +1,13 @@
-"""
-sageLLM Control Plane
-A high-performance request scheduling and routing layer for vLLM
-"""
+# DEPRECATED: This file is kept for backward compatibility
+# Please use pyproject.toml for modern Python packaging
+# This file will be removed in a future version
 
-from setuptools import find_packages, setup
-
-setup(
-    name="sage-control-plane",
-    version="0.1.0",
-    description="SAGE Control Plane for vLLM orchestration",
-    author="SAGE Project",
-    license="Apache License 2.0",
-    packages=find_packages(include=["control_plane"]),
-    python_requires=">=3.10",
-    install_requires=[
-        "vllm>=0.4.0",
-        "torch>=2.0.0",
-    ],
-    extras_require={
-        "dev": [
-            "pytest>=7.0.0",
-            "pytest-asyncio>=0.21.0",
-            "ruff>=0.1.0",
-            "tblib>=1.7.0",
-        ],
-    },
+import warnings
+warnings.warn(
+    "setup.py is deprecated. Please use pyproject.toml for packaging.",
+    DeprecationWarning,
+    stacklevel=2,
 )
+
+from setuptools import setup
+setup()

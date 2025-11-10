@@ -3,7 +3,6 @@
 
 """Priority-based scheduling strategy."""
 
-from .base import SchedulingPolicy
 from control_plane.types import (
     ExecutionInstance,
     ParallelismType,
@@ -11,6 +10,8 @@ from control_plane.types import (
     RequestPriority,
     SchedulingDecision,
 )
+
+from .base import SchedulingPolicy
 
 
 class PriorityPolicy(SchedulingPolicy):

@@ -9,8 +9,8 @@ Control Plane 通过 **HTTP API** 与所有 vLLM 实例通信。每个 vLLM 实�
 ### 核心原则
 
 1. **每个 GPU 配置启动一个 vLLM 服务器**（可以是单 GPU 或 TP/PP 多 GPU）
-2. **Control Plane 通过 HTTP 调用 vLLM 的 OpenAI-compatible API**
-3. **本地 GPU 和远程 GPU 对 Control Plane 透明**（统一通过 HTTP 访问）
+1. **Control Plane 通过 HTTP 调用 vLLM 的 OpenAI-compatible API**
+1. **本地 GPU 和远程 GPU 对 Control Plane 透明**（统一通过 HTTP 访问）
 
 ```
 Control Plane (HTTP 客户端)
@@ -26,15 +26,15 @@ Control Plane (HTTP 客户端)
 
 ## 部署模式总览
 
-| 部署模式 | 说明 | 适用场景 |
-|---------|------|---------|
-| **单机单卡** | 每个 GPU 一个 vLLM 实例 (TP=1) | 开发、测试、小规模部署 |
-| **单机多卡 TP** | 多个 GPU 组成一个 vLLM 实例 (TP>1) | 大模型推理（70B+） |
-| **单机多实例** | 多个独立 vLLM 实例 | 提高并发、PD 分离 |
-| **多机集群** | 跨机器部署多个实例 | 生产环境、大规模部署 |
+| 部署模式        | 说明                               | 适用场景                |
+| --------------- | ---------------------------------- | ----------------------- |
+| **单机单卡**    | 每个 GPU 一个 vLLM 实例 (TP=1)     | 开发、测试、小规模部署  |
+| **单机多卡 TP** | 多个 GPU 组成一个 vLLM 实例 (TP>1) | 大模型推理（70B+）      |
+| **单机多实例**  | 多个独立 vLLM 实例                 | 提高并发、PD 分离       |
+| **多机集群**    | 跨机器部署多个实例                 | 生产环境、大规模部署    |
 | **PD 分离部署** | 专门的 Prefilling 和 Decoding 实例 | 性能优化、高吞吐+低延迟 |
 
----
+______________________________________________________________________
 
 ## 一体机部署（单机多卡）
 
@@ -131,7 +131,7 @@ from control_plane import ControlPlaneManager, ExecutionInstance
 
 async def setup_local_cluster():
     cp = ControlPlaneManager(scheduling_policy="adaptive")
-    
+
     # 注册本机 4 个 GPU
     for gpu_id in range(4):
         instance = ExecutionInstance(
@@ -143,20 +143,19 @@ async def setup_local_cluster():
             gpu_count=1,
         )
         cp.register_instance(instance)
-    
+
     await cp.start()
     return cp
 ```
 
----
+______________________________________________________________________
 
 ## 多机部署（跨机器调度）
 
 ### 机器配置示例
 
-**机器 A** (IP: 192.168.1.100, 4 GPUs)
-**机器 B** (IP: 192.168.1.101, 4 GPUs)
-**机器 C** (IP: 192.168.1.102, 无 GPU, 运行 Control Plane)
+**机器 A** (IP: 192.168.1.100, 4 GPUs) **机器 B** (IP: 192.168.1.101, 4 GPUs) **机器 C** (IP:
+192.168.1.102, 无 GPU, 运行 Control Plane)
 
 ### 在每台 GPU 机器上启动 vLLM
 
@@ -184,7 +183,7 @@ async def setup_multi_machine_cluster():
         scheduling_policy="cost_optimized",
         routing_strategy="load_balanced",
     )
-    
+
     # 机器 A 的 4 个 GPU
     for gpu_id in range(4):
         instance = ExecutionInstance(
@@ -196,7 +195,7 @@ async def setup_multi_machine_cluster():
             gpu_count=1,
         )
         cp.register_instance(instance)
-    
+
     # 机器 B 的 4 个 GPU
     for gpu_id in range(4):
         instance = ExecutionInstance(
@@ -208,14 +207,14 @@ async def setup_multi_machine_cluster():
             gpu_count=1,
         )
         cp.register_instance(instance)
-    
+
     await cp.start()
-    
+
     # Control Plane 现在统一调度 8 个 GPU
     return cp
 ```
 
----
+______________________________________________________________________
 
 ## 验证部署
 
@@ -252,7 +251,7 @@ from control_plane import ControlPlaneManager, ExecutionInstance, RequestMetadat
 
 async def test_control_plane():
     cp = ControlPlaneManager()
-    
+
     # 注册实例
     instance = ExecutionInstance(
         instance_id="test-gpu",
@@ -262,25 +261,25 @@ async def test_control_plane():
         gpu_count=1,
     )
     cp.register_instance(instance)
-    
+
     await cp.start()
-    
+
     # 提交测试请求
     request = RequestMetadata(
         request_id="test-001",
         prompt="Tell me about artificial intelligence",
         max_tokens=100,
     )
-    
+
     await cp.submit_request(request)
-    
+
     await asyncio.sleep(5)
     await cp.stop()
 
 asyncio.run(test_control_plane())
 ```
 
----
+______________________________________________________________________
 
 ## 常见问题
 
@@ -333,17 +332,17 @@ curl http://localhost:8000/metrics
 
 可以集成到 Prometheus + Grafana 进行监控。
 
----
+______________________________________________________________________
 
 ## 最佳实践
 
 1. **使用 systemd 或 supervisor 管理 vLLM 进程**，确保崩溃后自动重启
-2. **配置日志滚动**，避免日志文件过大
-3. **定期健康检查**，Control Plane 会自动剔除不健康的实例
-4. **资源监控**，监控 GPU 利用率、内存、温度
-5. **负载均衡**，合理配置 Control Plane 的调度策略
+1. **配置日志滚动**，避免日志文件过大
+1. **定期健康检查**，Control Plane 会自动剔除不健康的实例
+1. **资源监控**，监控 GPU 利用率、内存、温度
+1. **负载均衡**，合理配置 Control Plane 的调度策略
 
----
+______________________________________________________________________
 
 ## 下一步
 

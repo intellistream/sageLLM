@@ -12,8 +12,9 @@ import pytest
 root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root))
 
+# flake8: noqa: E402
 from control_plane import (
-    ControlPlaneManager,  # noqa: E402
+    ControlPlaneManager,
     ExecutionInstance,
     RequestMetadata,
     RequestPriority,
@@ -41,9 +42,7 @@ async def test_basic_scheduling():
     )
 
     manager.register_instance(instance)
-    assert instance.instance_id in [
-        i.instance_id for i in manager.executor.get_all_instances()
-    ]
+    assert instance.instance_id in [i.instance_id for i in manager.executor.get_all_instances()]
 
     # Submit test requests
     for i in range(3):
