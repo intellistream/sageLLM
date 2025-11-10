@@ -15,7 +15,12 @@ The Control Plane sits between users and vLLM execution instances, providing:
 
 # Import autoscaling components
 from .autoscaler import Autoscaler, AutoscalerConfig
-from .load_predictor import LoadPredictor
+from .load_predictor import (
+    LoadPredictor,
+    ConstantPredictor,
+    MovingAveragePredictor,
+    ExponentialSmoothingPredictor,
+)
 from .metrics_collector import MetricsCollector, SystemMetrics
 from .performance_interpolator import DecodeInterpolator, PrefillInterpolator
 
@@ -99,6 +104,9 @@ __all__ = [
     "Autoscaler",
     "AutoscalerConfig",
     "LoadPredictor",
+    "ConstantPredictor",
+    "MovingAveragePredictor",
+    "ExponentialSmoothingPredictor",
     "MetricsCollector",
     "SystemMetrics",
     "PrefillInterpolator",

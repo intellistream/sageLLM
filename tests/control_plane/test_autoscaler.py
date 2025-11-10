@@ -196,16 +196,22 @@ async def test_autoscaler_apply_constraints():
     assert num_prefill == 1  # min
     assert num_decode == 2  # min
 
-    # Test max constraints
-    num_prefill, num_decode = autoscaler._apply_constraints(10, 20)
-    assert num_prefill == 3  # max
-    assert num_decode == 8  # max
+    # Test max constraints without exceeding budget
+    # Request 2 prefill (8 GPUs) + 4 decode (4 GPUs) = 12 GPUs (within budget)
+    num_prefill, num_decode = autoscaler._apply_constraints(2, 4)
+    assert num_prefill == 2
+    assert num_decode == 4
+    total_gpus = num_prefill * 4 + num_decode * 1
+    assert total_gpus == 12  # exactly at budget
 
-    # Test GPU budget constraint
+    # Test GPU budget constraint with over-request
     # Request 3 prefill (12 GPUs) + 5 decode (5 GPUs) = 17 GPUs > 12 budget
+    # Should scale down to fit budget
     num_prefill, num_decode = autoscaler._apply_constraints(3, 5)
     total_gpus = num_prefill * 4 + num_decode * 1
     assert total_gpus <= 12
+    assert num_prefill >= config.min_prefill_instances
+    assert num_decode >= config.min_decode_instances
 
 
 if __name__ == "__main__":

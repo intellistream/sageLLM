@@ -7,7 +7,7 @@ import asyncio
 import logging
 from collections import deque
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from .autoscaler import Autoscaler, AutoscalerConfig
 from .executor import ExecutionCoordinator
@@ -127,6 +127,7 @@ class ControlPlaneManager:
             scheduling_policy,
             routing_strategy,
             enable_pd_separation,
+            enable_auto_scaling,
         )
 
     def _create_policy(self, policy_name: str) -> SchedulingPolicy:
