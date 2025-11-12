@@ -44,6 +44,31 @@ class ExecutionCoordinatorBase(abc.ABC):
     def get_all_instances(self) -> list[ExecutionInstance]:
         return list(self.instances.values())
 
+    async def add_instance(self, instance: ExecutionInstance) -> None:
+        """
+        Dynamically add a new instance to the pool.
+
+        Args:
+            instance: New ExecutionInstance to add
+        """
+        self.register_instance(instance)
+
+    @abc.abstractmethod
+    async def remove_instance_gracefully(self, instance_id: str, max_wait_sec: int = 300) -> None:
+        """
+        Gracefully remove an instance from the pool.
+
+        This method:
+        1. Marks the instance as unavailable (stops accepting new requests)
+        2. Waits for active requests to complete (up to max_wait_sec)
+        3. Removes the instance from the registry
+
+        Args:
+            instance_id: ID of instance to remove
+            max_wait_sec: Maximum time to wait for requests to complete (seconds)
+        """
+        raise NotImplementedError
+
     @abc.abstractmethod
     async def execute_request(
         self, request: RequestMetadata, instance: ExecutionInstance, decision: SchedulingDecision
