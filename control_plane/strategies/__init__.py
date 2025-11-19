@@ -15,6 +15,7 @@ Available strategies:
 """
 
 from .adaptive import AdaptivePolicy
+from .aegaeon import AegaeonPolicy
 from .base import SchedulingPolicy
 from .cost_optimized import CostOptimizedPolicy
 from .fifo import FIFOPolicy
@@ -28,4 +29,5 @@ __all__ = [
     "SLOAwarePolicy",
     "CostOptimizedPolicy",
     "AdaptivePolicy",
+    "AegaeonPolicy",
 ]

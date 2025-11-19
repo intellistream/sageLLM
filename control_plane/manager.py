@@ -20,6 +20,7 @@ from .pd_routing import PDRoutingStrategy
 from .router import LoadBalancer, RequestRouter
 from .strategies import (
     AdaptivePolicy,
+    AegaeonPolicy,
     CostOptimizedPolicy,
     FIFOPolicy,
     PriorityPolicy,
@@ -138,6 +139,7 @@ class ControlPlaneManager:
             "slo_aware": SLOAwarePolicy(),
             "cost_optimized": CostOptimizedPolicy(),
             "adaptive": AdaptivePolicy(),
+            "aegaeon": AegaeonPolicy(),
         }
 
         return policies.get(policy_name, AdaptivePolicy())
