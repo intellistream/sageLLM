@@ -4,10 +4,10 @@
 
 ## Repository Information
 
-- **Name:** packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+- **Name:** packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 - **Repository:** https://github.com/intellistream/sageLLM.git
 - **Branch:** main-dev
-- **Path:** `packages/sage-common/src/sage/common/components/sage_vllm/sageLLM`
+- **Path:** `packages/sage-common/src/sage/common/components/sage_llm/sageLLM`
 
 ## Quick Guide for Committing Changes
 
@@ -15,7 +15,7 @@
 
 ```bash
 # Navigate to this directory (if not already here)
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 
 # Make your changes, then:
 git add .
@@ -30,7 +30,7 @@ git push origin main-dev
 cd ../../../../../../../
 
 # Add the submodule reference update
-git add packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+git add packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 git commit -m "chore: update sageLLM submodule reference"
 git push origin main-dev
 ```
@@ -41,12 +41,12 @@ To pull latest changes from the submodule repository:
 
 ```bash
 # In this directory
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 git pull origin main-dev
 
 # Update reference in main repo
 cd ../../../../../../../
-git add packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+git add packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 git commit -m "chore: update sageLLM to latest"
 ```
 
@@ -58,7 +58,7 @@ git commit -m "chore: update sageLLM to latest"
 
 **Solution:**
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM  # Enter the submodule first
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM  # Enter the submodule first
 git add .
 git commit -m "your message"
 ```
@@ -70,7 +70,7 @@ git commit -m "your message"
 **Solution:**
 ```bash
 cd ../../../../../../../  # Back to main repo
-git add packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+git add packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 git commit -m "chore: update sageLLM reference"
 ```
 
@@ -80,7 +80,7 @@ git commit -m "chore: update sageLLM reference"
 
 **Solution:**
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 git checkout main-dev
 git pull origin main-dev
 ```

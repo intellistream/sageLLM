@@ -99,7 +99,7 @@ Homepage = "https://github.com/intellistream/SAGE"
 Documentation = "https://intellistream.github.io/SAGE-Pub/"
 Repository = "https://github.com/intellistream/SAGE.git"
 "Bug Tracker" = "https://github.com/intellistream/SAGE/issues"
-"Source Code" = "https://github.com/intellistream/SAGE/tree/main/packages/sage-common/src/sage/common/components/sage_vllm/sageLLM"
+"Source Code" = "https://github.com/intellistream/SAGE/tree/main/packages/sage-common/src/sage/common/components/sage_llm/sageLLM"
 
 [tool.setuptools.packages.find]
 where = ["."]

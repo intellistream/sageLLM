@@ -769,7 +769,7 @@ request = RequestMetadata(
 ```bash
 # Fork 和 Clone
 git clone https://github.com/yourusername/SAGE.git
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 
 # 创建特性分支
 git checkout -b feature/your-feature
