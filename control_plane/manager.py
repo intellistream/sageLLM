@@ -662,11 +662,6 @@ class ControlPlaneManager:
             logger.info(f"Removing decode instance {instance.instance_id}")
             await self.executor.remove_instance_gracefully(instance.instance_id)
 
-    def get_metrics(self) -> PerformanceMetrics:
-        """Get current performance metrics."""
-        # TODO: Implement metrics aggregation
-        return PerformanceMetrics()
-
     def get_autoscaler_status(self) -> dict:
         """Get autoscaler status."""
         if not self.autoscaler:
