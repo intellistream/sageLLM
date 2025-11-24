@@ -462,3 +462,15 @@ class PDMetrics:
     avg_routing_decision_time_us: float = 0.0
 
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ScalingDecision:
+    """Scaling decision for autoscaler."""
+
+    num_prefill_instances: int
+    num_decode_instances: int
+    predicted_load: dict[str, float]
+    decision_time: datetime = field(default_factory=datetime.now)
+    reason: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)

@@ -7,7 +7,7 @@ This guide explains how to run and contribute to the sageLLM test suite.
 ### Install with Test Dependencies
 
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 
 # Install in editable mode with test dependencies
 pip install -e ".[test]"
@@ -49,7 +49,7 @@ tests/
 ### Run All Tests
 
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 pytest
 ```
 
@@ -228,7 +228,7 @@ async def test_async_operation():
 If you see import errors, ensure you're in the correct directory and the package is installed:
 
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 pip install -e .
 ```
 

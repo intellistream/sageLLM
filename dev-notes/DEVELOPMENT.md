@@ -5,7 +5,7 @@
 ### 1. Clone and Setup
 
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 
 # Install with all development dependencies
 pip install -e ".[all]"

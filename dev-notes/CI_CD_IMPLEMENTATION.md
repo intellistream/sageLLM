@@ -235,7 +235,7 @@ Comprehensive testing guide including:
 ### Locally
 
 ```bash
-cd packages/sage-common/src/sage/common/components/sage_vllm/sageLLM
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM
 
 # Install dependencies
 pip install -r requirements-dev.txt
