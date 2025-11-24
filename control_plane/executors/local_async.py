@@ -145,6 +145,70 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
     async def cleanup(self) -> None:
         raise NotImplementedError
 
+    async def remove_instance_gracefully(self, instance_id: str, max_wait_sec: int = 300) -> None:
+        """
+        Gracefully remove an instance from the pool.
+
+        This method:
+        1. Marks the instance as unavailable (stops accepting new requests)
+        2. Waits for active requests to complete (up to max_wait_sec)
+        3. Removes the instance from the registry and shuts down engine
+
+        Args:
+            instance_id: ID of instance to remove
+            max_wait_sec: Maximum time to wait for requests to complete (seconds)
+        """
+        instance = self.get_instance(instance_id)
+        if not instance:
+            logger.warning("Instance %s not found for removal", instance_id)
+            return
+
+        logger.info("Gracefully removing local instance %s", instance_id)
+
+        # Step 1: Mark as unavailable
+        instance.is_available = False
+        logger.info("Instance %s marked unavailable", instance_id)
+
+        # Step 2: Wait for active requests to complete
+        wait_interval = 5  # seconds
+        elapsed = 0
+
+        while instance.active_requests > 0 and elapsed < max_wait_sec:
+            logger.info(
+                "Waiting for %d requests to complete on instance %s (%d/%ds)",
+                instance.active_requests,
+                instance_id,
+                elapsed,
+                max_wait_sec,
+            )
+            await asyncio.sleep(wait_interval)
+            elapsed += wait_interval
+
+        if instance.active_requests > 0:
+            logger.warning(
+                "Force removing instance %s with %d active requests after %ds timeout",
+                instance_id,
+                instance.active_requests,
+                max_wait_sec,
+            )
+        else:
+            logger.info("All requests completed on instance %s", instance_id)
+
+        # Step 3: Shutdown engine and remove from registry
+        if instance_id in self.engines:
+            engine = self.engines[instance_id]
+            try:
+                # Shutdown the vLLM engine
+                if hasattr(engine, 'shutdown'):
+                    await engine.shutdown()
+                del self.engines[instance_id]
+                logger.info("Shutdown vLLM engine for instance %s", instance_id)
+            except Exception as e:
+                logger.error("Error shutting down engine %s: %s", instance_id, str(e))
+
+        self.unregister_instance(instance_id)
+        logger.info("Instance %s removed from registry", instance_id)
+
     async def execute_request(
         self, request: RequestMetadata, instance: ExecutionInstance, decision: SchedulingDecision
     ) -> dict[str, Any]:
