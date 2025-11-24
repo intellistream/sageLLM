@@ -56,6 +56,7 @@ class RequestMetadata:
 
     request_id: str
     prompt: str | None = None  # Prompt text for inference
+    completion_tokens: int | None = None  # number of completion tokens
     user_id: str | None = None
     priority: RequestPriority = RequestPriority.NORMAL
     slo_deadline_ms: float | None = None  # SLO deadline in milliseconds
@@ -69,6 +70,7 @@ class RequestMetadata:
     queue_time: datetime | None = None
     schedule_time: datetime | None = None
     start_time: datetime | None = None
+    prefill_end_time: datetime | None = None  # Time when prefilling is complete
     end_time: datetime | None = None
 
     # Resource preferences

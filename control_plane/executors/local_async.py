@@ -91,9 +91,9 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
                 model=instance.model_name,
                 tensor_parallel_size=instance.tensor_parallel_size,
                 pipeline_parallel_size=instance.pipeline_parallel_size,
-                gpu_memory_utilization=0.7,
+                gpu_memory_utilization=0.3,
                 enforce_eager=False,
-                max_model_len=256,
+                max_model_len=1024,
             )
 
             # Create async engine
@@ -172,9 +172,13 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
         results_generator = engine.generate(request.prompt, sampling_params, request.request_id)
 
         final_output: RequestOutput | None = None
+
         async for result in results_generator:
+            if request.prefill_end_time is None:
+                request.prefill_end_time = datetime.now()
             final_output = result
 
+        request.end_time = datetime.now()
         elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
 
         if not final_output or not final_output.finished:
@@ -182,6 +186,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
 
         prompt_tokens = len(final_output.prompt_token_ids or [])
         completion_tokens = len(final_output.outputs[0].token_ids)
+        request.completion_tokens = completion_tokens
 
         result_dict = {
             "id": request.request_id,
@@ -209,7 +214,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             elapsed_ms,
             result_dict["usage"]["total_tokens"],  # type: ignore[index]
         )
-        request.end_time = datetime.now()
+       
         return result_dict
 
     async def health_check(self, instance: ExecutionInstance) -> bool:

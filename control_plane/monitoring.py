@@ -4,7 +4,7 @@
 """Performance monitoring and metrics collection."""
 
 import logging
-from collections import deque
+from collections import deque, defaultdict
 from datetime import datetime
 
 from .types import (
@@ -37,6 +37,14 @@ class MetricsCollector:
         self.queue_wait_times: deque[float] = deque(maxlen=window_size)
         self.scheduling_times: deque[float] = deque(maxlen=window_size)
         self.queue_lengths: deque[int] = deque(maxlen=window_size)
+
+        # Model-level performance metrics (TTFT: Time to First Token, TPOT: Time per Output Token)
+        self.model_ttft: dict[str, deque[float]] = defaultdict(
+            lambda: deque(maxlen=window_size)
+        )
+        self.model_tpot: dict[str, deque[float]] = defaultdict(
+            lambda: deque(maxlen=window_size)
+        )
 
         # Instance-level metrics
         self.instance_metrics: dict[str, InstanceMetrics] = {}
@@ -80,6 +88,17 @@ class MetricsCollector:
 
             # Record latency
             self.latency_history.append(actual_latency_ms)
+
+            # Record model-specific TTFT and TPOT
+            if request.model_name:
+                self.model_ttft[request.model_name].append(
+                    (request.prefill_end_time - request.arrival_time).total_seconds() * 1000
+                )
+
+                generation_time = (request.end_time - request.prefill_end_time).total_seconds() * 1000  # type: ignore
+                if generation_time > 0:
+                    tpot = generation_time / request.completion_tokens  # type: ignore
+                    self.model_tpot[request.model_name].append(tpot)
 
             # Record prediction error
             prediction_error = abs(actual_latency_ms - decision.estimated_latency_ms)
@@ -248,6 +267,48 @@ class MetricsCollector:
             p95_latency_ms=self._percentile(self.latency_history, 95),
             p99_latency_ms=self._percentile(self.latency_history, 99),
         )
+
+    def log_stats(self):
+        """Log aggregated TTFT and TPOT statistics for each model."""
+        logger.info("--- Model Performance Statistics ---")
+        model_names = set(self.model_ttft.keys()) | set(self.model_tpot.keys())
+
+        if not model_names:
+            logger.info("No model performance data collected yet.")
+            return
+
+        for model_name in sorted(model_names):
+            ttft_data = self.model_ttft.get(model_name)
+            tpot_data = self.model_tpot.get(model_name)
+
+            logger.info("Model: %s", model_name)
+
+            if ttft_data:
+                avg_ttft = self._mean(ttft_data)
+                p95_ttft = self._percentile(ttft_data, 95)
+                p99_ttft = self._percentile(ttft_data, 99)
+                logger.info(
+                    "  TTFT (ms): Avg=%.2f, P95=%.2f, P99=%.2f",
+                    avg_ttft,
+                    p95_ttft,
+                    p99_ttft,
+                )
+            else:
+                logger.info("  TTFT (ms): No data.")
+
+            if tpot_data:
+                avg_tpot = self._mean(tpot_data)
+                p95_tpot = self._percentile(tpot_data, 95)
+                p99_tpot = self._percentile(tpot_data, 99)
+                logger.info(
+                    "  TPOT (ms/token): Avg=%.2f, P95=%.2f, P99=%.2f",
+                    avg_tpot,
+                    p95_tpot,
+                    p99_tpot,
+                )
+            else:
+                logger.info("  TPOT (ms/token): No data.")
+        logger.info("------------------------------------")
 
     def _calculate_load_variance(self) -> float:
         """Calculate load variance across instances."""

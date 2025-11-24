@@ -551,3 +551,11 @@ class ControlPlaneManager:
             "available_instances": len(self.executor.get_available_instances()),
             "metrics": self.get_metrics(),
         }
+    
+    def log_stats(self):
+        '''Log current statistics using the metrics collector.'''
+        self.metrics_collector.log_stats()
+
+    def is_busy(self) -> bool:
+        """Check if Control Plane is busy (has pending or running requests)."""
+        return bool(self.pending_queue or self.running_requests)
