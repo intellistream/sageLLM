@@ -79,6 +79,13 @@ class RequestMetadata:
     cost_budget: float | None = None
     billing_tier: str = "standard"
 
+    # Token-level tracking for Aegaeon
+    tokens_generated: int = 0  # Number of tokens already generated
+    last_token_time: datetime | None = None  # Timestamp of last token generation
+    tbt_slo_ms: float | None = None  # Time Between Tokens SLO in milliseconds
+    prefill_completed: bool = False  # Whether prefill phase is complete
+    can_be_preempted: bool = True  # Whether request can be preempted
+
     # Additional metadata
     tags: dict[str, Any] = field(default_factory=dict)
 
