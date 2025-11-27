@@ -5,7 +5,7 @@
 
 from abc import ABC, abstractmethod
 
-from control_plane.types import (
+from ..types import (
     ExecutionInstance,
     RequestMetadata,
     SchedulingDecision,

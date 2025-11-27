@@ -48,6 +48,14 @@ from .parallelism import (
 # Import PD separation routing
 from .pd_routing import PDRoutingStrategy
 
+# Import request classifier for hybrid scheduling
+from .request_classifier import (
+    RequestClassifier,
+    ValidationErrorCode,
+    ValidationResult,
+    create_classifier,
+)
+
 # Import router and coordinator
 from .router import LoadBalancer, RequestRouter
 
@@ -76,6 +84,7 @@ from .types import (
     RequestMetadata,
     RequestPriority,
     RequestStatus,
+    RequestType,
     ScalingDecision,
     SchedulingDecision,
     SchedulingMetrics,
@@ -85,6 +94,7 @@ __all__ = [
     # Types - Core
     "RequestPriority",
     "RequestStatus",
+    "RequestType",
     "ParallelismType",
     "RequestMetadata",
     "ExecutionInstance",
@@ -99,6 +109,11 @@ __all__ = [
     "DecodingConfig",
     "PDSeparationConfig",
     "PDMetrics",
+    # Request Classifier (Hybrid Scheduling)
+    "RequestClassifier",
+    "ValidationErrorCode",
+    "ValidationResult",
+    "create_classifier",
     # Autoscaling
     "Autoscaler",
     "AutoscalerConfig",

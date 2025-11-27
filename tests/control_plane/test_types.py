@@ -23,6 +23,7 @@ from control_plane.types import (  # noqa: E402
     RequestMetadata,
     RequestPriority,
     RequestStatus,
+    RequestType,
     SchedulingDecision,
 )
 
@@ -58,6 +59,34 @@ class TestEnums:
         assert ExecutionInstanceType.PREFILLING.value == "prefilling"
         assert ExecutionInstanceType.DECODING.value == "decoding"
         assert ExecutionInstanceType.HYBRID.value == "hybrid"
+        # T1.2: New instance types for hybrid scheduling
+        assert ExecutionInstanceType.EMBEDDING.value == "embedding"
+        assert ExecutionInstanceType.LLM_EMBEDDING.value == "llm_embedding"
+
+    def test_execution_instance_type_all_values(self):
+        """Test that all expected execution instance types exist."""
+        all_types = list(ExecutionInstanceType)
+        assert len(all_types) == 6
+        assert ExecutionInstanceType.GENERAL in all_types
+        assert ExecutionInstanceType.PREFILLING in all_types
+        assert ExecutionInstanceType.DECODING in all_types
+        assert ExecutionInstanceType.HYBRID in all_types
+        assert ExecutionInstanceType.EMBEDDING in all_types
+        assert ExecutionInstanceType.LLM_EMBEDDING in all_types
+
+    def test_request_type_values(self):
+        """Test request type enum values for hybrid scheduling."""
+        assert RequestType.LLM_CHAT.value == "llm_chat"
+        assert RequestType.LLM_GENERATE.value == "llm_generate"
+        assert RequestType.EMBEDDING.value == "embedding"
+
+    def test_request_type_all_values(self):
+        """Test that all expected request types exist."""
+        all_types = list(RequestType)
+        assert len(all_types) == 3
+        assert RequestType.LLM_CHAT in all_types
+        assert RequestType.LLM_GENERATE in all_types
+        assert RequestType.EMBEDDING in all_types
 
 
 class TestRequestMetadata:
@@ -139,6 +168,146 @@ class TestRequestMetadata:
 
         assert request.tags["experiment"] == "test"
         assert request.tags["version"] == "1.0"
+
+    # ============ Tests for Hybrid Scheduling Extensions (T1.1) ============
+
+    def test_request_type_default(self):
+        """Test default request type is LLM_CHAT for backward compatibility."""
+        request = RequestMetadata(request_id="req-1")
+        assert request.request_type == RequestType.LLM_CHAT
+
+    def test_request_type_llm_chat(self):
+        """Test LLM chat request type."""
+        request = RequestMetadata(
+            request_id="req-1",
+            prompt="Hello, how are you?",
+            request_type=RequestType.LLM_CHAT,
+        )
+        assert request.request_type == RequestType.LLM_CHAT
+        assert request.is_llm_request is True
+        assert request.is_embedding_request is False
+
+    def test_request_type_llm_generate(self):
+        """Test LLM generate request type."""
+        request = RequestMetadata(
+            request_id="req-1",
+            prompt="Once upon a time",
+            request_type=RequestType.LLM_GENERATE,
+        )
+        assert request.request_type == RequestType.LLM_GENERATE
+        assert request.is_llm_request is True
+        assert request.is_embedding_request is False
+
+    def test_request_type_embedding(self):
+        """Test embedding request type."""
+        request = RequestMetadata(
+            request_id="req-1",
+            request_type=RequestType.EMBEDDING,
+            embedding_texts=["text1", "text2"],
+            embedding_model="BAAI/bge-m3",
+        )
+        assert request.request_type == RequestType.EMBEDDING
+        assert request.is_embedding_request is True
+        assert request.is_llm_request is False
+
+    def test_embedding_texts_field(self):
+        """Test embedding_texts field for embedding requests."""
+        texts = ["Hello world", "How are you", "Test embedding"]
+        request = RequestMetadata(
+            request_id="req-1",
+            request_type=RequestType.EMBEDDING,
+            embedding_texts=texts,
+        )
+        assert request.embedding_texts == texts
+        assert len(request.embedding_texts) == 3
+
+    def test_embedding_texts_default_none(self):
+        """Test embedding_texts defaults to None."""
+        request = RequestMetadata(request_id="req-1")
+        assert request.embedding_texts is None
+
+    def test_embedding_model_field(self):
+        """Test embedding_model field."""
+        request = RequestMetadata(
+            request_id="req-1",
+            request_type=RequestType.EMBEDDING,
+            embedding_model="BAAI/bge-small-zh-v1.5",
+        )
+        assert request.embedding_model == "BAAI/bge-small-zh-v1.5"
+
+    def test_embedding_model_default_none(self):
+        """Test embedding_model defaults to None."""
+        request = RequestMetadata(request_id="req-1")
+        assert request.embedding_model is None
+
+    def test_embedding_batch_size_default(self):
+        """Test embedding_batch_size default value."""
+        request = RequestMetadata(request_id="req-1")
+        assert request.embedding_batch_size == 32
+
+    def test_embedding_batch_size_custom(self):
+        """Test custom embedding_batch_size."""
+        request = RequestMetadata(
+            request_id="req-1",
+            request_type=RequestType.EMBEDDING,
+            embedding_batch_size=64,
+        )
+        assert request.embedding_batch_size == 64
+
+    def test_effective_model_name_llm(self):
+        """Test effective_model_name for LLM requests."""
+        request = RequestMetadata(
+            request_id="req-1",
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            request_type=RequestType.LLM_CHAT,
+        )
+        assert request.effective_model_name == "Qwen/Qwen2.5-7B-Instruct"
+
+    def test_effective_model_name_embedding_with_embedding_model(self):
+        """Test effective_model_name for embedding with embedding_model set."""
+        request = RequestMetadata(
+            request_id="req-1",
+            model_name="Qwen/Qwen2.5-7B-Instruct",  # This should be ignored
+            embedding_model="BAAI/bge-m3",
+            request_type=RequestType.EMBEDDING,
+        )
+        assert request.effective_model_name == "BAAI/bge-m3"
+
+    def test_effective_model_name_embedding_without_embedding_model(self):
+        """Test effective_model_name for embedding without embedding_model set."""
+        request = RequestMetadata(
+            request_id="req-1",
+            model_name="BAAI/bge-m3",
+            request_type=RequestType.EMBEDDING,
+        )
+        assert request.effective_model_name == "BAAI/bge-m3"
+
+    def test_backward_compatibility_existing_fields(self):
+        """Test that existing fields still work (backward compatibility)."""
+        request = RequestMetadata(
+            request_id="req-1",
+            prompt="Test prompt",
+            user_id="user-123",
+            priority=RequestPriority.HIGH,
+            slo_deadline_ms=100.0,
+            max_tokens=512,
+            temperature=0.7,
+            top_p=0.9,
+            model_name="llama-7b",
+        )
+        assert request.prompt == "Test prompt"
+        assert request.user_id == "user-123"
+        assert request.priority == RequestPriority.HIGH
+        assert request.slo_deadline_ms == 100.0
+        assert request.max_tokens == 512
+        assert request.temperature == 0.7
+        assert request.top_p == 0.9
+        assert request.model_name == "llama-7b"
+        # New fields should have defaults
+        assert request.request_type == RequestType.LLM_CHAT
+        assert request.embedding_texts is None
+        assert request.embedding_model is None
+        assert request.embedding_batch_size == 32
 
 
 class TestExecutionInstance:
@@ -427,6 +596,291 @@ class TestExecutionInstance:
 
         assert inst1.is_local_to(inst2) is True
         assert inst1.is_local_to(inst3) is False
+
+    # ============ Tests for Hybrid Scheduling Extensions (T1.2) ============
+
+    def test_embedding_instance_type(self):
+        """Test EMBEDDING instance type creation."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            embedding_model_loaded="BAAI/bge-m3",
+        )
+        assert instance.instance_type == ExecutionInstanceType.EMBEDDING
+        assert instance.embedding_model_loaded == "BAAI/bge-m3"
+
+    def test_llm_embedding_instance_type(self):
+        """Test LLM_EMBEDDING mixed instance type creation."""
+        instance = ExecutionInstance(
+            instance_id="mixed-1",
+            host="localhost",
+            port=8000,
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            instance_type=ExecutionInstanceType.LLM_EMBEDDING,
+            embedding_model_loaded="BAAI/bge-m3",
+        )
+        assert instance.instance_type == ExecutionInstanceType.LLM_EMBEDDING
+        assert instance.embedding_model_loaded == "BAAI/bge-m3"
+
+    def test_embedding_fields_defaults(self):
+        """Test default values for embedding-related fields."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+        )
+        assert instance.supported_request_types is None
+        assert instance.embedding_model_loaded is None
+        assert instance.embedding_max_batch_size == 32
+        assert instance.embedding_active_requests == 0
+
+    def test_embedding_fields_custom(self):
+        """Test custom values for embedding-related fields."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            supported_request_types=[RequestType.EMBEDDING],
+            embedding_model_loaded="BAAI/bge-m3",
+            embedding_max_batch_size=64,
+            embedding_active_requests=10,
+        )
+        assert instance.supported_request_types == [RequestType.EMBEDDING]
+        assert instance.embedding_model_loaded == "BAAI/bge-m3"
+        assert instance.embedding_max_batch_size == 64
+        assert instance.embedding_active_requests == 10
+
+    def test_get_effective_supported_request_types_general(self):
+        """Test effective supported types for GENERAL instance."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+        )
+        types = instance.get_effective_supported_request_types()
+        assert RequestType.LLM_CHAT in types
+        assert RequestType.LLM_GENERATE in types
+        assert RequestType.EMBEDDING not in types
+
+    def test_get_effective_supported_request_types_embedding(self):
+        """Test effective supported types for EMBEDDING instance."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+        )
+        types = instance.get_effective_supported_request_types()
+        assert RequestType.EMBEDDING in types
+        assert RequestType.LLM_CHAT not in types
+        assert RequestType.LLM_GENERATE not in types
+
+    def test_get_effective_supported_request_types_llm_embedding(self):
+        """Test effective supported types for LLM_EMBEDDING mixed instance."""
+        instance = ExecutionInstance(
+            instance_id="mixed-1",
+            host="localhost",
+            port=8000,
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            instance_type=ExecutionInstanceType.LLM_EMBEDDING,
+        )
+        types = instance.get_effective_supported_request_types()
+        assert RequestType.LLM_CHAT in types
+        assert RequestType.LLM_GENERATE in types
+        assert RequestType.EMBEDDING in types
+
+    def test_get_effective_supported_request_types_explicit(self):
+        """Test that explicit supported_request_types overrides defaults."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+            supported_request_types=[RequestType.LLM_CHAT],  # Only chat
+        )
+        types = instance.get_effective_supported_request_types()
+        assert types == [RequestType.LLM_CHAT]
+        assert RequestType.LLM_GENERATE not in types
+
+    def test_can_handle_request_type_llm(self):
+        """Test can_handle_request_type for LLM requests."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+        )
+        assert instance.can_handle_request_type(RequestType.LLM_CHAT) is True
+        assert instance.can_handle_request_type(RequestType.LLM_GENERATE) is True
+        assert instance.can_handle_request_type(RequestType.EMBEDDING) is False
+
+    def test_can_handle_request_type_embedding(self):
+        """Test can_handle_request_type for EMBEDDING instance."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+        )
+        assert instance.can_handle_request_type(RequestType.EMBEDDING) is True
+        assert instance.can_handle_request_type(RequestType.LLM_CHAT) is False
+        assert instance.can_handle_request_type(RequestType.LLM_GENERATE) is False
+
+    def test_can_handle_request_type_mixed(self):
+        """Test can_handle_request_type for LLM_EMBEDDING mixed instance."""
+        instance = ExecutionInstance(
+            instance_id="mixed-1",
+            host="localhost",
+            port=8000,
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            instance_type=ExecutionInstanceType.LLM_EMBEDDING,
+        )
+        assert instance.can_handle_request_type(RequestType.LLM_CHAT) is True
+        assert instance.can_handle_request_type(RequestType.LLM_GENERATE) is True
+        assert instance.can_handle_request_type(RequestType.EMBEDDING) is True
+
+    def test_can_accept_embedding_request_embedding_instance(self):
+        """Test can_accept_embedding_request for EMBEDDING instance."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            embedding_max_batch_size=32,
+            embedding_active_requests=10,
+        )
+        assert instance.can_accept_embedding_request() is True
+
+    def test_can_accept_embedding_request_at_max_batch(self):
+        """Test can_accept_embedding_request when at max batch size."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            embedding_max_batch_size=32,
+            embedding_active_requests=32,  # At max
+        )
+        assert instance.can_accept_embedding_request() is False
+
+    def test_can_accept_embedding_request_general_instance(self):
+        """Test can_accept_embedding_request for GENERAL instance (no embedding support)."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+        )
+        assert instance.can_accept_embedding_request() is False
+
+    def test_can_accept_embedding_request_mixed_instance(self):
+        """Test can_accept_embedding_request for LLM_EMBEDDING mixed instance."""
+        instance = ExecutionInstance(
+            instance_id="mixed-1",
+            host="localhost",
+            port=8000,
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            instance_type=ExecutionInstanceType.LLM_EMBEDDING,
+            embedding_max_batch_size=32,
+            embedding_active_requests=10,
+        )
+        assert instance.can_accept_embedding_request() is True
+
+    def test_can_accept_embedding_request_unhealthy(self):
+        """Test can_accept_embedding_request when instance is unhealthy."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            is_healthy=False,
+        )
+        assert instance.can_accept_embedding_request() is False
+
+    def test_can_accept_embedding_request_unavailable(self):
+        """Test can_accept_embedding_request when instance is unavailable."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            is_available=False,
+        )
+        assert instance.can_accept_embedding_request() is False
+
+    def test_can_accept_embedding_request_overloaded(self):
+        """Test can_accept_embedding_request when instance is overloaded."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+            current_load=0.96,  # Over 0.95 threshold
+        )
+        assert instance.can_accept_embedding_request() is False
+
+    def test_can_accept_llm_request_general(self):
+        """Test can_accept_llm_request for GENERAL instance."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+        )
+        assert instance.can_accept_llm_request() is True
+
+    def test_can_accept_llm_request_embedding_only(self):
+        """Test can_accept_llm_request for EMBEDDING-only instance."""
+        instance = ExecutionInstance(
+            instance_id="embed-1",
+            host="localhost",
+            port=8090,
+            model_name="BAAI/bge-m3",
+            instance_type=ExecutionInstanceType.EMBEDDING,
+        )
+        assert instance.can_accept_llm_request() is False
+
+    def test_can_accept_llm_request_mixed(self):
+        """Test can_accept_llm_request for LLM_EMBEDDING mixed instance."""
+        instance = ExecutionInstance(
+            instance_id="mixed-1",
+            host="localhost",
+            port=8000,
+            model_name="Qwen/Qwen2.5-7B-Instruct",
+            instance_type=ExecutionInstanceType.LLM_EMBEDDING,
+        )
+        assert instance.can_accept_llm_request() is True
+
+    def test_can_accept_llm_request_unhealthy(self):
+        """Test can_accept_llm_request when instance is unhealthy."""
+        instance = ExecutionInstance(
+            instance_id="inst-1",
+            host="localhost",
+            port=8000,
+            model_name="llama-7b",
+            instance_type=ExecutionInstanceType.GENERAL,
+            is_healthy=False,
+        )
+        assert instance.can_accept_llm_request() is False
 
 
 class TestSchedulingDecision:

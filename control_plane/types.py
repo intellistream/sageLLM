@@ -9,6 +9,26 @@ from enum import Enum
 from typing import Any
 
 
+class RequestType(Enum):
+    """Request type for hybrid scheduling.
+
+    This enum categorizes inference requests to enable appropriate
+    routing to compatible execution instances.
+
+    Attributes:
+        LLM_CHAT: Chat/conversation request with message history.
+            Typically uses /v1/chat/completions endpoint.
+        LLM_GENERATE: Text generation/completion request.
+            Typically uses /v1/completions endpoint.
+        EMBEDDING: Text embedding/vectorization request.
+            Typically uses /v1/embeddings endpoint.
+    """
+
+    LLM_CHAT = "llm_chat"
+    LLM_GENERATE = "llm_generate"
+    EMBEDDING = "embedding"
+
+
 class RequestPriority(Enum):
     """Request priority levels."""
 
@@ -42,17 +62,83 @@ class ParallelismType(Enum):
 
 
 class ExecutionInstanceType(Enum):
-    """Types/roles of execution instances for PD separation."""
+    """Types/roles of execution instances for PD separation and hybrid scheduling.
+
+    This enum categorizes execution instances based on their capabilities,
+    enabling appropriate routing of different request types.
+
+    Attributes:
+        GENERAL: General-purpose instance capable of handling LLM requests.
+            Supports chat and text generation but not optimized for either phase.
+        PREFILLING: Specialized for the prefilling phase of LLM inference.
+            Optimized for processing long input sequences efficiently.
+        DECODING: Specialized for the decoding phase of LLM inference.
+            Optimized for generating output tokens with low latency.
+        HYBRID: Handles both prefilling and decoding phases of LLM.
+            Balances between prefilling throughput and decoding latency.
+        EMBEDDING: Pure embedding instance (e.g., TEI, dedicated embedding server).
+            Only handles embedding/vectorization requests, cannot process LLM requests.
+        LLM_EMBEDDING: Mixed instance capable of both LLM and embedding requests.
+            Supports chat, generation, and embedding operations.
+            Useful for maximizing GPU utilization with mixed workloads.
+    """
 
     GENERAL = "general"  # General-purpose instance
     PREFILLING = "prefilling"  # Specialized for prefilling phase
     DECODING = "decoding"  # Specialized for decoding phase
     HYBRID = "hybrid"  # Handles both prefilling and decoding
+    EMBEDDING = "embedding"  # Pure embedding instance (e.g., TEI)
+    LLM_EMBEDDING = "llm_embedding"  # Mixed instance for both LLM and embedding
 
 
 @dataclass
 class RequestMetadata:
-    """Metadata for an inference request."""
+    """Metadata for an inference request.
+
+    This dataclass stores all metadata associated with an inference request,
+    including request identification, parameters, timing information,
+    resource preferences, and cost/billing information.
+
+    The class supports both LLM requests (chat/generate) and Embedding requests
+    through the request_type field and embedding-specific fields.
+
+    Attributes:
+        request_id: Unique identifier for this request.
+        prompt: Prompt text for LLM inference (None for embedding requests).
+        user_id: Optional user identifier for tracking/billing.
+        priority: Request priority level for scheduling.
+        slo_deadline_ms: SLO deadline in milliseconds.
+        max_tokens: Maximum tokens to generate (LLM only).
+        temperature: Sampling temperature (LLM only).
+        top_p: Top-p sampling parameter (LLM only).
+        model_name: Model name/identifier.
+
+        request_type: Type of request (LLM_CHAT, LLM_GENERATE, or EMBEDDING).
+            Defaults to LLM_CHAT for backward compatibility.
+        embedding_texts: List of texts to embed (Embedding requests only).
+        embedding_model: Model to use for embedding (overrides model_name if set).
+        embedding_batch_size: Batch size for embedding requests.
+
+        arrival_time: When the request arrived.
+        queue_time: When the request was queued.
+        schedule_time: When the request was scheduled.
+        start_time: When execution started.
+        end_time: When execution completed.
+
+        preferred_instance_id: Preferred execution instance.
+        parallelism_hint: Hint for parallelism strategy.
+
+        cost_budget: Maximum cost budget.
+        billing_tier: Billing tier identifier.
+
+        tokens_generated: Number of tokens generated so far.
+        last_token_time: Timestamp of last token generation.
+        tbt_slo_ms: Time Between Tokens SLO in milliseconds.
+        prefill_completed: Whether prefill phase is complete.
+        can_be_preempted: Whether request can be preempted.
+
+        tags: Additional metadata tags.
+    """
 
     request_id: str
     prompt: str | None = None  # Prompt text for inference
@@ -63,6 +149,19 @@ class RequestMetadata:
     temperature: float = 1.0
     top_p: float = 1.0
     model_name: str | None = None
+
+    # ============ Request Type for Hybrid Scheduling ============
+    # Type of request: LLM_CHAT, LLM_GENERATE, or EMBEDDING
+    # Defaults to LLM_CHAT for backward compatibility with existing code
+    request_type: RequestType = RequestType.LLM_CHAT
+
+    # ============ Embedding-specific Fields ============
+    # List of texts to embed (for EMBEDDING requests)
+    embedding_texts: list[str] | None = None
+    # Embedding model name (overrides model_name for embedding if set)
+    embedding_model: str | None = None
+    # Batch size for embedding requests (affects throughput vs latency tradeoff)
+    embedding_batch_size: int = 32
 
     # Timing information
     arrival_time: datetime = field(default_factory=datetime.now)
@@ -102,6 +201,38 @@ class RequestMetadata:
         if self.schedule_time and self.queue_time:
             return (self.schedule_time - self.queue_time).total_seconds() * 1000
         return None
+
+    @property
+    def is_embedding_request(self) -> bool:
+        """Check if this is an embedding request.
+
+        Returns:
+            True if request_type is EMBEDDING, False otherwise.
+        """
+        return self.request_type == RequestType.EMBEDDING
+
+    @property
+    def is_llm_request(self) -> bool:
+        """Check if this is an LLM request (chat or generate).
+
+        Returns:
+            True if request_type is LLM_CHAT or LLM_GENERATE, False otherwise.
+        """
+        return self.request_type in (RequestType.LLM_CHAT, RequestType.LLM_GENERATE)
+
+    @property
+    def effective_model_name(self) -> str | None:
+        """Get the effective model name for this request.
+
+        For embedding requests, returns embedding_model if set, otherwise model_name.
+        For LLM requests, returns model_name.
+
+        Returns:
+            The model name to use for this request.
+        """
+        if self.is_embedding_request and self.embedding_model:
+            return self.embedding_model
+        return self.model_name
 
 
 @dataclass
@@ -146,7 +277,67 @@ class DecodingConfig:
 
 @dataclass
 class ExecutionInstance:
-    """Represents a vLLM execution instance."""
+    """Represents a vLLM execution instance.
+
+    This dataclass stores all information about an execution instance,
+    including its identification, configuration, resource usage, health status,
+    performance metrics, and topology information.
+
+    The class supports both LLM-only and mixed LLM/Embedding instances through
+    the instance_type field and embedding-specific fields.
+
+    Attributes:
+        instance_id: Unique identifier for this instance.
+        host: Hostname or IP address of the instance.
+        port: Port number for the instance API.
+        model_name: Primary model loaded on this instance.
+
+        tensor_parallel_size: Number of GPUs used for tensor parallelism.
+        pipeline_parallel_size: Number of pipeline stages.
+        data_parallel_size: Number of data parallel replicas.
+
+        instance_type: Type/role of this instance (GENERAL, EMBEDDING, etc.).
+        prefilling_config: Configuration for prefilling-specialized instances.
+        decoding_config: Configuration for decoding-specialized instances.
+
+        gpu_count: Number of GPUs allocated to this instance.
+        gpu_memory_gb: Total GPU memory in gigabytes.
+        gpu_utilization: Current GPU utilization (0.0 to 1.0).
+
+        is_available: Whether the instance is available for new requests.
+        is_healthy: Whether the instance is healthy.
+        current_load: Current load level (0.0 to 1.0).
+
+        avg_latency_ms: Average request latency in milliseconds.
+        throughput_tokens_per_sec: Throughput in tokens per second.
+
+        active_requests: Total number of active requests.
+        max_concurrent_requests: Maximum concurrent requests allowed.
+
+        prefilling_active_requests: Active prefilling requests (PD separation).
+        decoding_active_requests: Active decoding requests (PD separation).
+
+        supported_request_types: List of request types this instance can handle.
+            Defaults based on instance_type if not explicitly set.
+        embedding_model_loaded: Name of the embedding model loaded (if any).
+            None if no embedding model is loaded.
+        embedding_max_batch_size: Maximum batch size for embedding requests.
+            Affects throughput vs latency tradeoff.
+        embedding_active_requests: Current number of active embedding requests.
+
+        machine_id: Physical machine identifier for topology-aware scheduling.
+        rack_id: Rack identifier for multi-rack deployments.
+        gpu_bus_id: PCIe bus ID of the GPU.
+        gpu_device_id: CUDA device ID.
+        nvlink_peers: Instance IDs connected via NVLINK.
+        numa_node: NUMA node number.
+        network_bandwidth_gbps: Network bandwidth in Gbps.
+        network_latency_ms: Network latency to Control Plane.
+        shared_memory_pool: Whether sharing system memory pool.
+        shared_storage_path: Shared storage path.
+
+        metadata: Additional metadata tags.
+    """
 
     instance_id: str
     host: str
@@ -184,6 +375,22 @@ class ExecutionInstance:
     # PD Separation: Request type tracking
     prefilling_active_requests: int = 0
     decoding_active_requests: int = 0
+
+    # ============ Embedding Support for Hybrid Scheduling ============
+    # List of request types this instance can handle.
+    # If None, defaults are computed based on instance_type.
+    supported_request_types: list[RequestType] | None = None
+
+    # Name of the embedding model loaded on this instance.
+    # None if no embedding model is loaded or instance doesn't support embedding.
+    embedding_model_loaded: str | None = None
+
+    # Maximum batch size for embedding requests.
+    # Larger batches improve throughput but increase latency.
+    embedding_max_batch_size: int = 32
+
+    # Current number of active embedding requests being processed.
+    embedding_active_requests: int = 0
 
     # ============ Topology Information (for scheduling optimization) ============
     machine_id: str | None = None  # Physical machine identifier (hostname/UUID)
@@ -231,6 +438,143 @@ class ExecutionInstance:
         """Check if instance can accept decoding requests."""
         if self.instance_type == ExecutionInstanceType.PREFILLING:
             return False
+        return self.can_accept_request
+
+    def get_effective_supported_request_types(self) -> list[RequestType]:
+        """Get the effective list of supported request types.
+
+        If supported_request_types is explicitly set, returns that list.
+        Otherwise, computes default supported types based on instance_type.
+
+        Default mappings:
+        - EMBEDDING: [EMBEDDING]
+        - LLM_EMBEDDING: [LLM_CHAT, LLM_GENERATE, EMBEDDING]
+        - GENERAL/PREFILLING/DECODING/HYBRID: [LLM_CHAT, LLM_GENERATE]
+
+        Returns:
+            List of RequestType values this instance can handle.
+        """
+        if self.supported_request_types is not None:
+            return self.supported_request_types
+
+        # Compute defaults based on instance_type
+        if self.instance_type == ExecutionInstanceType.EMBEDDING:
+            return [RequestType.EMBEDDING]
+        elif self.instance_type == ExecutionInstanceType.LLM_EMBEDDING:
+            return [RequestType.LLM_CHAT, RequestType.LLM_GENERATE, RequestType.EMBEDDING]
+        else:
+            # GENERAL, PREFILLING, DECODING, HYBRID - all handle LLM requests
+            return [RequestType.LLM_CHAT, RequestType.LLM_GENERATE]
+
+    def can_handle_request_type(self, request_type: RequestType) -> bool:
+        """Check if this instance can handle a specific request type.
+
+        Determines whether the instance is capable of processing requests
+        of the given type, based on its configuration and instance_type.
+
+        Args:
+            request_type: The type of request to check.
+
+        Returns:
+            True if the instance can handle the request type, False otherwise.
+
+        Examples:
+            >>> instance = ExecutionInstance(
+            ...     instance_id="llm-1",
+            ...     host="localhost",
+            ...     port=8000,
+            ...     model_name="Qwen/Qwen2.5-7B-Instruct",
+            ...     instance_type=ExecutionInstanceType.GENERAL,
+            ... )
+            >>> instance.can_handle_request_type(RequestType.LLM_CHAT)
+            True
+            >>> instance.can_handle_request_type(RequestType.EMBEDDING)
+            False
+
+            >>> embed_instance = ExecutionInstance(
+            ...     instance_id="embed-1",
+            ...     host="localhost",
+            ...     port=8090,
+            ...     model_name="BAAI/bge-m3",
+            ...     instance_type=ExecutionInstanceType.EMBEDDING,
+            ... )
+            >>> embed_instance.can_handle_request_type(RequestType.EMBEDDING)
+            True
+            >>> embed_instance.can_handle_request_type(RequestType.LLM_CHAT)
+            False
+        """
+        return request_type in self.get_effective_supported_request_types()
+
+    def can_accept_embedding_request(self) -> bool:
+        """Check if instance can accept new embedding requests.
+
+        This method checks both capability (can the instance handle embedding?)
+        and availability (is there capacity for new requests?).
+
+        The check considers:
+        1. Whether the instance supports EMBEDDING request type
+        2. General availability (is_available, is_healthy)
+        3. Current load and active request counts
+        4. Embedding-specific batch constraints
+
+        Returns:
+            True if the instance can accept a new embedding request,
+            False otherwise.
+
+        Examples:
+            >>> instance = ExecutionInstance(
+            ...     instance_id="embed-1",
+            ...     host="localhost",
+            ...     port=8090,
+            ...     model_name="BAAI/bge-m3",
+            ...     instance_type=ExecutionInstanceType.EMBEDDING,
+            ...     embedding_max_batch_size=32,
+            ...     embedding_active_requests=10,
+            ... )
+            >>> instance.can_accept_embedding_request()
+            True
+
+            >>> instance.embedding_active_requests = 32
+            >>> instance.can_accept_embedding_request()
+            False
+        """
+        # Check if instance supports embedding
+        if not self.can_handle_request_type(RequestType.EMBEDDING):
+            return False
+
+        # Check general availability
+        if not self.is_available or not self.is_healthy:
+            return False
+
+        # Check load constraints
+        if self.current_load >= 0.95:
+            return False
+
+        # Check embedding-specific batch constraint
+        if self.embedding_active_requests >= self.embedding_max_batch_size:
+            return False
+
+        return True
+
+    def can_accept_llm_request(self) -> bool:
+        """Check if instance can accept new LLM requests (chat or generate).
+
+        This method checks both capability (can the instance handle LLM?)
+        and availability (is there capacity for new requests?).
+
+        Returns:
+            True if the instance can accept a new LLM request,
+            False otherwise.
+        """
+        # Check if instance supports LLM (either chat or generate)
+        supports_llm = (
+            self.can_handle_request_type(RequestType.LLM_CHAT)
+            or self.can_handle_request_type(RequestType.LLM_GENERATE)
+        )
+        if not supports_llm:
+            return False
+
+        # Use existing general availability check
         return self.can_accept_request
 
     def get_affinity_score(self, other: "ExecutionInstance") -> float:

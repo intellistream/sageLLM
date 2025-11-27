@@ -12,6 +12,7 @@ Available strategies:
 - SLOAwarePolicy: SLO deadline-aware scheduling
 - CostOptimizedPolicy: Cost-optimized scheduling
 - AdaptivePolicy: Adaptive strategy selection
+- HybridSchedulingPolicy: Hybrid LLM/Embedding scheduling
 """
 
 from .adaptive import AdaptivePolicy
@@ -19,6 +20,12 @@ from .aegaeon import AegaeonPolicy
 from .base import SchedulingPolicy
 from .cost_optimized import CostOptimizedPolicy
 from .fifo import FIFOPolicy
+from .hybrid_policy import (
+    EmbeddingBatch,
+    EmbeddingPriority,
+    HybridSchedulingConfig,
+    HybridSchedulingPolicy,
+)
 from .priority import PriorityPolicy
 from .slo_aware import SLOAwarePolicy
 
@@ -30,4 +37,8 @@ __all__ = [
     "CostOptimizedPolicy",
     "AdaptivePolicy",
     "AegaeonPolicy",
+    "HybridSchedulingPolicy",
+    "HybridSchedulingConfig",
+    "EmbeddingPriority",
+    "EmbeddingBatch",
 ]

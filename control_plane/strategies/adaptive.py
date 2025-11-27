@@ -3,7 +3,7 @@
 
 """Adaptive scheduling strategy that switches between strategies based on conditions."""
 
-from control_plane.types import (
+from ..types import (
     ExecutionInstance,
     RequestMetadata,
     RequestPriority,

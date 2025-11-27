@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from control_plane.types import (
+from ..types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,
