@@ -39,6 +39,14 @@ class RequestPriority(Enum):
     BACKGROUND = 4  # Lowest priority
 
 
+class RequestType(Enum):
+    """Types of inference requests."""
+
+    LLM_CHAT = "llm_chat"
+    LLM_GENERATE = "llm_generate"
+    EMBEDDING = "embedding"
+
+
 class RequestStatus(Enum):
     """Request lifecycle status."""
 

@@ -3,7 +3,7 @@
 
 """Adaptive scheduling strategy that switches between strategies based on conditions."""
 
-from ..types import (
+from sage.common.components.sage_llm.sageLLM.control_plane.types import (
     ExecutionInstance,
     RequestMetadata,
     RequestPriority,

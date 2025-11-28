@@ -3,7 +3,7 @@
 
 """Priority-based scheduling strategy."""
 
-from ..types import (
+from sage.common.components.sage_llm.sageLLM.control_plane.types import (
     ExecutionInstance,
     ParallelismType,
     RequestMetadata,
