@@ -11,6 +11,8 @@ The Control Plane sits between users and vLLM execution instances, providing:
 - Multi-instance management and coordination
 - Performance monitoring and adaptive optimization
 - SLA-based autoscaling for Prefill/Decode instances
+- GPU resource management and allocation
+- Engine lifecycle management (spawn, stop, health check)
 """
 
 # Import autoscaling components
@@ -32,6 +34,17 @@ from .manager import ControlPlaneManager
 
 # Import monitoring
 from .monitoring import MetricsCollector
+
+# Import GPU resource management
+from .gpu_manager import GPUResourceManager, GPUStatus
+
+# Import engine lifecycle management
+from .engine_lifecycle import (
+    EngineLifecycleManager,
+    EngineProcessInfo,
+    EngineRuntime,
+    EngineStatus,
+)
 
 # Import parallelism strategies
 from .parallelism import (
@@ -153,4 +166,12 @@ __all__ = [
     "PDRoutingStrategy",
     # Manager
     "ControlPlaneManager",
+    # GPU Resource Management
+    "GPUResourceManager",
+    "GPUStatus",
+    # Engine Lifecycle Management
+    "EngineLifecycleManager",
+    "EngineProcessInfo",
+    "EngineRuntime",
+    "EngineStatus",
 ]

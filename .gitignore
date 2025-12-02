@@ -1,3 +1,6 @@
+# Reference directory (for storing reference project files)
+.reference/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

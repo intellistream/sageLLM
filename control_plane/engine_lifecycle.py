@@ -2,8 +2,10 @@
 # SPDX-FileCopyrightText: Copyright contributors to the SAGE project
 
 """Lifecycle management for vLLM engines managed by the control plane."""
+
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import subprocess
@@ -15,7 +17,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+import aiohttp
 import psutil
+
 from sage.common.config.ports import SagePorts
 
 logger = logging.getLogger(__name__)
@@ -102,6 +106,7 @@ class EngineLifecycleManager:
                 tensor_parallel_size,
                 pipeline_parallel_size,
                 extra_args,
+                gpu_ids=gpu_ids,
             )
             env = self._build_environment(gpu_ids)
 
@@ -179,9 +184,125 @@ class EngineLifecycleManager:
 
         with self._lock:
             return [
-                self._serialize(info, self._refresh_status(info))
-                for info in self._engines.values()
+                self._serialize(info, self._refresh_status(info)) for info in self._engines.values()
             ]
+
+    # ------------------------------------------------------------------
+    # Health Check API
+    # ------------------------------------------------------------------
+    async def health_check(
+        self,
+        engine_id: str,
+        timeout: float = 5.0,
+    ) -> bool:
+        """HTTP check engine health status.
+
+        For LLM engines: GET /health or /v1/models
+        For Embedding engines: GET /health
+
+        Args:
+            engine_id: The engine identifier to check
+            timeout: HTTP request timeout in seconds
+
+        Returns:
+            True if engine is healthy, False otherwise
+        """
+        with self._lock:
+            info = self._engines.get(engine_id)
+            if info is None:
+                logger.warning("Health check for unknown engine %s", engine_id)
+                return False
+
+            # If engine is in terminal state, it's not healthy
+            if info.status in {EngineStatus.STOPPED, EngineStatus.FAILED}:
+                return False
+
+            # First check if process is alive
+            process = self._get_process(info.pid)
+            if process is None or not process.is_running():
+                logger.debug("Engine %s process not running", engine_id)
+                return False
+
+            port = info.port
+            runtime = info.runtime
+
+        # Perform HTTP health check
+        return await self._http_health_check(engine_id, port, runtime, timeout)
+
+    async def _http_health_check(
+        self,
+        engine_id: str,
+        port: int,
+        runtime: EngineRuntime,
+        timeout: float,
+    ) -> bool:
+        """Perform HTTP health check against an engine endpoint."""
+        # Determine health check endpoints based on engine type
+        if runtime == EngineRuntime.EMBEDDING:
+            endpoints = ["/health"]
+        else:
+            # LLM: Try /health first, then /v1/models as fallback
+            endpoints = ["/health", "/v1/models"]
+
+        base_url = f"http://{self.host}:{port}"
+        # Use localhost for health checks since we're checking from the same machine
+        if self.host == "0.0.0.0":
+            base_url = f"http://127.0.0.1:{port}"
+
+        try:
+            async with aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=timeout)
+            ) as session:
+                for endpoint in endpoints:
+                    url = f"{base_url}{endpoint}"
+                    try:
+                        async with session.get(url) as response:
+                            if response.status == 200:
+                                logger.debug(
+                                    "Engine %s healthy (endpoint=%s)",
+                                    engine_id,
+                                    endpoint,
+                                )
+                                return True
+                    except aiohttp.ClientError:
+                        # Try next endpoint
+                        continue
+
+                logger.debug("Engine %s failed all health check endpoints", engine_id)
+                return False
+
+        except TimeoutError:
+            logger.debug("Engine %s health check timed out", engine_id)
+            return False
+        except Exception as e:
+            logger.debug("Engine %s health check error: %s", engine_id, e)
+            return False
+
+    async def health_check_all(self) -> dict[str, bool]:
+        """Check health status of all managed engines.
+
+        Returns:
+            Dictionary mapping engine_id to health status (True/False)
+        """
+        with self._lock:
+            engine_ids = list(self._engines.keys())
+
+        if not engine_ids:
+            return {}
+
+        # Run health checks concurrently
+        tasks = [self.health_check(engine_id) for engine_id in engine_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        health_status: dict[str, bool] = {}
+        for engine_id, result in zip(engine_ids, results, strict=False):
+            if isinstance(result, Exception):
+                logger.error("Health check failed for engine %s: %s", engine_id, result)
+                health_status[engine_id] = False
+            else:
+                health_status[engine_id] = result
+
+        return health_status
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -199,9 +320,10 @@ class EngineLifecycleManager:
         tensor_parallel_size: int,
         pipeline_parallel_size: int,
         extra_args: list[str],
+        gpu_ids: list[int] | None = None,
     ) -> list[str]:
         if engine_kind == EngineRuntime.EMBEDDING:
-            return self._build_embedding_command(model_id, port, extra_args)
+            return self._build_embedding_command(model_id, port, extra_args, gpu_ids=gpu_ids)
         return self._build_llm_command(
             model_id,
             port,
@@ -239,6 +361,8 @@ class EngineLifecycleManager:
         model_id: str,
         port: int,
         extra_args: list[str],
+        *,
+        gpu_ids: list[int] | None = None,
     ) -> list[str]:
         command = [
             self.python_executable,
@@ -251,6 +375,11 @@ class EngineLifecycleManager:
             "--port",
             str(port),
         ]
+        # Add device parameter based on GPU allocation
+        if gpu_ids:
+            command.extend(["--device", "cuda"])
+        else:
+            command.extend(["--device", "cpu"])
         command.extend(extra_args)
         return command
 

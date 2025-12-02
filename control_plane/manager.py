@@ -88,6 +88,12 @@ class ControlPlaneManager:
         pd_config: PDSeparationConfig | None = None,
         autoscaler_config: AutoscalerConfig | None = None,
         mode: Literal["http", "local"] = "http",
+        auto_restart: bool = True,
+        max_restart_attempts: int = 3,
+        health_check_interval: float = 10.0,
+        health_check_timeout: float = 5.0,
+        restart_backoff_base: float = 1.0,
+        consecutive_failures_threshold: int = 2,
     ):
         """
         Initialize Control Plane Manager.
@@ -105,6 +111,12 @@ class ControlPlaneManager:
             enable_pd_separation: Enable Prefilling/Decoding separation
             pd_config: PD separation configuration
             autoscaler_config: Autoscaler configuration
+            auto_restart: Enable automatic engine restart on failure
+            max_restart_attempts: Maximum number of restart attempts per engine
+            health_check_interval: Interval between health checks in seconds
+            health_check_timeout: Timeout for each health check request
+            restart_backoff_base: Base time in seconds for exponential backoff
+            consecutive_failures_threshold: Number of consecutive failures before restart
         """
 
         # Core components
@@ -171,16 +183,31 @@ class ControlPlaneManager:
             )
             logger.info("Autoscaler enabled")
 
+        # Auto-restart configuration
+        self.auto_restart = auto_restart
+        self.max_restart_attempts = max_restart_attempts
+        self.health_check_interval = health_check_interval
+        self.health_check_timeout = health_check_timeout
+        self.restart_backoff_base = restart_backoff_base
+        self.consecutive_failures_threshold = consecutive_failures_threshold
+
+        # Auto-restart state tracking
+        # engine_id -> {"consecutive_failures": int, "restart_count": int, "last_restart_time": float}
+        self._engine_health_state: dict[str, dict[str, Any]] = {}
+        self._engine_health_state_lock = threading.Lock()
+
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
         self._running = False
 
         logger.info(
-            "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s, autoscaling=%s",
+            "Control Plane initialized with policy=%s, routing=%s, pd_separation=%s, "
+            "autoscaling=%s, auto_restart=%s",
             scheduling_policy,
             routing_strategy,
             enable_pd_separation,
             enable_auto_scaling,
+            auto_restart,
         )
 
     def _create_policy(self, policy_name: str) -> SchedulingPolicy:
@@ -210,9 +237,15 @@ class ControlPlaneManager:
         task = asyncio.create_task(self._scheduling_loop())
         self.background_tasks.append(task)
 
-        # Start health check loop
+        # Start health check loop (for execution instances)
         task = asyncio.create_task(self._health_check_loop())
         self.background_tasks.append(task)
+
+        # Start engine health check and auto-restart loop if enabled
+        if self.auto_restart and self.lifecycle_manager:
+            task = asyncio.create_task(self._engine_health_and_restart_loop())
+            self.background_tasks.append(task)
+            logger.info("Engine auto-restart enabled")
 
         # Start autoscaler if enabled
         if self.autoscaler:
@@ -538,6 +571,264 @@ class ControlPlaneManager:
             except Exception as e:
                 logger.error("Health check loop error: %s", e)
 
+    async def _engine_health_and_restart_loop(self):
+        """Periodic health check of managed engines with automatic restart.
+
+        This loop checks the health of all engines managed by the lifecycle manager
+        and attempts to restart failed engines with exponential backoff.
+        """
+        while self._running:
+            try:
+                if not self.lifecycle_manager:
+                    await asyncio.sleep(self.health_check_interval)
+                    continue
+
+                # Get health status of all managed engines
+                health_results = await self.lifecycle_manager.health_check_all()
+
+                for engine_id, is_healthy in health_results.items():
+                    await self._handle_engine_health_result(engine_id, is_healthy)
+
+                await asyncio.sleep(self.health_check_interval)
+
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error("Engine health check loop error: %s", e)
+                await asyncio.sleep(self.health_check_interval)
+
+    async def _handle_engine_health_result(
+        self,
+        engine_id: str,
+        is_healthy: bool,
+    ) -> None:
+        """Handle health check result for a single engine.
+
+        Args:
+            engine_id: The engine identifier
+            is_healthy: Whether the engine health check passed
+        """
+        with self._engine_health_state_lock:
+            if engine_id not in self._engine_health_state:
+                self._engine_health_state[engine_id] = {
+                    "consecutive_failures": 0,
+                    "restart_count": 0,
+                    "last_restart_time": 0.0,
+                }
+            state = self._engine_health_state[engine_id]
+
+        if is_healthy:
+            # Reset consecutive failures on success
+            with self._engine_health_state_lock:
+                state["consecutive_failures"] = 0
+            return
+
+        # Increment consecutive failures
+        with self._engine_health_state_lock:
+            state["consecutive_failures"] += 1
+            consecutive_failures = state["consecutive_failures"]
+            restart_count = state["restart_count"]
+
+        logger.warning(
+            "Engine %s health check failed (consecutive=%d, restarts=%d/%d)",
+            engine_id,
+            consecutive_failures,
+            restart_count,
+            self.max_restart_attempts,
+        )
+
+        # Check if we should attempt restart
+        if consecutive_failures < self.consecutive_failures_threshold:
+            logger.debug(
+                "Engine %s: waiting for more failures before restart (current=%d, threshold=%d)",
+                engine_id,
+                consecutive_failures,
+                self.consecutive_failures_threshold,
+            )
+            return
+
+        if restart_count >= self.max_restart_attempts:
+            logger.error(
+                "Engine %s exceeded max restart attempts (%d), marking as FAILED",
+                engine_id,
+                self.max_restart_attempts,
+            )
+            # Mark engine as permanently failed
+            await self._mark_engine_failed(engine_id)
+            return
+
+        # Calculate backoff delay
+        backoff_delay = self.restart_backoff_base * (2**restart_count)
+        last_restart = state.get("last_restart_time", 0.0)
+        time_since_last_restart = asyncio.get_event_loop().time() - last_restart
+
+        if time_since_last_restart < backoff_delay:
+            logger.debug(
+                "Engine %s: in backoff period (%.1fs remaining)",
+                engine_id,
+                backoff_delay - time_since_last_restart,
+            )
+            return
+
+        # Attempt restart
+        await self._attempt_engine_restart(engine_id)
+
+    async def _attempt_engine_restart(self, engine_id: str) -> bool:
+        """Attempt to restart a failed engine.
+
+        Args:
+            engine_id: The engine identifier to restart
+
+        Returns:
+            True if restart was successful, False otherwise
+        """
+        if not self.lifecycle_manager:
+            return False
+
+        # Get engine metadata from registry
+        with self._engine_registry_lock:
+            engine_meta = self._engine_registry.get(engine_id)
+            if not engine_meta:
+                logger.warning("Cannot restart engine %s: not found in registry", engine_id)
+                return False
+            # Copy metadata to avoid mutation during restart
+            engine_meta = dict(engine_meta)
+
+        logger.info("Attempting to restart engine %s", engine_id)
+
+        # Update restart tracking
+        with self._engine_health_state_lock:
+            state = self._engine_health_state.get(engine_id, {})
+            state["restart_count"] = state.get("restart_count", 0) + 1
+            state["last_restart_time"] = asyncio.get_event_loop().time()
+            state["consecutive_failures"] = 0
+            self._engine_health_state[engine_id] = state
+            current_restart = state["restart_count"]
+
+        try:
+            # Stop the old engine first
+            logger.info("Stopping failed engine %s", engine_id)
+            self.lifecycle_manager.stop_engine(engine_id, timeout=10.0)
+
+            # Release resources before restart
+            if self.gpu_manager:
+                gpu_ids = engine_meta.get("gpu_ids", [])
+                memory_per_gpu_gb = engine_meta.get("memory_per_gpu_gb", 0.0)
+                if gpu_ids and memory_per_gpu_gb:
+                    self.gpu_manager.release_resources(gpu_ids, memory_per_gpu_gb)
+
+            port = engine_meta.get("port")
+            if port:
+                self._release_port(port)
+
+            # Unregister old instance
+            instance_id = engine_meta.get("instance_id")
+            if instance_id:
+                self.unregister_instance(instance_id)
+
+            # Remove old engine from registry
+            with self._engine_registry_lock:
+                self._engine_registry.pop(engine_id, None)
+
+            # Wait a bit before restart
+            await asyncio.sleep(1.0)
+
+            # Determine engine kind from metadata
+            engine_kind = engine_meta.get("engine_kind", "llm")
+
+            # Restart with same configuration
+            new_engine_info = self.request_engine_startup(
+                model_id=engine_meta.get("model_id", ""),
+                tensor_parallel_size=engine_meta.get("tensor_parallel_size", 1),
+                pipeline_parallel_size=engine_meta.get("pipeline_parallel_size", 1),
+                port=None,  # Let the system assign a new port
+                instance_host=engine_meta.get("metadata", {}).get("host", "localhost"),
+                instance_type=self._get_instance_type_from_meta(engine_meta),
+                max_concurrent_requests=engine_meta.get("metadata", {}).get(
+                    "max_concurrent_requests", 256
+                ),
+                engine_label=engine_meta.get("engine_label"),
+                metadata=engine_meta.get("metadata"),
+                engine_kind=engine_kind,
+            )
+
+            new_engine_id = new_engine_info.get("engine_id", "")
+            logger.info(
+                "Engine restart successful: %s -> %s (attempt %d/%d)",
+                engine_id,
+                new_engine_id,
+                current_restart,
+                self.max_restart_attempts,
+            )
+
+            # Transfer health state to new engine ID
+            with self._engine_health_state_lock:
+                if engine_id in self._engine_health_state:
+                    old_state = self._engine_health_state.pop(engine_id)
+                    self._engine_health_state[new_engine_id] = old_state
+
+            return True
+
+        except Exception as e:
+            logger.error(
+                "Failed to restart engine %s (attempt %d/%d): %s",
+                engine_id,
+                current_restart,
+                self.max_restart_attempts,
+                e,
+            )
+            return False
+
+    def _get_instance_type_from_meta(self, engine_meta: dict[str, Any]) -> ExecutionInstanceType:
+        """Get ExecutionInstanceType from engine metadata."""
+        meta = engine_meta.get("metadata", {})
+        type_str = meta.get("instance_type")
+        if type_str:
+            try:
+                return ExecutionInstanceType[type_str.upper()]
+            except (KeyError, AttributeError):
+                pass
+        engine_kind = engine_meta.get("engine_kind", "llm")
+        if engine_kind == "embedding":
+            return ExecutionInstanceType.EMBEDDING
+        return ExecutionInstanceType.GENERAL
+
+    async def _mark_engine_failed(self, engine_id: str) -> None:
+        """Mark an engine as permanently failed after exhausting restart attempts."""
+        if not self.lifecycle_manager:
+            return
+
+        logger.error(
+            "Engine %s marked as FAILED after %d restart attempts",
+            engine_id,
+            self.max_restart_attempts,
+        )
+
+        # Update engine status in lifecycle manager
+        try:
+            status = self.lifecycle_manager.get_engine_status(engine_id)
+            if status:
+                logger.info(
+                    "Engine %s final status: %s (pid=%s)",
+                    engine_id,
+                    status.get("status"),
+                    status.get("pid"),
+                )
+        except Exception as e:
+            logger.debug("Could not get final status for engine %s: %s", engine_id, e)
+
+        # Unregister from execution pool to prevent routing requests to it
+        with self._engine_registry_lock:
+            engine_meta = self._engine_registry.get(engine_id)
+            if engine_meta:
+                instance_id = engine_meta.get("instance_id")
+                if instance_id:
+                    self.unregister_instance(instance_id)
+
+        # Clean up health state
+        with self._engine_health_state_lock:
+            self._engine_health_state.pop(engine_id, None)
+
     async def _monitoring_loop(self):
         """Periodic monitoring and metrics collection."""
 
@@ -789,6 +1080,7 @@ class ControlPlaneManager:
         engine_label: str | None = None,
         metadata: dict[str, Any] | None = None,
         engine_kind: str = "llm",
+        use_gpu: bool | None = None,
     ) -> dict[str, Any]:
         """Provision a new vLLM/vLLM-compatible engine and register it.
 
@@ -811,13 +1103,21 @@ class ControlPlaneManager:
             instance_type = ExecutionInstanceType.EMBEDDING
 
         logger.info(
-            "Requesting engine startup for model=%s tp=%d port=%s",
+            "Requesting engine startup for model=%s tp=%d port=%s use_gpu=%s",
             model_id,
             tensor_parallel_size,
             port or "auto",
+            use_gpu,
         )
 
-        needs_gpu = runtime_kind is None or runtime_kind.value != "embedding"
+        # Determine GPU requirement:
+        # - use_gpu=True: Force GPU usage
+        # - use_gpu=False: Force no GPU
+        # - use_gpu=None (default): LLM uses GPU, Embedding does not
+        if use_gpu is not None:
+            needs_gpu = use_gpu
+        else:
+            needs_gpu = runtime_kind is None or runtime_kind.value != "embedding"
         per_gpu_memory_gb = 0.0
         gpu_ids: list[int] = []
         if needs_gpu:
@@ -898,9 +1198,7 @@ class ControlPlaneManager:
             pipeline_parallel_size=pipeline_parallel_size,
             engine_label=label,
             metadata=instance_metadata,
-            engine_kind=(runtime_kind or EngineRuntime.LLM).value
-            if EngineRuntime
-            else "llm",
+            engine_kind=(runtime_kind or EngineRuntime.LLM).value if EngineRuntime else "llm",
         )
 
         logger.info(
@@ -921,10 +1219,17 @@ class ControlPlaneManager:
             "pipeline_parallel_size": pipeline_parallel_size,
             "memory_per_gpu_gb": per_gpu_memory_gb,
             "engine_label": label,
-            "engine_kind": (runtime_kind or EngineRuntime.LLM).value
-            if EngineRuntime
-            else "llm",
+            "engine_kind": (runtime_kind or EngineRuntime.LLM).value if EngineRuntime else "llm",
         }
+
+        # Initialize health state tracking for auto-restart
+        if self.auto_restart:
+            with self._engine_health_state_lock:
+                self._engine_health_state[engine_id] = {
+                    "consecutive_failures": 0,
+                    "restart_count": 0,
+                    "last_restart_time": 0.0,
+                }
 
         status_snapshot = self._safe_get_engine_status(engine_id)
         if status_snapshot:
@@ -962,6 +1267,10 @@ class ControlPlaneManager:
                 self._release_port(port)
             if instance_id:
                 self.unregister_instance(instance_id)
+
+        # Clean up health state tracking
+        with self._engine_health_state_lock:
+            self._engine_health_state.pop(engine_id, None)
 
         logger.info("Engine %s stopped and resources released", engine_id)
         return {"engine_id": engine_id, "stopped": True, "status": "STOPPED"}
@@ -1008,6 +1317,31 @@ class ControlPlaneManager:
             "resource_reservations": self._get_engine_registry_snapshot(),
         }
 
+    def get_engine_health_status(self) -> dict[str, Any]:
+        """Get health status and restart tracking for all managed engines.
+
+        Returns:
+            Dictionary with auto_restart config and per-engine health state
+        """
+        with self._engine_health_state_lock:
+            engine_states = {
+                engine_id: {
+                    "consecutive_failures": state.get("consecutive_failures", 0),
+                    "restart_count": state.get("restart_count", 0),
+                    "last_restart_time": state.get("last_restart_time", 0.0),
+                    "can_restart": state.get("restart_count", 0) < self.max_restart_attempts,
+                }
+                for engine_id, state in self._engine_health_state.items()
+            }
+
+        return {
+            "auto_restart_enabled": self.auto_restart,
+            "max_restart_attempts": self.max_restart_attempts,
+            "health_check_interval": self.health_check_interval,
+            "consecutive_failures_threshold": self.consecutive_failures_threshold,
+            "engines": engine_states,
+        }
+
     # ------------------------------------------------------------------
     # Internal helpers for engine lifecycle management
     # ------------------------------------------------------------------
@@ -1023,9 +1357,7 @@ class ControlPlaneManager:
 
     def _init_engine_lifecycle_manager(self) -> EngineLifecycleManager | None:
         if RuntimeEngineLifecycleManager is None:
-            logger.debug(
-                "EngineLifecycleManager not available; dynamic lifecycle control disabled"
-            )
+            logger.debug("EngineLifecycleManager not available; dynamic lifecycle control disabled")
             return None
         try:
             return RuntimeEngineLifecycleManager()
