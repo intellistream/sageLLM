@@ -55,6 +55,8 @@ from .strategies import (
     SLOAwarePolicy,
 )
 from .types import (
+    EngineInfo,
+    EngineState,
     ExecutionInstance,
     ExecutionInstanceType,
     InstanceMetrics,
@@ -196,6 +198,11 @@ class ControlPlaneManager:
         self._engine_health_state: dict[str, dict[str, Any]] = {}
         self._engine_health_state_lock = threading.Lock()
 
+        # Engine registration tracking (for Task 1A: Engine registration and lifecycle)
+        # Maps engine_id to EngineInfo for state tracking and heartbeat management
+        self._registered_engines: dict[str, EngineInfo] = {}
+        self._registered_engines_lock = threading.Lock()
+
         # Background tasks
         self.background_tasks: list[asyncio.Task] = []
         self._running = False
@@ -287,6 +294,357 @@ class ControlPlaneManager:
     def unregister_instance(self, instance_id: str):
         """Unregister an execution instance."""
         self.executor.unregister_instance(instance_id)
+
+    # ------------------------------------------------------------------
+    # Engine Registration and State Management (Task 1A)
+    # ------------------------------------------------------------------
+
+    def register_engine(
+        self,
+        engine_id: str,
+        model_id: str,
+        host: str,
+        port: int,
+        engine_kind: str = "llm",
+        metadata: dict[str, Any] | None = None,
+    ) -> EngineInfo:
+        """Register a new engine with the Control Plane.
+
+        This method should be called after an engine process has been spawned
+        and is starting up. The engine will be registered in STARTING state
+        and will transition to READY after successful health checks.
+
+        Args:
+            engine_id: Unique identifier for the engine.
+            model_id: The model loaded on this engine.
+            host: Hostname or IP address of the engine.
+            port: Port number the engine is listening on.
+            engine_kind: Type of engine ('llm' or 'embedding').
+            metadata: Optional additional metadata.
+
+        Returns:
+            EngineInfo object representing the registered engine.
+
+        Raises:
+            ValueError: If an engine with the same ID is already registered.
+        """
+        with self._registered_engines_lock:
+            if engine_id in self._registered_engines:
+                raise ValueError(f"Engine {engine_id} is already registered")
+
+            engine_info = EngineInfo(
+                engine_id=engine_id,
+                model_id=model_id,
+                host=host,
+                port=port,
+                state=EngineState.STARTING,
+                engine_kind=engine_kind,
+                metadata=dict(metadata) if metadata else {},
+            )
+            self._registered_engines[engine_id] = engine_info
+
+        logger.info(
+            "Engine %s registered (model=%s, host=%s:%d, kind=%s)",
+            engine_id,
+            model_id,
+            host,
+            port,
+            engine_kind,
+        )
+        return engine_info
+
+    def unregister_engine(self, engine_id: str) -> EngineInfo | None:
+        """Unregister an engine from the Control Plane.
+
+        This removes the engine from the registration tracking. The engine
+        should be stopped before calling this method.
+
+        Args:
+            engine_id: The ID of the engine to unregister.
+
+        Returns:
+            The EngineInfo that was removed, or None if not found.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.pop(engine_id, None)
+
+        if engine_info:
+            logger.info("Engine %s unregistered", engine_id)
+        else:
+            logger.warning("Attempted to unregister unknown engine %s", engine_id)
+
+        return engine_info
+
+    def get_engine_info(self, engine_id: str) -> EngineInfo | None:
+        """Get information about a registered engine.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            EngineInfo if found, None otherwise.
+        """
+        with self._registered_engines_lock:
+            return self._registered_engines.get(engine_id)
+
+    def get_engine_state(self, engine_id: str) -> EngineState | None:
+        """Get the current state of a registered engine.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            EngineState if found, None otherwise.
+        """
+        engine_info = self.get_engine_info(engine_id)
+        return engine_info.state if engine_info else None
+
+    def list_registered_engines(
+        self,
+        state_filter: EngineState | None = None,
+    ) -> list[EngineInfo]:
+        """List all registered engines, optionally filtered by state.
+
+        Args:
+            state_filter: If provided, only return engines in this state.
+
+        Returns:
+            List of EngineInfo objects.
+        """
+        with self._registered_engines_lock:
+            engines = list(self._registered_engines.values())
+
+        if state_filter is not None:
+            engines = [e for e in engines if e.state == state_filter]
+
+        return engines
+
+    def update_engine_state(
+        self,
+        engine_id: str,
+        new_state: EngineState,
+        *,
+        reset_failures: bool = False,
+    ) -> bool:
+        """Update the state of a registered engine.
+
+        This method handles state transitions and validates them according
+        to the EngineState state machine.
+
+        Args:
+            engine_id: The ID of the engine.
+            new_state: The new state to transition to.
+            reset_failures: If True, reset the consecutive_failures counter.
+
+        Returns:
+            True if the state was updated, False if engine not found.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                logger.warning("Cannot update state for unknown engine %s", engine_id)
+                return False
+
+            old_state = engine_info.state
+            engine_info.state = new_state
+
+            if reset_failures:
+                engine_info.consecutive_failures = 0
+
+            logger.info(
+                "Engine %s state changed: %s -> %s",
+                engine_id,
+                old_state.value,
+                new_state.value,
+            )
+
+        return True
+
+    def record_engine_heartbeat(self, engine_id: str) -> bool:
+        """Record a successful heartbeat for an engine.
+
+        This method should be called when an engine health check succeeds.
+        It updates the last_heartbeat timestamp and resets failure counters.
+        If the engine is in STARTING state, it transitions to READY.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            True if heartbeat was recorded, False if engine not found.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                return False
+
+            engine_info.last_heartbeat = datetime.now()
+            engine_info.consecutive_failures = 0
+
+            # Transition from STARTING to READY on first successful heartbeat
+            if engine_info.state == EngineState.STARTING:
+                engine_info.state = EngineState.READY
+                logger.info("Engine %s is now READY", engine_id)
+
+        return True
+
+    def record_engine_failure(self, engine_id: str) -> int:
+        """Record a health check failure for an engine.
+
+        This method increments the consecutive failure counter. If the
+        counter reaches the threshold (default 3), the engine transitions
+        to ERROR state.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            The new consecutive failure count, or -1 if engine not found.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                return -1
+
+            engine_info.consecutive_failures += 1
+            failure_count = engine_info.consecutive_failures
+
+            # Transition to ERROR after consecutive failures threshold
+            if (
+                failure_count >= self.consecutive_failures_threshold
+                and engine_info.state not in (EngineState.STOPPED, EngineState.ERROR)
+            ):
+                engine_info.state = EngineState.ERROR
+                logger.warning(
+                    "Engine %s entered ERROR state after %d consecutive failures",
+                    engine_id,
+                    failure_count,
+                )
+
+        return failure_count
+
+    def start_engine_drain(self, engine_id: str) -> bool:
+        """Start draining an engine for graceful shutdown.
+
+        This transitions the engine to DRAINING state, which means it will
+        stop accepting new requests but continue processing existing ones.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            True if drain was started, False if engine not found or
+            already in terminal state.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                logger.warning("Cannot drain unknown engine %s", engine_id)
+                return False
+
+            if engine_info.is_terminal:
+                logger.warning(
+                    "Cannot drain engine %s in terminal state %s",
+                    engine_id,
+                    engine_info.state.value,
+                )
+                return False
+
+            engine_info.state = EngineState.DRAINING
+            logger.info("Engine %s is now DRAINING", engine_id)
+
+        return True
+
+    def check_engine_drain_complete(self, engine_id: str) -> bool:
+        """Check if an engine has finished draining.
+
+        An engine is considered drained when it has no active requests.
+
+        Args:
+            engine_id: The ID of the engine.
+
+        Returns:
+            True if engine is drained (no active requests), False otherwise.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                return True  # Non-existent engine is considered drained
+
+            if engine_info.state != EngineState.DRAINING:
+                return False
+
+            return engine_info.active_requests == 0
+
+    def update_engine_active_requests(
+        self,
+        engine_id: str,
+        active_requests: int,
+    ) -> bool:
+        """Update the active request count for an engine.
+
+        Args:
+            engine_id: The ID of the engine.
+            active_requests: The current number of active requests.
+
+        Returns:
+            True if updated, False if engine not found.
+        """
+        with self._registered_engines_lock:
+            engine_info = self._registered_engines.get(engine_id)
+            if not engine_info:
+                return False
+
+            engine_info.active_requests = active_requests
+
+        return True
+
+    async def stop_engine_gracefully(
+        self,
+        engine_id: str,
+        timeout: float = 30.0,
+    ) -> bool:
+        """Stop an engine gracefully with draining.
+
+        This method:
+        1. Transitions the engine to DRAINING state
+        2. Waits for active requests to complete (up to timeout)
+        3. Stops the engine process
+        4. Transitions to STOPPED state
+
+        Args:
+            engine_id: The ID of the engine to stop.
+            timeout: Maximum time to wait for draining in seconds.
+
+        Returns:
+            True if engine was stopped gracefully, False otherwise.
+        """
+        # Start draining
+        if not self.start_engine_drain(engine_id):
+            return False
+
+        # Wait for drain to complete
+        start_time = asyncio.get_event_loop().time()
+        while asyncio.get_event_loop().time() - start_time < timeout:
+            if self.check_engine_drain_complete(engine_id):
+                logger.info("Engine %s drain complete", engine_id)
+                break
+            await asyncio.sleep(0.5)
+        else:
+            logger.warning(
+                "Engine %s drain timeout after %.1f seconds, forcing stop",
+                engine_id,
+                timeout,
+            )
+
+        # Stop the engine process
+        if self.lifecycle_manager:
+            self.lifecycle_manager.stop_engine(engine_id)
+
+        # Update state to STOPPED
+        self.update_engine_state(engine_id, EngineState.STOPPED)
+
+        return True
 
     async def submit_request(
         self,
@@ -1148,7 +1506,7 @@ class ControlPlaneManager:
                 tensor_parallel_size=tensor_parallel_size,
                 pipeline_parallel_size=pipeline_parallel_size,
                 extra_args=extra_spawn_args,
-                engine_kind=(runtime_kind or EngineRuntime.LLM) if EngineRuntime else None,
+                engine_kind=(runtime_kind or EngineRuntime.LLM) if EngineRuntime else None, # type: ignore
             )
         except Exception:
             self._release_port(allocated_port)
@@ -1281,7 +1639,7 @@ class ControlPlaneManager:
         gpu_status: list[dict[str, Any]] = []
         if self.gpu_manager:
             try:
-                gpu_status = self.gpu_manager.get_system_status()
+                gpu_status = self.gpu_manager.get_system_status() # type: ignore
             except Exception:  # pragma: no cover - defensive logging
                 logger.exception("Failed to fetch GPU status")
 
@@ -1315,6 +1673,63 @@ class ControlPlaneManager:
             "engines": engine_status,
             "managed_instances": instances,
             "resource_reservations": self._get_engine_registry_snapshot(),
+        }
+
+    def get_registered_backends(self) -> dict[str, Any]:
+        """Get all registered backend instances for dynamic discovery.
+
+        Returns a categorized list of all registered LLM and Embedding backends
+        that are currently available for routing. This endpoint is used by
+        UnifiedInferenceClient to dynamically discover available services.
+
+        Returns:
+            Dictionary containing:
+                - llm_backends: List of LLM backend info (host, port, model, healthy)
+                - embedding_backends: List of Embedding backend info
+                - timestamp: ISO format timestamp of when this snapshot was taken
+        """
+        llm_backends: list[dict[str, Any]] = []
+        embedding_backends: list[dict[str, Any]] = []
+
+        for inst in self.executor.get_all_instances():
+            backend_info = {
+                "instance_id": inst.instance_id,
+                "host": inst.host,
+                "port": inst.port,
+                "model_name": inst.model_name,
+                "base_url": f"http://{inst.host}:{inst.port}/v1",
+                "is_healthy": inst.is_healthy,
+                "is_available": inst.is_available,
+                "active_requests": inst.active_requests,
+                "max_concurrent_requests": inst.max_concurrent_requests,
+            }
+
+            # Categorize by instance type
+            instance_type = (
+                inst.instance_type.name
+                if isinstance(inst.instance_type, ExecutionInstanceType)
+                else str(inst.instance_type)
+            )
+
+            # Check if this is an embedding instance
+            if instance_type in ("EMBEDDING",):
+                embedding_backends.append(backend_info)
+            elif instance_type in ("LLM_EMBEDDING",):
+                # Mixed instance: add to both lists
+                llm_backends.append(backend_info)
+                embedding_backends.append(backend_info)
+            else:
+                # GENERAL, PREFILLING, DECODING, HYBRID are all LLM types
+                llm_backends.append(backend_info)
+
+        return {
+            "llm_backends": llm_backends,
+            "embedding_backends": embedding_backends,
+            "total_llm_backends": len(llm_backends),
+            "total_embedding_backends": len(embedding_backends),
+            "healthy_llm_backends": sum(1 for b in llm_backends if b["is_healthy"]),
+            "healthy_embedding_backends": sum(1 for b in embedding_backends if b["is_healthy"]),
+            "timestamp": datetime.now().isoformat(),
         }
 
     def get_engine_health_status(self) -> dict[str, Any]:
@@ -1372,7 +1787,7 @@ class ControlPlaneManager:
             )
         return self.lifecycle_manager, self.gpu_manager
 
-    def _normalize_engine_kind(self, engine_kind: str | None) -> EngineRuntime | None:
+    def _normalize_engine_kind(self, engine_kind: str | None) -> EngineRuntime | None: # type: ignore
         if EngineRuntime is None:
             return None
         if not engine_kind:
@@ -1492,7 +1907,7 @@ class ControlPlaneManager:
                     "metadata": dict(meta.get("metadata", {})),
                     "engine_kind": meta.get(
                         "engine_kind",
-                        EngineRuntime.VLLM.value if EngineRuntime else "llm",
+                        EngineRuntime.LLM.value if EngineRuntime else "llm",
                     ),
                 }
                 for engine_id, meta in self._engine_registry.items()

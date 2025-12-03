@@ -86,6 +86,8 @@ from .strategies import (
 from .topology import TopologyDetector
 from .types import (
     DecodingConfig,
+    EngineInfo,
+    EngineState,
     ExecutionInstance,
     ExecutionInstanceType,
     InstanceMetrics,
@@ -116,6 +118,9 @@ __all__ = [
     "SchedulingMetrics",
     "InstanceMetrics",
     "ScalingDecision",
+    # Types - Engine Registration
+    "EngineState",
+    "EngineInfo",
     # Types - PD Separation
     "ExecutionInstanceType",
     "PrefillingConfig",
