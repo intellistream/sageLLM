@@ -1827,19 +1827,34 @@ class ControlPlaneManager:
             logger.debug("Failed to get engine status for %s", engine_id, exc_info=True)
             return None
 
+    def _get_all_reserved_ports(self) -> set[int]:
+        """Get all reserved ports from both manager and lifecycle manager.
+
+        This ensures we don't allocate a port that's already reserved
+        by the lifecycle manager (which tracks ports for spawned engines).
+        """
+        reserved = set(self._reserved_ports)
+        if self.lifecycle_manager:
+            reserved.update(self.lifecycle_manager.reserved_ports)
+        return reserved
+
     def _reserve_port(self, requested_port: int | None = None) -> int:
+        all_reserved = self._get_all_reserved_ports()
+
         if requested_port is not None:
             if not SagePorts.is_available(requested_port):
                 raise RuntimeError(f"Requested port {requested_port} is already in use")
             with self._engine_registry_lock:
-                if requested_port in self._reserved_ports:
+                if requested_port in all_reserved:
                     raise RuntimeError(f"Requested port {requested_port} is reserved")
                 self._reserved_ports.add(requested_port)
             return requested_port
 
         for candidate in SagePorts.get_llm_ports():
             with self._engine_registry_lock:
-                if candidate in self._reserved_ports:
+                # Re-check all reserved ports inside lock to avoid race conditions
+                all_reserved = self._get_all_reserved_ports()
+                if candidate in all_reserved:
                     continue
             if SagePorts.is_available(candidate):
                 with self._engine_registry_lock:

@@ -99,6 +99,17 @@ class EngineLifecycleManager:
         self._engines: dict[str, EngineProcessInfo] = {}
         self._reserved_ports: set[int] = set()
 
+    @property
+    def reserved_ports(self) -> set[int]:
+        """Return a copy of currently reserved ports.
+
+        This allows external components (like ControlPlaneManager) to check
+        which ports are already reserved by the lifecycle manager when
+        allocating new ports for engines.
+        """
+        with self._lock:
+            return set(self._reserved_ports)
+
     def set_control_plane(self, control_plane: ControlPlaneManager | None) -> None:
         """Set the Control Plane reference for engine registration.
 
