@@ -15,12 +15,14 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
 import psutil
-
 from sage.common.config.ports import SagePorts
+
+if TYPE_CHECKING:
+    from .manager import ControlPlaneManager
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +64,14 @@ class EngineProcessInfo:
 
 
 class EngineLifecycleManager:
-    """Spawn, monitor, and stop vLLM engines for the control plane."""
+    """Spawn, monitor, and stop vLLM engines for the control plane.
+
+    This class manages the lifecycle of vLLM engine processes, including:
+    - Spawning new engine processes
+    - Health checking via HTTP endpoints
+    - Graceful and forced shutdown
+    - Optional registration with Control Plane for state tracking
+    """
 
     def __init__(
         self,
@@ -70,14 +79,33 @@ class EngineLifecycleManager:
         python_executable: str | None = None,
         host: str = "0.0.0.0",
         stop_timeout: float = 20.0,
+        control_plane: ControlPlaneManager | None = None,
     ) -> None:
+        """Initialize the engine lifecycle manager.
+
+        Args:
+            python_executable: Path to Python executable for spawning engines.
+            host: Default host address for engines.
+            stop_timeout: Default timeout for stopping engines.
+            control_plane: Optional reference to ControlPlaneManager for
+                automatic engine registration and state updates.
+        """
         self.python_executable = python_executable or sys.executable
         self.host = host
         self.stop_timeout = stop_timeout
+        self._control_plane = control_plane
 
         self._lock = threading.RLock()
         self._engines: dict[str, EngineProcessInfo] = {}
         self._reserved_ports: set[int] = set()
+
+    def set_control_plane(self, control_plane: ControlPlaneManager | None) -> None:
+        """Set the Control Plane reference for engine registration.
+
+        Args:
+            control_plane: The ControlPlaneManager to register engines with.
+        """
+        self._control_plane = control_plane
 
     # ------------------------------------------------------------------
     # Public API
@@ -92,8 +120,23 @@ class EngineLifecycleManager:
         pipeline_parallel_size: int = 1,
         extra_args: list[str] | None = None,
         engine_kind: EngineRuntime = EngineRuntime.LLM,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Launch a vLLM OpenAI-compatible server and register it."""
+        """Launch a vLLM OpenAI-compatible server and register it.
+
+        Args:
+            model_id: The model to load.
+            gpu_ids: List of GPU device IDs to use.
+            port: Optional specific port (auto-select if None).
+            tensor_parallel_size: Tensor parallelism degree.
+            pipeline_parallel_size: Pipeline parallelism degree.
+            extra_args: Additional CLI arguments.
+            engine_kind: Type of engine (LLM or EMBEDDING).
+            metadata: Optional metadata for engine registration.
+
+        Returns:
+            The engine_id of the spawned engine.
+        """
 
         extra_args = list(extra_args or [])
         with self._lock:
@@ -146,28 +189,108 @@ class EngineLifecycleManager:
             self._engines[engine_id] = info
             self._reserved_ports.add(resolved_port)
             logger.debug("Engine %s registered with PID %d", engine_id, process.pid)
+
+            # Auto-register with Control Plane if available
+            if self._control_plane:
+                try:
+                    engine_metadata = dict(metadata) if metadata else {}
+                    engine_metadata.update({
+                        "gpu_ids": list(gpu_ids),
+                        "tensor_parallel_size": tensor_parallel_size,
+                        "pipeline_parallel_size": pipeline_parallel_size,
+                        "pid": process.pid,
+                    })
+                    self._control_plane.register_engine(
+                        engine_id=engine_id,
+                        model_id=model_id,
+                        host=self.host if self.host != "0.0.0.0" else "localhost",
+                        port=resolved_port,
+                        engine_kind=engine_kind.value,
+                        metadata=engine_metadata,
+                    )
+                    logger.debug(
+                        "Engine %s auto-registered with Control Plane",
+                        engine_id,
+                    )
+                except Exception as e:
+                    logger.warning(
+                        "Failed to auto-register engine %s with Control Plane: %s",
+                        engine_id,
+                        e,
+                    )
+
             return engine_id
 
-    def stop_engine(self, engine_id: str, *, timeout: float | None = None) -> bool:
-        """Stop a managed engine by sending SIGTERM followed by SIGKILL if needed."""
+    def stop_engine(
+        self,
+        engine_id: str,
+        *,
+        timeout: float | None = None,
+        drain: bool = False,
+    ) -> bool:
+        """Stop a managed engine by sending SIGTERM followed by SIGKILL if needed.
 
+        Args:
+            engine_id: The ID of the engine to stop.
+            timeout: Timeout for graceful shutdown. Defaults to stop_timeout.
+            drain: If True and Control Plane is available, initiate graceful
+                draining before stopping.
+
+        Returns:
+            True if engine was stopped successfully, False otherwise.
+        """
         with self._lock:
             info = self._engines.get(engine_id)
             if info is None:
                 logger.warning("Requested stop for unknown engine %s", engine_id)
                 return False
             info.status = EngineStatus.STOPPING
+
+        # Notify Control Plane of state change if drain requested
+        if drain and self._control_plane:
+            try:
+                self._control_plane.start_engine_drain(engine_id)
+            except Exception as e:
+                logger.warning(
+                    "Failed to start drain for engine %s: %s",
+                    engine_id,
+                    e,
+                )
+
         process = self._get_process(info.pid)
         if process is None:
             logger.info("Engine %s already stopped", engine_id)
             self._finalize_engine(info, EngineStatus.STOPPED)
+            self._notify_control_plane_stopped(engine_id)
             return True
 
         success = self._terminate_process(process, timeout or self.stop_timeout)
         with self._lock:
             new_status = EngineStatus.STOPPED if success else EngineStatus.FAILED
             self._finalize_engine(info, new_status)
+
+        self._notify_control_plane_stopped(engine_id, success=success)
         return success
+
+    def _notify_control_plane_stopped(
+        self,
+        engine_id: str,
+        success: bool = True,
+    ) -> None:
+        """Notify Control Plane that an engine has stopped."""
+        if not self._control_plane:
+            return
+        try:
+            from .types import EngineState
+
+            new_state = EngineState.STOPPED if success else EngineState.ERROR
+            self._control_plane.update_engine_state(engine_id, new_state)
+        except Exception as e:
+            logger.debug(
+                "Failed to notify Control Plane of engine %s stop: %s",
+                engine_id,
+                e,
+            )
 
     def get_engine_status(self, engine_id: str) -> dict[str, Any]:
         """Return runtime metadata for the specified engine."""
@@ -200,6 +323,11 @@ class EngineLifecycleManager:
         For LLM engines: GET /health or /v1/models
         For Embedding engines: GET /health
 
+        When Control Plane is configured, this method will automatically:
+        - Record a heartbeat on successful health check
+        - Record a failure on failed health check (triggers ERROR state
+          after consecutive failures threshold)
+
         Args:
             engine_id: The engine identifier to check
             timeout: HTTP request timeout in seconds
@@ -221,13 +349,40 @@ class EngineLifecycleManager:
             process = self._get_process(info.pid)
             if process is None or not process.is_running():
                 logger.debug("Engine %s process not running", engine_id)
+                self._notify_health_check_result(engine_id, is_healthy=False)
                 return False
 
             port = info.port
             runtime = info.runtime
 
         # Perform HTTP health check
-        return await self._http_health_check(engine_id, port, runtime, timeout)
+        is_healthy = await self._http_health_check(engine_id, port, runtime, timeout)
+
+        # Notify Control Plane of health check result
+        self._notify_health_check_result(engine_id, is_healthy=is_healthy)
+
+        return is_healthy
+
+    def _notify_health_check_result(
+        self,
+        engine_id: str,
+        is_healthy: bool,
+    ) -> None:
+        """Notify Control Plane of health check result."""
+        if not self._control_plane:
+            return
+
+        try:
+            if is_healthy:
+                self._control_plane.record_engine_heartbeat(engine_id)
+            else:
+                self._control_plane.record_engine_failure(engine_id)
+        except Exception as e:
+            logger.debug(
+                "Failed to notify Control Plane of health check for %s: %s",
+                engine_id,
+                e,
+            )
 
     async def _http_health_check(
         self,
