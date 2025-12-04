@@ -19,46 +19,47 @@ from .base import ExecutionCoordinatorBase
 # Module-level flags for vLLM availability
 VLLM_AVAILABLE: bool = False
 _VLLM_IMPORT_ERROR: Exception | None = None
+_vllm_checked: bool = False
+
+# Lazy-loaded vLLM classes
+AsyncEngineArgs = None
+AsyncLLMEngine = None
+RequestOutput = None
+SamplingParams = None
 
 if TYPE_CHECKING:
     # Type-checking imports - these are always available during type checking
-    from vllm.engine.arg_utils import AsyncEngineArgs
-    from vllm.engine.async_llm_engine import AsyncLLMEngine
-    from vllm.outputs import RequestOutput
-    from vllm.sampling_params import SamplingParams
-else:
-    # Runtime imports - handle gracefully if vLLM not installed
-    try:
-        from vllm.engine.arg_utils import AsyncEngineArgs
-        from vllm.engine.async_llm_engine import AsyncLLMEngine
-        from vllm.outputs import RequestOutput
-        from vllm.sampling_params import SamplingParams
+    from vllm.engine.arg_utils import AsyncEngineArgs as _AsyncEngineArgs
+    from vllm.engine.async_llm_engine import AsyncLLMEngine as _AsyncLLMEngine
+    from vllm.outputs import RequestOutput as _RequestOutput
+    from vllm.sampling_params import SamplingParams as _SamplingParams
 
+
+def _ensure_vllm_imported() -> bool:
+    """Lazily import vLLM on first use. Returns True if vLLM is available."""
+    global VLLM_AVAILABLE, _VLLM_IMPORT_ERROR, _vllm_checked
+    global AsyncEngineArgs, AsyncLLMEngine, RequestOutput, SamplingParams
+
+    if _vllm_checked:
+        return VLLM_AVAILABLE
+
+    try:
+        from vllm.engine.arg_utils import AsyncEngineArgs as _AsyncEngineArgs
+        from vllm.engine.async_llm_engine import AsyncLLMEngine as _AsyncLLMEngine
+        from vllm.outputs import RequestOutput as _RequestOutput
+        from vllm.sampling_params import SamplingParams as _SamplingParams
+
+        AsyncEngineArgs = _AsyncEngineArgs
+        AsyncLLMEngine = _AsyncLLMEngine
+        RequestOutput = _RequestOutput
+        SamplingParams = _SamplingParams
         VLLM_AVAILABLE = True
     except ImportError as e:
-        # vLLM not fully installed (e.g., missing C extensions)
-        # Create minimal stubs for runtime
         _VLLM_IMPORT_ERROR = e
+        VLLM_AVAILABLE = False
 
-        # Stub classes - won't be instantiated when VLLM_AVAILABLE is False
-        class AsyncEngineArgs:  # type: ignore[no-redef]
-            def __init__(self, **kwargs):
-                pass
-
-        class AsyncLLMEngine:  # type: ignore[no-redef]
-            @classmethod
-            def from_engine_args(cls, args):
-                pass
-
-            async def generate(self, prompt, sampling_params, request_id):
-                pass
-
-        class RequestOutput:  # type: ignore[no-redef]
-            pass
-
-        class SamplingParams:  # type: ignore[no-redef]
-            def __init__(self, **kwargs):
-                pass
+    _vllm_checked = True
+    return VLLM_AVAILABLE
 
 
 logger = logging.getLogger(__name__)
@@ -79,7 +80,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
         Raises:
             RuntimeError: If vLLM is not properly installed
         """
-        if not VLLM_AVAILABLE:
+        if not _ensure_vllm_imported():
             raise RuntimeError(
                 f"vLLM is not properly installed or compiled. "
                 f"Cannot initialize local async engine. Error: {_VLLM_IMPORT_ERROR}"

@@ -1052,6 +1052,27 @@ class ControlPlaneManager:
             # Copy metadata to avoid mutation during restart
             engine_meta = dict(engine_meta)
 
+        model_id = engine_meta.get("model_id", "")
+        engine_kind = engine_meta.get("engine_kind", "llm")
+
+        # Check if there's already a healthy engine for the same model
+        # This prevents restart loops when another engine is already running
+        existing_healthy = self._find_healthy_engine_for_model(model_id, engine_kind)
+        if existing_healthy and existing_healthy != engine_id:
+            logger.info(
+                "Skipping restart of engine %s: healthy engine %s already serves model %s",
+                engine_id,
+                existing_healthy,
+                model_id,
+            )
+            # Clean up the old engine instead of restarting
+            self.lifecycle_manager.stop_engine(engine_id, timeout=5.0)
+            with self._engine_registry_lock:
+                self._engine_registry.pop(engine_id, None)
+            with self._engine_health_state_lock:
+                self._engine_health_state.pop(engine_id, None)
+            return False
+
         logger.info("Attempting to restart engine %s", engine_id)
 
         # Update restart tracking
@@ -1091,12 +1112,9 @@ class ControlPlaneManager:
             # Wait a bit before restart
             await asyncio.sleep(1.0)
 
-            # Determine engine kind from metadata
-            engine_kind = engine_meta.get("engine_kind", "llm")
-
             # Restart with same configuration
             new_engine_info = self.request_engine_startup(
-                model_id=engine_meta.get("model_id", ""),
+                model_id=model_id,
                 tensor_parallel_size=engine_meta.get("tensor_parallel_size", 1),
                 pipeline_parallel_size=engine_meta.get("pipeline_parallel_size", 1),
                 port=None,  # Let the system assign a new port
@@ -1136,6 +1154,41 @@ class ControlPlaneManager:
                 e,
             )
             return False
+
+    def _find_healthy_engine_for_model(
+        self,
+        model_id: str,
+        engine_kind: str = "llm",
+    ) -> str | None:
+        """Find a healthy engine serving the given model.
+
+        Args:
+            model_id: The model identifier to look for
+            engine_kind: Type of engine ('llm' or 'embedding')
+
+        Returns:
+            Engine ID if found, None otherwise
+        """
+        if not self.lifecycle_manager:
+            return None
+
+        try:
+            engines = self.lifecycle_manager.list_engines()
+            for engine in engines:
+                if engine.get("model_id") != model_id:
+                    continue
+                # Check engine kind
+                runtime = engine.get("runtime", "llm")
+                if runtime != engine_kind:
+                    continue
+                # Only consider healthy engines (RUNNING or STARTING)
+                status = engine.get("status", "").upper()
+                if status in ("RUNNING", "STARTING"):
+                    return engine.get("engine_id")
+        except Exception as e:
+            logger.debug("Error finding healthy engine for model %s: %s", model_id, e)
+
+        return None
 
     def _get_instance_type_from_meta(self, engine_meta: dict[str, Any]) -> ExecutionInstanceType:
         """Get ExecutionInstanceType from engine metadata."""
@@ -1632,6 +1685,19 @@ class ControlPlaneManager:
 
         logger.info("Engine %s stopped and resources released", engine_id)
         return {"engine_id": engine_id, "stopped": True, "status": "STOPPED"}
+
+    def prune_stopped_engines(self) -> int:
+        """Remove all STOPPED/FAILED engine records from the registry.
+
+        This is useful for cleaning up stale engine records that accumulate
+        over time. Running engines are not affected.
+
+        Returns:
+            Number of engine records pruned.
+        """
+        if not self.lifecycle_manager:
+            return 0
+        return self.lifecycle_manager.prune_stopped_engines()
 
     def get_cluster_status(self) -> dict[str, Any]:
         """Return consolidated GPU, engine, and instance status."""
