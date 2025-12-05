@@ -311,8 +311,8 @@ class ControlPlaneManager:
         """Register a new engine with the Control Plane.
 
         This method should be called after an engine process has been spawned
-        and is starting up. The engine will be registered in STARTING state
-        and will transition to READY after successful health checks.
+        and is starting up. It creates an ExecutionInstance and registers it
+        with the executor for request routing.
 
         Args:
             engine_id: Unique identifier for the engine.
@@ -342,6 +342,33 @@ class ControlPlaneManager:
                 metadata=dict(metadata) if metadata else {},
             )
             self._registered_engines[engine_id] = engine_info
+
+        # Create and register ExecutionInstance for request routing
+        instance_metadata = dict(metadata or {})
+        instance_metadata.setdefault("engine_kind", engine_kind)
+
+        # Determine instance type
+        if engine_kind == "embedding":
+            instance_type = ExecutionInstanceType.EMBEDDING
+        else:
+            instance_type = ExecutionInstanceType.GENERAL
+
+        instance = ExecutionInstance(
+            instance_id=engine_id,
+            host=host if host != "0.0.0.0" else "localhost",
+            port=port,
+            model_name=model_id,
+            instance_type=instance_type,
+            metadata=instance_metadata,
+            supported_request_types=(
+                [RequestType.EMBEDDING] if engine_kind == "embedding" else None
+            ),
+            embedding_model_loaded=model_id if engine_kind == "embedding" else None,
+        )
+        self.register_instance(instance)
+
+        # Reserve the port
+        self._reserved_ports.add(port)
 
         logger.info(
             "Engine %s registered (model=%s, host=%s:%d, kind=%s)",
@@ -641,9 +668,29 @@ class ControlPlaneManager:
         if self.lifecycle_manager:
             self.lifecycle_manager.stop_engine(engine_id)
 
+        # Release resources (port, GPU, instance registration)
+        engine_entry = self._pop_engine_metadata(engine_id)
+        if engine_entry:
+            gpu_ids = engine_entry.get("gpu_ids", [])
+            memory_per_gpu_gb = engine_entry.get("memory_per_gpu_gb", 0.0)
+            port = engine_entry.get("port")
+            instance_id = engine_entry.get("instance_id")
+
+            if gpu_ids and memory_per_gpu_gb and self.gpu_manager:
+                self.gpu_manager.release_resources(gpu_ids, memory_per_gpu_gb)
+            if port:
+                self._release_port(port)
+            if instance_id:
+                self.unregister_instance(instance_id)
+
+        # Clean up health state tracking
+        with self._engine_health_state_lock:
+            self._engine_health_state.pop(engine_id, None)
+
         # Update state to STOPPED
         self.update_engine_state(engine_id, EngineState.STOPPED)
 
+        logger.info("Engine %s stopped gracefully and resources released", engine_id)
         return True
 
     async def submit_request(
@@ -1687,7 +1734,7 @@ class ControlPlaneManager:
         return {"engine_id": engine_id, "stopped": True, "status": "STOPPED"}
 
     def prune_stopped_engines(self) -> int:
-        """Remove all STOPPED/FAILED engine records from the registry.
+        """Remove all STOPPED/FAILED engine records and release their resources.
 
         This is useful for cleaning up stale engine records that accumulate
         over time. Running engines are not affected.
@@ -1697,7 +1744,40 @@ class ControlPlaneManager:
         """
         if not self.lifecycle_manager:
             return 0
-        return self.lifecycle_manager.prune_stopped_engines()
+
+        # First, release resources for all stopped/failed engines
+        engines_to_prune = []
+        for engine_info in self.lifecycle_manager.list_engines():
+            status = engine_info.get("status", "")
+            engine_id = engine_info.get("engine_id", "")
+            if status in {"STOPPED", "FAILED"} and engine_id:
+                engines_to_prune.append(engine_id)
+
+        for engine_id in engines_to_prune:
+            # Release port and GPU resources if we have metadata
+            engine_entry = self._pop_engine_metadata(engine_id)
+            if engine_entry:
+                gpu_ids = engine_entry.get("gpu_ids", [])
+                memory_per_gpu_gb = engine_entry.get("memory_per_gpu_gb", 0.0)
+                port = engine_entry.get("port")
+                instance_id = engine_entry.get("instance_id")
+
+                if gpu_ids and memory_per_gpu_gb and self.gpu_manager:
+                    self.gpu_manager.release_resources(gpu_ids, memory_per_gpu_gb)
+                if port:
+                    self._release_port(port)
+                if instance_id:
+                    self.unregister_instance(instance_id)
+
+            # Clean up health state tracking
+            with self._engine_health_state_lock:
+                self._engine_health_state.pop(engine_id, None)
+
+        # Now prune the engine records from lifecycle manager
+        pruned = self.lifecycle_manager.prune_stopped_engines()
+        if pruned > 0:
+            logger.info("Pruned %d stopped/failed engines and released resources", pruned)
+        return pruned
 
     def get_cluster_status(self) -> dict[str, Any]:
         """Return consolidated GPU, engine, and instance status."""
@@ -1841,7 +1921,8 @@ class ControlPlaneManager:
             logger.debug("EngineLifecycleManager not available; dynamic lifecycle control disabled")
             return None
         try:
-            return RuntimeEngineLifecycleManager()
+            # Pass self as control_plane so discovered engines can register
+            return RuntimeEngineLifecycleManager(control_plane=self)
         except Exception:  # pragma: no cover - dependency wiring
             logger.exception("Unable to initialize EngineLifecycleManager")
             return None
