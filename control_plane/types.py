@@ -8,6 +8,104 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+# =============================================================================
+# Engine State and Registration Types
+# =============================================================================
+
+
+class EngineState(str, Enum):
+    """Lifecycle states for registered engines in the Control Plane.
+
+    State transitions:
+        STARTING -> READY (after successful health check)
+        READY -> DRAINING (when graceful shutdown requested)
+        DRAINING -> STOPPED (after all requests complete)
+        Any -> ERROR (on consecutive health check failures)
+        ERROR -> STARTING (on restart attempt)
+
+    Attributes:
+        STARTING: Engine process is starting, not yet ready to accept requests.
+        READY: Engine is healthy and accepting requests.
+        DRAINING: Engine is stopping gracefully, not accepting new requests
+            but finishing existing ones.
+        STOPPED: Engine has been stopped (gracefully or after draining).
+        ERROR: Engine is unhealthy (e.g., consecutive health check failures).
+    """
+
+    STARTING = "STARTING"
+    READY = "READY"
+    DRAINING = "DRAINING"
+    STOPPED = "STOPPED"
+    ERROR = "ERROR"
+
+
+@dataclass
+class EngineInfo:
+    """Information about a registered engine in the Control Plane.
+
+    This dataclass tracks the state and metadata of an engine that has
+    registered with the Control Plane, including its health status,
+    heartbeat information, and lifecycle state.
+
+    Attributes:
+        engine_id: Unique identifier for this engine.
+        model_id: The model loaded on this engine.
+        host: Hostname or IP address of the engine.
+        port: Port number the engine is listening on.
+        state: Current lifecycle state of the engine.
+        engine_kind: Type of engine ('llm' or 'embedding').
+        created_at: When the engine was registered.
+        last_heartbeat: Timestamp of last successful heartbeat.
+        consecutive_failures: Number of consecutive health check failures.
+        active_requests: Number of requests currently being processed.
+        metadata: Additional engine metadata (labels, GPU info, etc.).
+    """
+
+    engine_id: str
+    model_id: str
+    host: str
+    port: int
+    state: EngineState = EngineState.STARTING
+    engine_kind: str = "llm"
+    created_at: datetime = field(default_factory=datetime.now)
+    last_heartbeat: datetime | None = None
+    consecutive_failures: int = 0
+    active_requests: int = 0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def is_healthy(self) -> bool:
+        """Check if the engine is in a healthy state."""
+        return self.state == EngineState.READY
+
+    @property
+    def is_accepting_requests(self) -> bool:
+        """Check if the engine can accept new requests."""
+        return self.state == EngineState.READY
+
+    @property
+    def is_terminal(self) -> bool:
+        """Check if the engine is in a terminal state (STOPPED or ERROR)."""
+        return self.state in (EngineState.STOPPED, EngineState.ERROR)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "engine_id": self.engine_id,
+            "model_id": self.model_id,
+            "host": self.host,
+            "port": self.port,
+            "state": self.state.value,
+            "engine_kind": self.engine_kind,
+            "created_at": self.created_at.isoformat(),
+            "last_heartbeat": (
+                self.last_heartbeat.isoformat() if self.last_heartbeat else None
+            ),
+            "consecutive_failures": self.consecutive_failures,
+            "active_requests": self.active_requests,
+            "metadata": self.metadata,
+        }
+
 
 class RequestType(Enum):
     """Request type for hybrid scheduling.
@@ -37,14 +135,6 @@ class RequestPriority(Enum):
     NORMAL = 2
     LOW = 3
     BACKGROUND = 4  # Lowest priority
-
-
-class RequestType(Enum):
-    """Types of inference requests."""
-
-    LLM_CHAT = "llm_chat"
-    LLM_GENERATE = "llm_generate"
-    EMBEDDING = "embedding"
 
 
 class RequestStatus(Enum):
