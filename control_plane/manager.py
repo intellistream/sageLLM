@@ -240,6 +240,15 @@ class ControlPlaneManager:
         self._running = True
         logger.info("Starting Control Plane...")
 
+        # Discover existing engines (orphaned from previous session)
+        if self.lifecycle_manager:
+            try:
+                logger.info("Discovering existing engines...")
+                discovered = self.lifecycle_manager.discover_running_engines()
+                logger.info("Discovered %d existing engines", len(discovered))
+            except Exception as e:
+                logger.warning("Failed to discover existing engines: %s", e)
+
         # Start scheduling loop
         task = asyncio.create_task(self._scheduling_loop())
         self.background_tasks.append(task)
