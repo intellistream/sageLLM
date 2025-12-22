@@ -6,13 +6,16 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import threading
 from collections import deque
 from datetime import datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 from sage.common.config.ports import SagePorts
+from sage.common.config.user_paths import get_user_paths
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from .engine_lifecycle import EngineLifecycleManager, EngineRuntime
@@ -198,6 +201,10 @@ class ControlPlaneManager:
         self._engine_health_state: dict[str, dict[str, Any]] = {}
         self._engine_health_state_lock = threading.Lock()
 
+        # Persistence for engine registry
+        self.paths = get_user_paths()
+        self.registry_file = self.paths.state_dir / "control_plane_registry.json"
+        self.registry_file.parent.mkdir(parents=True, exist_ok=True)
         # Engine registration tracking (for Task 1A: Engine registration and lifecycle)
         # Maps engine_id to EngineInfo for state tracking and heartbeat management
         self._registered_engines: dict[str, EngineInfo] = {}
@@ -217,6 +224,51 @@ class ControlPlaneManager:
             auto_restart,
         )
 
+    def _save_registry(self) -> None:
+        """Persist the registered engines to disk."""
+        try:
+            with self._registered_engines_lock:
+                data = {
+                    "engines": [e.to_dict() for e in self._registered_engines.values()]
+                }
+            with open(self.registry_file, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception as exc:  # pragma: no cover - defensive persistence
+            logger.error("Failed to save registry: %s", exc)
+
+    def _load_registry(self) -> None:
+        """Load registered engines from disk."""
+        if not self.registry_file.exists():
+            return
+
+        try:
+            logger.info("Loading registry from %s", self.registry_file)
+            with open(self.registry_file, "r") as f:
+                data = json.load(f)
+
+            for engine_data in data.get("engines", []):
+                engine_id = engine_data["engine_id"]
+                with self._registered_engines_lock:
+                    if engine_id in self._registered_engines:
+                        continue
+
+                try:
+                    # Use register_engine for side effects (instances, ports)
+                    self.register_engine(
+                        engine_id=engine_id,
+                        model_id=engine_data["model_id"],
+                        host=engine_data["host"],
+                        port=engine_data["port"],
+                        engine_kind=engine_data.get("engine_kind", "llm"),
+                        metadata=engine_data.get("metadata", {}),
+                        _skip_save=True,
+                    )
+                    logger.info("Restored engine %s from registry", engine_id)
+                except Exception as exc:  # pragma: no cover - defensive persistence
+                    logger.error("Failed to restore engine %s: %s", engine_id, exc)
+
+        except Exception as exc:  # pragma: no cover - defensive persistence
+            logger.error("Failed to load registry: %s", exc)
     def _create_policy(self, policy_name: str) -> SchedulingPolicy:
         """Create scheduling policy instance."""
 
@@ -239,7 +291,16 @@ class ControlPlaneManager:
 
         self._running = True
         logger.info("Starting Control Plane...")
+        # Load persisted registry and discover running engines if available
+        self._load_registry()
 
+        if self.lifecycle_manager:
+            try:
+                logger.info("Discovering existing engines...")
+                discovered = self.lifecycle_manager.discover_running_engines()
+                logger.info("Discovered %d existing engines", len(discovered))
+            except Exception as exc:  # pragma: no cover - defensive logging
+                logger.warning("Failed to discover existing engines: %s", exc)
         # Start scheduling loop
         task = asyncio.create_task(self._scheduling_loop())
         self.background_tasks.append(task)
@@ -307,6 +368,7 @@ class ControlPlaneManager:
         port: int,
         engine_kind: str = "llm",
         metadata: dict[str, Any] | None = None,
+        _skip_save: bool = False,
     ) -> EngineInfo:
         """Register a new engine with the Control Plane.
 
@@ -321,6 +383,7 @@ class ControlPlaneManager:
             port: Port number the engine is listening on.
             engine_kind: Type of engine ('llm' or 'embedding').
             metadata: Optional additional metadata.
+            _skip_save: Internal flag to skip saving registry (used during load).
 
         Returns:
             EngineInfo object representing the registered engine.
@@ -370,6 +433,8 @@ class ControlPlaneManager:
         # Reserve the port
         self._reserved_ports.add(port)
 
+        if not _skip_save:
+            self._save_registry()
         logger.info(
             "Engine %s registered (model=%s, host=%s:%d, kind=%s)",
             engine_id,
@@ -397,6 +462,7 @@ class ControlPlaneManager:
 
         if engine_info:
             logger.info("Engine %s unregistered", engine_id)
+            self._save_registry()
         else:
             logger.warning("Attempted to unregister unknown engine %s", engine_id)
 
@@ -1809,6 +1875,7 @@ class ControlPlaneManager:
                 "max_concurrent_requests": inst.max_concurrent_requests,
                 "is_available": inst.is_available,
                 "is_healthy": inst.is_healthy,
+                "metadata": inst.metadata,
             }
             for inst in self.executor.get_all_instances()
         ]
@@ -1848,6 +1915,7 @@ class ControlPlaneManager:
                 "is_available": inst.is_available,
                 "active_requests": inst.active_requests,
                 "max_concurrent_requests": inst.max_concurrent_requests,
+                "metadata": inst.metadata,
             }
 
             # Categorize by instance type

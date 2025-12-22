@@ -140,8 +140,22 @@ class EngineLifecycleManager:
         """
         discovered: list[dict[str, Any]] = []
 
+        current_user = os.getlogin() if hasattr(os, "getlogin") else None
+        if not current_user:
+            try:
+                import pwd
+
+                current_user = pwd.getpwuid(os.getuid()).pw_name
+            except Exception:
+                current_user = str(os.getuid())
+
         for proc in psutil.process_iter(["pid", "name", "cmdline", "username"]):
             try:
+                # Filter by user ownership to avoid managing other users' processes
+                proc_user = proc.info.get("username")
+                if proc_user and current_user and proc_user != current_user:
+                    continue
+
                 cmdline = proc.info.get("cmdline") or []
                 if not cmdline:
                     continue
@@ -417,6 +431,7 @@ class EngineLifecycleManager:
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     close_fds=True,
+                    start_new_session=True,
                 )
             except Exception:
                 self._reserved_ports.discard(resolved_port)
