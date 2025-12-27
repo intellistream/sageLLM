@@ -3,6 +3,7 @@
 # This file will be removed in a future version
 
 import warnings
+
 warnings.warn(
     "setup.py is deprecated. Please use pyproject.toml for packaging.",
     DeprecationWarning,
@@ -10,4 +11,5 @@ warnings.warn(
 )
 
 from setuptools import setup
+
 setup()

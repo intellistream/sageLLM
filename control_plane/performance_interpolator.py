@@ -11,7 +11,7 @@ Adapted from Dynamo Planner utils/perf_interpolation.py.
 """
 
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +212,7 @@ class DecodeInterpolator:
 
     def find_best_throughput_per_gpu(
         self, itl: float, context_length: float
-    ) -> Tuple[float, float, float]:
+    ) -> tuple[float, float, float]:
         """
         Find maximum throughput per GPU that achieves target ITL.
 

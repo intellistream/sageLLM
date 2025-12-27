@@ -9,7 +9,6 @@ embedding requests via OpenAI-compatible HTTP API endpoints.
 
 from __future__ import annotations
 
-import asyncio
 import sys
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -29,7 +28,6 @@ from control_plane.executors.embedding_executor import (  # noqa: E402  # type: 
     EmbeddingResult,
     EmbeddingTimeoutError,
 )
-
 
 # ============ EmbeddingResult Tests ============
 

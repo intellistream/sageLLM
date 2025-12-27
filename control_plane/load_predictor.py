@@ -16,7 +16,7 @@ Ported from Dynamo Planner load_predictor.py.
 import logging
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import Optional, Tuple
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class BaseLoadPredictor(ABC):
         self.osl_history.append(avg_osl)
 
     @abstractmethod
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """
         Predict the next interval's load.
 
@@ -81,7 +81,7 @@ class ConstantPredictor(BaseLoadPredictor):
     Best for: Stable workloads with minimal variation.
     """
 
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """Return the most recent observation as prediction."""
         if not self.has_sufficient_data():
             logger.debug("Insufficient data for constant prediction")
@@ -108,7 +108,7 @@ class MovingAveragePredictor(BaseLoadPredictor):
     Best for: Smoothing out short-term fluctuations.
     """
 
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """Return the average of recent observations."""
         if not self.has_sufficient_data():
             logger.debug("Insufficient data for moving average prediction")
@@ -143,7 +143,7 @@ class ExponentialSmoothingPredictor(BaseLoadPredictor):
         super().__init__(window_size)
         self.alpha = alpha
 
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """Apply exponential smoothing to predict next value."""
         if not self.has_sufficient_data():
             return None, None, None
@@ -190,7 +190,7 @@ class ARIMAPredictor(BaseLoadPredictor):
                 "statsmodels not available, ARIMA predictor will fall back to moving average"
             )
 
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """Use ARIMA to predict next value, or fall back to moving average."""
         if not self.has_sufficient_data(min_points=5):
             return None, None, None
@@ -253,7 +253,7 @@ class ProphetPredictor(BaseLoadPredictor):
                 "prophet not available, Prophet predictor will fall back to moving average"
             )
 
-    def predict(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    def predict(self) -> tuple[Optional[float], Optional[float], Optional[float]]:
         """Use Prophet to predict next value, or fall back to moving average."""
         if not self.has_sufficient_data(min_points=10):
             return None, None, None

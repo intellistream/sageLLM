@@ -13,7 +13,6 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from .base import SchedulingPolicy
 from ..types import (
     ExecutionInstance,
     ExecutionInstanceType,
@@ -21,6 +20,7 @@ from ..types import (
     RequestMetadata,
     SchedulingDecision,
 )
+from .base import SchedulingPolicy
 
 
 @dataclass
@@ -114,7 +114,7 @@ class AegaeonPolicy(SchedulingPolicy):
         self.min_alpha = min_alpha
         self.estimated_scaling_overhead = estimated_scaling_overhead
         self.use_dynamic_scaling_overhead = use_dynamic_scaling_overhead
-        
+
         # Model switching overhead cache (model_name, tp_size) -> overhead_seconds
         self._scaling_overhead_cache: dict[tuple[str, int], float] = {}
 
@@ -149,7 +149,7 @@ class AegaeonPolicy(SchedulingPolicy):
 
         # Estimate model size from name
         base_overhead = 1.0  # Default 1.0s
-        
+
         if any(size in model_name.lower() for size in ["1b", "3b", "6b"]):
             base_overhead = 0.6
         elif any(size in model_name.lower() for size in ["7b", "8b"]):
@@ -197,14 +197,14 @@ class AegaeonPolicy(SchedulingPolicy):
                 continue
 
             work_list = self.decoding_work_lists[instance.instance_id]
-            
+
             for batch in work_list:
                 high_risk_requests = []
                 safe_requests = []
 
                 for req in batch.requests:
                     risk = self._calculate_slo_violation_risk(req)
-                    
+
                     # Preempt if risk > 0.8 and request is preemptible
                     if risk > 0.8 and req.can_be_preempted:
                         high_risk_requests.append((risk, req))
@@ -213,12 +213,12 @@ class AegaeonPolicy(SchedulingPolicy):
 
                 # Sort by risk (highest first) and preempt
                 high_risk_requests.sort(key=lambda x: x[0], reverse=True)
-                
+
                 if high_risk_requests:
                     # Keep highest risk requests in batch, preempt others
                     for _, req in high_risk_requests[:1]:  # Keep top 1 high-risk
                         safe_requests.append(req)
-                    
+
                     for _, req in high_risk_requests[1:]:  # Preempt the rest
                         preempted.append(req)
                         if req.request_id in self.running_requests:
@@ -238,7 +238,7 @@ class AegaeonPolicy(SchedulingPolicy):
 
         # Step 0: Check for preemption opportunities
         preempted_requests = self._check_and_preempt(instances)
-        
+
         # Add preempted requests back to scheduling queue
         all_requests = list(requests) + preempted_requests
 
@@ -420,12 +420,12 @@ class AegaeonPolicy(SchedulingPolicy):
         while batch.remaining_quota > 0 and batch.requests:
             # Simulate one decoding step for all requests in batch
             step_time = batch.decoding_step_time
-            
+
             # Update token tracking for each request
             for req in batch.requests:
                 req.tokens_generated += 1
                 req.last_token_time = datetime.now()
-                
+
                 # Check if request is complete
                 if req.max_tokens and req.tokens_generated >= req.max_tokens:
                     batch.requests.remove(req)
@@ -434,11 +434,11 @@ class AegaeonPolicy(SchedulingPolicy):
 
             tokens_generated += len(batch.requests)
             batch.tokens_executed += len(batch.requests)
-            
+
             # Consume quota
             elapsed = (datetime.now() - start_time).total_seconds()
             batch.consume_quota(elapsed)
-            
+
             # Check if quota exhausted
             if batch.remaining_quota <= 0:
                 break

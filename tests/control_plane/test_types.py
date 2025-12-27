@@ -7,8 +7,6 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import pytest
-
 # Add parent to path
 root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root))

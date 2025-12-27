@@ -29,10 +29,7 @@ SamplingParams = None
 
 if TYPE_CHECKING:
     # Type-checking imports - these are always available during type checking
-    from vllm.engine.arg_utils import AsyncEngineArgs as _AsyncEngineArgs
-    from vllm.engine.async_llm_engine import AsyncLLMEngine as _AsyncLLMEngine
-    from vllm.outputs import RequestOutput as _RequestOutput
-    from vllm.sampling_params import SamplingParams as _SamplingParams
+    pass
 
 
 def _ensure_vllm_imported() -> bool:
@@ -297,7 +294,7 @@ class LocalAsyncExecutionCoordinator(ExecutionCoordinatorBase):
             logger.debug("Health check passed for %s", instance.instance_id)
             return True
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("Health check timeout for %s", instance.instance_id)
             instance.is_healthy = False
             instance.is_available = False

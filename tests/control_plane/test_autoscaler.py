@@ -4,7 +4,6 @@
 """Tests for autoscaler module."""
 
 import pytest
-
 from control_plane import (
     Autoscaler,
     AutoscalerConfig,

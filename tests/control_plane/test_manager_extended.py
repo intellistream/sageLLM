@@ -9,7 +9,6 @@ that support mixed LLM and Embedding workloads scheduling (T2.3).
 
 from __future__ import annotations
 
-import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -30,7 +29,6 @@ from control_plane import (  # noqa: E402  # type: ignore[import-not-found]
     RequestStatus,
     RequestType,
 )
-
 
 # ============ Fixtures ============
 

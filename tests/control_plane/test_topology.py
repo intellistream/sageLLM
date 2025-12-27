@@ -4,7 +4,6 @@
 """Tests for topology detection and awareness."""
 
 import pytest
-
 from control_plane import ExecutionInstance, TopologyDetector
 
 

@@ -295,7 +295,7 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
 
         except aiohttp.ClientError as e:
             raise RuntimeError(f"HTTP error calling {url}: {e}")
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise RuntimeError(f"Request timeout calling {url} (timeout={self.timeout.total}s)")
 
     async def health_check(self, instance: ExecutionInstance) -> bool:
@@ -347,7 +347,7 @@ class HttpExecutionCoordinator(ExecutionCoordinatorBase):
 
                 return bool(is_healthy)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning(
                 "Health check timeout for %s at %s:%d",
                 instance.instance_id,

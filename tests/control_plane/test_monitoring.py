@@ -3,11 +3,9 @@
 
 """Tests for monitoring and metrics collection."""
 
-import pytest
 
 from control_plane import (
     ExecutionInstance,
-    InstanceMetrics,
     MetricsCollector,
     RequestMetadata,
     RequestPriority,

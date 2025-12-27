@@ -11,7 +11,6 @@ import logging
 import threading
 from collections import deque
 from datetime import datetime
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 from sage.common.config.ports import SagePorts
@@ -243,7 +242,7 @@ class ControlPlaneManager:
 
         try:
             logger.info("Loading registry from %s", self.registry_file)
-            with open(self.registry_file, "r") as f:
+            with open(self.registry_file) as f:
                 data = json.load(f)
 
             for engine_data in data.get("engines", []):

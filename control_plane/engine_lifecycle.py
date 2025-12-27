@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 
 import aiohttp
 import psutil
+
 from sage.common.config.ports import SagePorts
 
 if TYPE_CHECKING:

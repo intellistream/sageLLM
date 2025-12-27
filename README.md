@@ -1,318 +1,633 @@
-# sageLLM - 智能 LLM 推理调度控制平面
+# sageLLM - 自研 LLM 推理运行时# sageLLM - 智能 LLM 推理调度控制平面
 
-<p align="center">
-  <strong>基于 vLLM 的高性能、智能化 LLM 推理调度管理系统</strong>
-</p>
 
-<p align="center">
-| <a href="#概述"><b>概述</b></a> | <a href="#核心特性"><b>核心特性</b></a> | <a href="#快速开始"><b>快速开始</b></a> | <a href="#开发设置"><b>开发设置</b></a> | <a href="#架构"><b>架构</b></a> | <a href="./dev-notes/INTEGRATION.md"><b>集成指南</b></a> | <a href="./dev-notes/DEPLOYMENT.md"><b>部署指南</b></a> |
-</p>
 
-______________________________________________________________________
+<p align="center"><p align="center">
 
-## 概述
+  <strong>硬件无关的高性能 LLM 推理运行时，支持 PD 分离与国产加速器</strong>  <strong>基于 vLLM 的高性能、智能化 LLM 推理调度管理系统</strong>
 
-**sageLLM** 是 SAGE 项目中的 LLM 推理控制平面，提供智能请求调度、多实例管理和动态并行优化。它位于用户应用和 vLLM 执行引擎之间，负责请求的智能调度、路由和性能优化。
+</p></p>
 
-### 核心价值
 
-Control Plane 作为 sageLLM 的核心组件，提供：
+
+<p align="center"><p align="center">
+
+| <a href="#概述"><b>概述</b></a> | <a href="#架构"><b>架构</b></a> | <a href="#研究课题"><b>研究课题</b></a> | <a href="#快速开始"><b>快速开始</b></a> | <a href="#目录结构"><b>目录结构</b></a> || <a href="#概述"><b>概述</b></a> | <a href="#核心特性"><b>核心特性</b></a> | <a href="#快速开始"><b>快速开始</b></a> | <a href="#开发设置"><b>开发设置</b></a> | <a href="#架构"><b>架构</b></a> | <a href="./dev-notes/INTEGRATION.md"><b>集成指南</b></a> | <a href="./dev-notes/DEPLOYMENT.md"><b>部署指南</b></a> |
+
+</p></p>
+
+
+
+____________________________________________________________________________________________________________________________________________
+
+
+
+## 概述## 概述
+
+
+
+**sageLLM** 是 SAGE 项目的自研 LLM 推理运行时，采用"自研核心 + 硬件后端抽象"架构，提供：**sageLLM** 是 SAGE 项目中的 LLM 推理控制平面，提供智能请求调度、多实例管理和动态并行优化。它位于用户应用和 vLLM 执行引擎之间，负责请求的智能调度、路由和性能优化。
+
+
+
+- **硬件无关性**：统一接口支持 NVIDIA GPU、华为昇腾、寒武纪、海光等加速器### 核心价值
+
+- **PD 分离优化**：Prefill-Decode 分离调度，最大化资源利用率
+
+- **智能调度**：Control Plane 提供多种调度策略（FIFO、优先级、SLO 感知等）Control Plane 作为 sageLLM 的核心组件，提供：
+
+- **高效 KV Cache**：页式内存管理、前缀复用、智能驱逐策略
 
 - **智能请求调度**：FIFO、优先级、SLO感知、成本优化、自适应 5 种调度算法
-- **PD 分离优化**：将 Prefilling 和 Decoding 请求分别路由到专门优化的实例（+50-80% 吞吐，-50-60% 延迟）
+
+## 架构- **PD 分离优化**：将 Prefilling 和 Decoding 请求分别路由到专门优化的实例（+50-80% 吞吐，-50-60% 延迟）
+
 - **多实例管理**：统一管理多个 vLLM 实例，支持不同并行策略
-- **动态并行优化**：自动选择最优的模型并行方案（TP、PP、DP、EP、混合）
-- **负载均衡路由**：多种路由算法确保资源高效利用
-- **性能监控**：实时监控和指标收集
 
-## 🚀 快速开始
+```- **动态并行优化**：自动选择最优的模型并行方案（TP、PP、DP、EP、混合）
 
-### 用户安装（使用）
+┌─────────────────────────────────────────────────────────────────────────┐- **负载均衡路由**：多种路由算法确保资源高效利用
 
-```bash
-# 基础安装
-pip install -e .
+│                         sageLLM Architecture                            │- **性能监控**：实时监控和指标收集
 
-# 运行示例
-python control_plane/examples/demo_control_plane.py
-```
+├─────────────────────────────────────────────────────────────────────────┤
 
-### 开发者安装（贡献）
+│                                                                         │## 🚀 快速开始
 
-```bash
-# 一键设置开发环境（推荐）
-./setup-dev.sh
+│  ┌─────────────────────────────────────────────────────────────────┐   │
 
-# 或手动设置
-pip install -e ".[dev]"
-pre-commit install
+│  │                    Control Plane (控制平面)                      │   │### 用户安装（使用）
 
-# 验证安装
-pytest
-pre-commit run --all-files
-```
+│  │   • 请求调度 (FIFO/Priority/SLO-Aware/Adaptive)                 │   │
 
-**setup-dev.sh 会自动：**
+│  │   • PD 分离路由                                                  │   │```bash
 
-- ✅ 检查 Python 版本 (>= 3.10)
-- ✅ 安装开发依赖
-- ✅ 安装 pre-commit hooks
-- ✅ 可选：运行代码质量检查
+│  │   • 多实例管理                                                   │   │# 基础安装
 
-详见 [DEVELOPMENT.md](./dev-notes/DEVELOPMENT.md) 了解完整开发指南。
+│  │   • 性能监控                                                     │   │pip install -e .
 
-## 📦 项目结构
+│  └─────────────────────────────────────────────────────────────────┘   │
 
-```
-sageLLM/
+│                                    │                                    │# 运行示例
+
+│                                    ▼                                    │python control_plane/examples/demo_control_plane.py
+
+│  ┌─────────────────────────────────────────────────────────────────┐   │```
+
+│  │                     Runtime (自研运行时)                         │   │
+
+│  │  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐   │   │### 开发者安装（贡献）
+
+│  │  │ execution_graph │ │      comm       │ │    scheduler    │   │   │
+
+│  │  │  • IR 定义       │ │  • 通信协议     │ │  • PD 调度器    │   │   │```bash
+
+│  │  │  • 图构建        │ │  • 拓扑发现     │ │  • 批处理       │   │   │# 一键设置开发环境（推荐）
+
+│  │  │  • 优化 Pass    │ │  • 集合通信     │ │  • 优先级       │   │   │./setup-dev.sh
+
+│  │  └─────────────────┘ └─────────────────┘ └─────────────────┘   │   │
+
+│  └─────────────────────────────────────────────────────────────────┘   │# 或手动设置
+
+│                                    │                                    │pip install -e ".[dev]"
+
+│                                    ▼                                    │pre-commit install
+
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+
+│  │                   Backends (硬件后端抽象)                        │   │# 验证安装
+
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │   │pytest
+
+│  │  │   cuda   │ │  ascend  │ │cambricon │ │  hygon   │          │   │pre-commit run --all-files
+
+│  │  │  NVIDIA  │ │   华为   │ │  寒武纪  │ │   海光   │          │   │```
+
+│  │  │   GPU    │ │   昇腾   │ │   MLU    │ │   DCU    │          │   │
+
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │   │**setup-dev.sh 会自动：**
+
+│  └─────────────────────────────────────────────────────────────────┘   │
+
+│                                                                         │- ✅ 检查 Python 版本 (>= 3.10)
+
+│  ┌─────────────────────────────────────────────────────────────────┐   │- ✅ 安装开发依赖
+
+│  │                    支撑模块 (Supporting Modules)                 │   │- ✅ 安装 pre-commit hooks
+
+│  │  • kv_runtime: KV Cache 运行时                                   │   │- ✅ 可选：运行代码质量检查
+
+│  │  • kv_policy: KV Cache 驱逐策略                                  │   │
+
+│  │  • prefix_reuse: 前缀复用                                        │   │详见 [DEVELOPMENT.md](./dev-notes/DEVELOPMENT.md) 了解完整开发指南。
+
+│  │  • accel: 加速器工具                                             │   │
+
+│  └─────────────────────────────────────────────────────────────────┘   │## 📦 项目结构
+
+│                                                                         │
+
+└─────────────────────────────────────────────────────────────────────────┘```
+
+```sageLLM/
+
 ├── control_plane/                 # ⭐ Control Plane 核心组件
-│   ├── manager.py                # 控制平面管理器 - 核心协调层
+
+## 研究课题│   ├── manager.py                # 控制平面管理器 - 核心协调层
+
 │   ├── executor.py               # 执行协调器 - vLLM 实例管理
-│   ├── strategies/               # 调度策略模块
+
+sageLLM 的开发对应以下研究方向：│   ├── strategies/               # 调度策略模块
+
 │   │   ├── base.py              # 策略基类
-│   │   ├── fifo.py              # FIFO 策略
+
+### 课题 1: PD 分离优化│   │   ├── fifo.py              # FIFO 策略
+
 │   │   ├── priority.py          # 优先级策略
-│   │   ├── slo_aware.py         # SLO 感知策略
+
+**目标**：通过 Prefill-Decode 分离提升推理性能│   │   ├── slo_aware.py         # SLO 感知策略
+
 │   │   ├── cost_optimized.py    # 成本优化策略
-│   │   └── adaptive.py          # 自适应策略
-│   ├── pd_routing.py             # PD 分离路由 - Prefilling/Decoding 优化
-│   ├── router.py                 # 请求路由 - 负载均衡/亲和性/局部性
+
+- **Prefill 阶段**：计算密集，优化吞吐量 → 高 TP、大批处理│   │   └── adaptive.py          # 自适应策略
+
+- **Decode 阶段**：内存密集，优化延迟 → 低 TP、高并发│   ├── pd_routing.py             # PD 分离路由 - Prefilling/Decoding 优化
+
+- **KV Cache 迁移**：高效的 Prefill→Decode KV Cache 传输│   ├── router.py                 # 请求路由 - 负载均衡/亲和性/局部性
+
 │   ├── parallelism.py            # 并行策略 - TP/PP/DP/EP/Hybrid
-│   ├── monitoring.py             # 性能监控 - 指标收集与分析
-│   ├── topology.py               # 拓扑检测 - NVLINK/NUMA 感知
-│   ├── types.py                  # 类型定义 - 数据模型和枚举
-│   └── examples/                 # 📖 使用示例
+
+**相关模块**：│   ├── monitoring.py             # 性能监控 - 指标收集与分析
+
+- `runtime/scheduler/pd_scheduler.py` - PD 分离调度器│   ├── topology.py               # 拓扑检测 - NVLINK/NUMA 感知
+
+- `runtime/execution_graph/` - PD 分离执行图│   ├── types.py                  # 类型定义 - 数据模型和枚举
+
+- `control_plane/pd_routing.py` - PD 路由策略│   └── examples/                 # 📖 使用示例
+
 │       ├── example_http_client.py   # HTTP 客户端模式示例
-│       ├── demo_control_plane.py    # 完整演示（无需 vLLM 实例）
+
+### 课题 2: 国产加速器支持│       ├── demo_control_plane.py    # 完整演示（无需 vLLM 实例）
+
 │       └── README.md                # 示例文档
-│
+
+**目标**：统一支持国产 AI 加速器│
+
 ├── docs/                          # 📚 文档目录
-│   ├── INTEGRATION.md            # 集成架构文档
-│   ├── DEPLOYMENT.md             # 部署指南
-│   ├── CUSTOM_SCHEDULING.md      # 自定义调度策略开发指南
-│   ├── METRICS.md                # 监控指标文档
-│   ├── TOPOLOGY.md               # 拓扑感知配置文档
-│   └── FAULT_TOLERANCE.md        # 故障容错机制文档
+
+| 硬件 | 后端模块 | 状态 |│   ├── INTEGRATION.md            # 集成架构文档
+
+|------|----------|------|│   ├── DEPLOYMENT.md             # 部署指南
+
+| NVIDIA GPU | `backends/cuda/` | ✅ 基础框架 |│   ├── CUSTOM_SCHEDULING.md      # 自定义调度策略开发指南
+
+| 华为昇腾 NPU | `backends/ascend/` | 🚧 开发中 |│   ├── METRICS.md                # 监控指标文档
+
+| 寒武纪 MLU | `backends/cambricon/` | 🚧 开发中 |│   ├── TOPOLOGY.md               # 拓扑感知配置文档
+
+| 海光 DCU | `backends/hygon/` | 🚧 开发中 |│   └── FAULT_TOLERANCE.md        # 故障容错机制文档
+
 │
-├── vendors/vllm/                 # vLLM 源代码 (vendored)
-│   ├── vllm/                     # Python 模块
-│   ├── csrc/                     # CUDA 内核
-│   ├── cmake/                    # 编译配置
+
+**抽象层设计**：├── vendors/vllm/                 # vLLM 源代码 (vendored)
+
+- `backends/base.py` - 硬件后端抽象基类│   ├── vllm/                     # Python 模块
+
+- 设备管理、内存分配、Kernel 执行统一接口│   ├── csrc/                     # CUDA 内核
+
+- 集合通信封装 (NCCL/HCCL/CNCL)│   ├── cmake/                    # 编译配置
+
 │   └── ...
-│
+
+### 课题 3: KV Cache 优化│
+
 ├── tests/
-│   ├── control_plane/            # Control Plane 单元测试
+
+**目标**：高效的 KV Cache 管理│   ├── control_plane/            # Control Plane 单元测试
+
 │   │   ├── test_scheduling.py    # 调度测试 (5 tests)
-│   │   ├── test_pd_separation.py # PD 分离测试 (5 tests)
-│   │   ├── test_executor.py      # 执行器测试 (5 tests)
-│   │   └── test_integration.py   # 集成测试 (5 tests)
-│   │
+
+- **页式管理**：类似 vLLM PagedAttention│   │   ├── test_pd_separation.py # PD 分离测试 (5 tests)
+
+- **前缀复用**：共享前缀的 KV Cache 复用│   │   ├── test_executor.py      # 执行器测试 (5 tests)
+
+- **智能驱逐**：基于访问模式的 LRU/LFU 策略│   │   └── test_integration.py   # 集成测试 (5 tests)
+
+- **跨节点传输**：RDMA 加速的 KV Cache 迁移│   │
+
 │   └── vendors/vllm/tests/       # vLLM 原有测试
-│
-├── setup.py                      # 安装脚本
-├── requirements.txt              # 依赖配置
-├── requirements-dev.txt          # 开发依赖
+
+**相关模块**：│
+
+- `kv_runtime/` - KV Cache 运行时├── setup.py                      # 安装脚本
+
+- `kv_policy/` - 驱逐策略├── requirements.txt              # 依赖配置
+
+- `prefix_reuse/` - 前缀复用├── requirements-dev.txt          # 开发依赖
+
 └── README.md                     # 本文档
-```
 
-## 🎯 核心特性
+### 课题 4: 调度算法```
 
-### 1️⃣ **智能请求调度（5种策略）**
 
-Control Plane 提供多种调度策略，适应不同场景：
 
-| 策略               | 特点                             | 适用场景           |
-| ------------------ | -------------------------------- | ------------------ |
+**目标**：SLO 感知的智能调度## 🎯 核心特性
+
+
+
+| 策略 | 特点 | 适用场景 |### 1️⃣ **智能请求调度（5种策略）**
+
+|------|------|----------|
+
+| FIFO | 先到先得 | 简单场景 |Control Plane 提供多种调度策略，适应不同场景：
+
+| Priority | 优先级排序 | 分级服务 |
+
+| SLO-Aware | 延迟保证 | 实时应用 || 策略               | 特点                             | 适用场景           |
+
+| Adaptive | 自适应切换 | 生产环境 || ------------------ | -------------------------------- | ------------------ |
+
 | **FIFO**           | 先到先得，简单公平               | 简单场景、公平处理 |
-| **Priority**       | 优先级排序                       | SaaS平台、分级服务 |
-| **SLO-Aware**      | SLO感知调度，保证延迟要求        | 有延迟要求的应用   |
-| **Cost-Optimized** | 成本优化，在满足要求下最小化成本 | 云端部署、成本敏感 |
+
+**相关模块**：| **Priority**       | 优先级排序                       | SaaS平台、分级服务 |
+
+- `control_plane/strategies/` - 调度策略| **SLO-Aware**      | SLO感知调度，保证延迟要求        | 有延迟要求的应用   |
+
+- `runtime/scheduler/` - 底层调度器| **Cost-Optimized** | 成本优化，在满足要求下最小化成本 | 云端部署、成本敏感 |
+
 | **Adaptive**       | 自适应选择，根据负载动态切换     | 生产环境、动态负载 |
 
+## 快速开始
+
 ```python
-from control_plane import ControlPlaneManager
 
-# 创建控制平面，使用自适应调度
-manager = ControlPlaneManager(
-    scheduling_policy="adaptive",  # 可选：fifo, priority, slo_aware, cost_optimized
-    routing_strategy="load_balanced",
+### 安装from control_plane import ControlPlaneManager
+
+
+
+```bash# 创建控制平面，使用自适应调度
+
+# 作为 SAGE 的一部分安装manager = ControlPlaneManager(
+
+cd /path/to/SAGE    scheduling_policy="adaptive",  # 可选：fifo, priority, slo_aware, cost_optimized
+
+./quickstart.sh --dev --yes    routing_strategy="load_balanced",
+
     enable_monitoring=True,
-)
-```
 
-### 2️⃣ **PD 分离 - 性能优化（+50-80% 吞吐，-50-60% 延迟）**
+# 单独开发安装)
 
-将 Prefilling（长输入处理）和 Decoding（生成输出）请求路由到专门优化的实例：
+cd packages/sage-common/src/sage/common/components/sage_llm/sageLLM```
 
-**核心理念：**
+pip install -e ".[dev]"
 
-- **Prefilling 阶段**（长输入）：优化吞吐量 → 高 TP (4-8)，大批处理
+```### 2️⃣ **PD 分离 - 性能优化（+50-80% 吞吐，-50-60% 延迟）**
+
+
+
+### 基本使用将 Prefilling（长输入处理）和 Decoding（生成输出）请求路由到专门优化的实例：
+
+
+
+```python**核心理念：**
+
+from sageLLM import backends, runtime
+
+from sageLLM.runtime.scheduler import PDScheduler, PDSchedulerConfig- **Prefilling 阶段**（长输入）：优化吞吐量 → 高 TP (4-8)，大批处理
+
 - **Decoding 阶段**（短输入）：优化延迟 → 低 TP (1)，高并发
 
-```python
-from control_plane import (
+# 1. 获取硬件后端
+
+backend = backends.get_backend("cuda")```python
+
+print(f"Found {backend.get_device_count()} CUDA devices")from control_plane import (
+
     ControlPlaneManager,
-    ExecutionInstance,
-    ExecutionInstanceType,
-    PDSeparationConfig,
-    PrefillingConfig,
-    DecodingConfig,
+
+# 2. 配置 PD 分离调度器    ExecutionInstance,
+
+config = PDSchedulerConfig(    ExecutionInstanceType,
+
+    prefill_device_ids=[0, 1],    PDSeparationConfig,
+
+    decode_device_ids=[2, 3, 4, 5],    PrefillingConfig,
+
+    max_prefill_batch_size=4,    DecodingConfig,
+
+    max_decode_batch_size=64,)
+
 )
 
-# 启用 PD 分离
+scheduler = PDScheduler(config)# 启用 PD 分离
+
 pd_config = PDSeparationConfig(
-    enabled=True,
-    routing_policy="adaptive",
-    prefilling_threshold_input_tokens=800,
-)
 
-manager = ControlPlaneManager(
-    scheduling_policy="adaptive",
-    enable_pd_separation=True,
+# 3. 添加请求    enabled=True,
+
+from sageLLM.runtime.scheduler.base import Request    routing_policy="adaptive",
+
+request = Request(    prefilling_threshold_input_tokens=800,
+
+    request_id="req_1",)
+
+    prompt_token_ids=[1, 2, 3, ...],
+
+    max_new_tokens=128,manager = ControlPlaneManager(
+
+)    scheduling_policy="adaptive",
+
+scheduler.add_request(request)    enable_pd_separation=True,
+
     pd_config=pd_config,
-)
 
-# Prefilling 实例 (优化吞吐)
-prefilling_instance = ExecutionInstance(
+# 4. 获取执行批次)
+
+prefill_batch = scheduler.get_prefill_batch()
+
+decode_batch = scheduler.get_decode_batch()# Prefilling 实例 (优化吞吐)
+
+```prefilling_instance = ExecutionInstance(
+
     instance_id="prefill-1",
-    host="localhost",
+
+### 使用 Control Plane    host="localhost",
+
     port=8000,
-    model_name="meta-llama/Llama-2-7b",
-    instance_type=ExecutionInstanceType.PREFILLING,
+
+```python    model_name="meta-llama/Llama-2-7b",
+
+from sageLLM.control_plane import ControlPlaneManager    instance_type=ExecutionInstanceType.PREFILLING,
+
     tensor_parallel_size=4,  # 高吞吐
-    gpu_count=4,
-    prefilling_config=PrefillingConfig(
-        target_batch_size=64,
-        enable_chunked_prefill=True,
-    ),
+
+# 创建控制平面    gpu_count=4,
+
+manager = ControlPlaneManager(    prefilling_config=PrefillingConfig(
+
+    scheduling_policy="adaptive",        target_batch_size=64,
+
+    enable_pd_separation=True,        enable_chunked_prefill=True,
+
+)    ),
+
 )
 
-# Decoding 实例 (优化延迟)
-decoding_instance = ExecutionInstance(
-    instance_id="decode-1",
-    host="localhost",
-    port=8001,
+# 提交请求
+
+result = await manager.submit_request(# Decoding 实例 (优化延迟)
+
+    prompt="Hello, world!",decoding_instance = ExecutionInstance(
+
+    max_tokens=100,    instance_id="decode-1",
+
+)    host="localhost",
+
+```    port=8001,
+
     model_name="meta-llama/Llama-2-7b",
-    instance_type=ExecutionInstanceType.DECODING,
+
+## 目录结构    instance_type=ExecutionInstanceType.DECODING,
+
     tensor_parallel_size=1,  # 低延迟
-    gpu_count=1,
-    decoding_config=DecodingConfig(
-        target_latency_ms=50,
-        max_parallel_requests=200,
-    ),
-)
 
-manager.register_instance(prefilling_instance)
-manager.register_instance(decoding_instance)
-```
+```    gpu_count=1,
 
-**性能对比：**
+sageLLM/    decoding_config=DecodingConfig(
 
-| 指标              | 单实例   | PD分离  | 提升    |
-| ----------------- | -------- | ------- | ------- |
-| 吞吐量 (tokens/s) | 100      | 150-180 | +50-80% |
-| P99延迟 (ms)      | 120      | 50-60   | -50-60% |
-| GPU利用率         | 75%      | 90%     | +15%    |
-| 成本效率          | baseline | 1.8x    | +80%    |
+├── __init__.py              # 包入口，导出所有模块        target_latency_ms=50,
 
-### 3️⃣ **动态并行策略（5种方案）**
+├── README.md                # 本文档        max_parallel_requests=200,
 
-自动选择最优的模型并行方案，支持 TP、PP、DP、EP、Hybrid：
+│    ),
 
-| 并行策略                   | 说明                   | 适用场景                |
-| -------------------------- | ---------------------- | ----------------------- |
-| **TP (Tensor Parallel)**   | 张量并行，模型权重切分 | 单模型太大无法放入单GPU |
-| **PP (Pipeline Parallel)** | 流水线并行，模型层切分 | 超大模型（70B+）        |
-| **DP (Data Parallel)**     | 数据并行，模型复制     | 高吞吐场景              |
-| **EP (Expert Parallel)**   | 专家并行，MoE模型      | Mixtral等MoE模型        |
-| **Hybrid**                 | 混合并行，组合多种策略 | 超大模型+高吞吐         |
+├── control_plane/           # 🎯 Control Plane (控制平面))
 
-```python
-from control_plane import ParallelismConfig
+│   ├── manager.py          # 控制平面管理器
 
-# 自动优化并行配置
-config = ParallelismConfig(
-    auto_optimize=True,
-    supported_strategies=["TP", "PP", "Hybrid"],
-)
+│   ├── executor.py         # 执行协调器manager.register_instance(prefilling_instance)
 
-# 手动指定并行配置
-instance = ExecutionInstance(
-    instance_id="hybrid-instance",
-    tensor_parallel_size=4,     # TP=4
-    pipeline_parallel_size=2,   # PP=2
-    data_parallel_size=2,       # DP=2
-    gpu_count=16,
-)
-```
+│   ├── strategies/         # 调度策略 (FIFO/Priority/SLO/Adaptive)manager.register_instance(decoding_instance)
 
-**并行方案推荐：**
+│   ├── pd_routing.py       # PD 分离路由```
 
-| 模型大小 | GPU数量 | 推荐策略            |
+│   └── examples/           # 使用示例
+
+│**性能对比：**
+
+├── runtime/                 # 🆕 自研推理运行时
+
+│   ├── execution_graph/    # 执行图 IR| 指标              | 单实例   | PD分离  | 提升    |
+
+│   │   ├── ir.py          # IR 定义 (Node/Edge/Graph)| ----------------- | -------- | ------- | ------- |
+
+│   │   ├── builder.py     # 图构建器| 吞吐量 (tokens/s) | 100      | 150-180 | +50-80% |
+
+│   │   └── optimizer.py   # 优化 Pass| P99延迟 (ms)      | 120      | 50-60   | -50-60% |
+
+│   ├── comm/               # 通信层| GPU利用率         | 75%      | 90%     | +15%    |
+
+│   │   ├── protocols.py   # 通信协议 (RDMA/TCP/SharedMem)| 成本效率          | baseline | 1.8x    | +80%    |
+
+│   │   ├── topology.py    # 拓扑发现
+
+│   │   └── collective.py  # 集合通信原语### 3️⃣ **动态并行策略（5种方案）**
+
+│   └── scheduler/          # 调度器
+
+│       ├── base.py        # 调度器基类自动选择最优的模型并行方案，支持 TP、PP、DP、EP、Hybrid：
+
+│       └── pd_scheduler.py # PD 分离调度器
+
+│| 并行策略                   | 说明                   | 适用场景                |
+
+├── backends/                # 🆕 硬件后端抽象| -------------------------- | ---------------------- | ----------------------- |
+
+│   ├── base.py             # 后端抽象基类 (HardwareBackend)| **TP (Tensor Parallel)**   | 张量并行，模型权重切分 | 单模型太大无法放入单GPU |
+
+│   ├── cuda/               # NVIDIA CUDA 后端| **PP (Pipeline Parallel)** | 流水线并行，模型层切分 | 超大模型（70B+）        |
+
+│   ├── ascend/             # 华为昇腾后端| **DP (Data Parallel)**     | 数据并行，模型复制     | 高吞吐场景              |
+
+│   ├── cambricon/          # 寒武纪后端| **EP (Expert Parallel)**   | 专家并行，MoE模型      | Mixtral等MoE模型        |
+
+│   └── hygon/              # 海光后端| **Hybrid**                 | 混合并行，组合多种策略 | 超大模型+高吞吐         |
+
+│
+
+├── kv_runtime/              # KV Cache 运行时```python
+
+├── kv_policy/               # KV Cache 驱逐策略from control_plane import ParallelismConfig
+
+├── prefix_reuse/            # 前缀复用
+
+├── accel/                   # 加速器工具# 自动优化并行配置
+
+├── engines/                 # 推理引擎封装config = ParallelismConfig(
+
+├── core/                    # 核心数据结构    auto_optimize=True,
+
+│    supported_strategies=["TP", "PP", "Hybrid"],
+
+├── benchmarks/              # 性能基准测试)
+
+├── tests/                   # 单元测试
+
+│   ├── unit/               # 单元测试# 手动指定并行配置
+
+│   ├── control_plane/      # Control Plane 测试instance = ExecutionInstance(
+
+│   └── examples/           # 示例测试    instance_id="hybrid-instance",
+
+│    tensor_parallel_size=4,     # TP=4
+
+├── third_party/             # 第三方参考    pipeline_parallel_size=2,   # PP=2
+
+│   └── reference/          # 参考资料 (设计文档，非代码依赖)    data_parallel_size=2,       # DP=2
+
+│    gpu_count=16,
+
+└── dev-notes/               # 开发笔记)
+
+``````
+
+
+
+## 开发指南**并行方案推荐：**
+
+
+
+### 运行测试| 模型大小 | GPU数量 | 推荐策略            |
+
 | -------- | ------- | ------------------- |
-| \<10B    | 1-2     | TP=1 或 TP=2        |
-| 10B-30B  | 2-4     | TP=4                |
-| 30B-70B  | 4-8     | TP=4 或 TP=8        |
+
+```bash| \<10B    | 1-2     | TP=1 或 TP=2        |
+
+# 运行所有测试| 10B-30B  | 2-4     | TP=4                |
+
+pytest tests/ -v| 30B-70B  | 4-8     | TP=4 或 TP=8        |
+
 | 70B-175B | 8-16    | Hybrid (TP=4, PP=2) |
-| >175B    | 16+     | Hybrid (TP=8, PP=4) |
 
-### 4️⃣ **请求路由策略**
+# 运行特定模块测试| >175B    | 16+     | Hybrid (TP=8, PP=4) |
 
-支持多种路由算法，优化请求分发：
+pytest tests/unit/ -v
 
-- **load_balanced**: 负载均衡，路由到负载最低的实例
+pytest tests/control_plane/ -v### 4️⃣ **请求路由策略**
+
+
+
+# 运行带覆盖率支持多种路由算法，优化请求分发：
+
+pytest tests/ --cov=. --cov-report=html
+
+```- **load_balanced**: 负载均衡，路由到负载最低的实例
+
 - **round_robin**: 轮询
-- **random**: 随机选择
-- **affinity**: 用户亲和性，同一用户请求路由到同一实例（提高缓存命中率）
-- **locality**: 基于哈希的局部性路由，提高缓存命中率
 
-```python
+### 代码质量- **random**: 随机选择
+
+- **affinity**: 用户亲和性，同一用户请求路由到同一实例（提高缓存命中率）
+
+```bash- **locality**: 基于哈希的局部性路由，提高缓存命中率
+
+# 格式化代码
+
+ruff format .```python
+
 manager = ControlPlaneManager(
-    routing_strategy="affinity",  # 用户亲和性路由
-)
+
+# 检查代码    routing_strategy="affinity",  # 用户亲和性路由
+
+ruff check .)
+
 ```
 
-### 5️⃣ **性能监控与指标**
+# 类型检查
+
+mypy .### 5️⃣ **性能监控与指标**
+
+```
 
 实时收集和分析性能指标：
 
-```python
-# 获取性能指标
-metrics = manager.get_metrics()
+### 添加新后端
 
-# 请求指标
+```python
+
+1. 在 `backends/` 下创建新目录# 获取性能指标
+
+2. 实现 `HardwareBackend` 抽象类metrics = manager.get_metrics()
+
+3. 使用 `@register_backend("name")` 装饰器注册
+
+4. 添加单元测试# 请求指标
+
 print(f"Total requests: {metrics.total_requests}")
-print(f"Completed: {metrics.completed_requests}")
-print(f"Active: {metrics.active_requests}")
+
+```pythonprint(f"Completed: {metrics.completed_requests}")
+
+from sageLLM.backends import register_backendprint(f"Active: {metrics.active_requests}")
+
+from sageLLM.backends.base import HardwareBackend
 
 # 延迟指标
-print(f"Avg latency: {metrics.avg_latency_ms}ms")
-print(f"P95 latency: {metrics.p95_latency_ms}ms")
-print(f"P99 latency: {metrics.p99_latency_ms}ms")
 
-# 吞吐指标
-print(f"Tokens/sec: {metrics.tokens_per_second}")
-print(f"Requests/sec: {metrics.requests_per_second}")
+@register_backend("my_device")print(f"Avg latency: {metrics.avg_latency_ms}ms")
 
-# SLO指标
-print(f"SLO violations: {metrics.slo_violations}")
-print(f"SLO compliance: {metrics.slo_compliance_rate:.2%}")
+class MyDeviceBackend(HardwareBackend):print(f"P95 latency: {metrics.p95_latency_ms}ms")
 
-# 资源指标
-print(f"GPU utilization: {metrics.avg_gpu_utilization:.2%}")
+    @propertyprint(f"P99 latency: {metrics.p99_latency_ms}ms")
+
+    def device_type(self) -> DeviceType:
+
+        return DeviceType.MY_DEVICE# 吞吐指标
+
+    print(f"Tokens/sec: {metrics.tokens_per_second}")
+
+    # 实现其他抽象方法...print(f"Requests/sec: {metrics.requests_per_second}")
+
 ```
 
-## 🚀 快速开始
+# SLO指标
 
-### 安装
+## 参考资料print(f"SLO violations: {metrics.slo_violations}")
 
-```bash
-# 克隆项目
-git clone https://github.com/intellistream/sageLLM.git
+print(f"SLO compliance: {metrics.slo_compliance_rate:.2%}")
+
+### 论文
+
+# 资源指标
+
+- [vLLM: Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)print(f"GPU utilization: {metrics.avg_gpu_utilization:.2%}")
+
+- [FlashAttention: Fast and Memory-Efficient Exact Attention](https://arxiv.org/abs/2205.14135)```
+
+- [Splitwise: Efficient generative LLM inference using phase splitting](https://arxiv.org/abs/2311.18677)
+
+- [DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving](https://arxiv.org/abs/2401.09670)## 🚀 快速开始
+
+
+
+### 相关项目### 安装
+
+
+
+- [vLLM](https://github.com/vllm-project/vllm) - PagedAttention 参考```bash
+
+- [LMDeploy](https://github.com/InternLM/lmdeploy) - TurboMind 引擎参考# 克隆项目
+
+- [TensorRT-LLM](https://github.com/NVIDIA/TensorRT-LLM) - NVIDIA 优化参考git clone https://github.com/intellistream/sageLLM.git
+
 cd sageLLM
 
+## 许可证
+
 # 安装依赖
-pip install -r requirements.txt
+
+Apache License 2.0 - 详见 [LICENSE](../../../../../../LICENSE)pip install -r requirements.txt
+
 
 # 开发模式安装
 pip install -e .

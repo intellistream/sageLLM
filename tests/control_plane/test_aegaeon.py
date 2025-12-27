@@ -4,7 +4,6 @@
 """Tests for Aegaeon scheduling policy."""
 
 import pytest
-
 from control_plane import (
     ControlPlaneManager,
     ExecutionInstance,
@@ -235,13 +234,14 @@ async def test_aegaeon_fifo_within_groups():
 async def test_aegaeon_token_level_preemption():
     """Test token-level preemption based on SLO violation risk."""
     from datetime import datetime, timedelta
+
     from control_plane.strategies.aegaeon import AegaeonPolicy, DecodingBatch
 
     policy = AegaeonPolicy()
 
     # Create requests with different SLO states
     now = datetime.now()
-    
+
     # High-risk request: last token was 200ms ago, SLO is 50ms
     high_risk_req = RequestMetadata(
         request_id="high-risk",
@@ -250,7 +250,7 @@ async def test_aegaeon_token_level_preemption():
         last_token_time=now - timedelta(milliseconds=200),
         max_tokens=100,
     )
-    
+
     # Safe request: last token was 20ms ago, SLO is 50ms
     safe_req = RequestMetadata(
         request_id="safe",
@@ -265,7 +265,7 @@ async def test_aegaeon_token_level_preemption():
         model_name="test-model",
         requests=[high_risk_req, safe_req],
     )
-    
+
     decoding_instances = [
         ExecutionInstance(
             instance_id="decoding-1",
@@ -277,7 +277,7 @@ async def test_aegaeon_token_level_preemption():
             gpu_count=1,
         )
     ]
-    
+
     policy.decoding_work_lists["decoding-1"] = [batch]
 
     # Calculate SLO violation risks
@@ -289,7 +289,7 @@ async def test_aegaeon_token_level_preemption():
 
     # Test preemption logic
     preempted = policy._check_and_preempt(decoding_instances)
-    
+
     # High-risk request should be kept, others might be preempted if needed
     # (Current implementation keeps top 1 high-risk, preempts rest)
     assert len(batch.requests) > 0  # At least some requests should remain
@@ -299,6 +299,7 @@ async def test_aegaeon_token_level_preemption():
 async def test_aegaeon_tbt_tracking():
     """Test Time Between Tokens (TBT) tracking."""
     from datetime import datetime
+
     from control_plane.strategies.aegaeon import DecodingBatch
 
     # Create request with TBT SLO
@@ -374,17 +375,17 @@ async def test_aegaeon_dynamic_scaling_overhead():
 
     # Small model (7B) with TP=2
     overhead_7b = policy._get_scaling_overhead("llama-7b", 2)
-    
+
     # Large model (70B) with TP=4
     overhead_70b = policy._get_scaling_overhead("llama-70b", 4)
 
     # Large model should have higher overhead
     assert overhead_70b > overhead_7b
-    
+
     # Higher TP should increase overhead
     overhead_7b_tp1 = policy._get_scaling_overhead("llama-7b", 1)
     overhead_7b_tp4 = policy._get_scaling_overhead("llama-7b", 4)
-    
+
     assert overhead_7b_tp4 > overhead_7b_tp1
 
     # Test caching
@@ -433,7 +434,7 @@ async def test_aegaeon_decoding_round_with_quotas():
 
     # Should have 2 batches with quotas
     assert len(schedule) == 2
-    
+
     # Both batches should have positive quotas
     for batch, quota in schedule:
         assert quota > 0
@@ -443,14 +444,14 @@ async def test_aegaeon_decoding_round_with_quotas():
     # Batch with smaller n (more urgent) should get larger quota
     batch2_entry = next((b, q) for b, q in schedule if b.model_name == "model-b")
     batch1_entry = next((b, q) for b, q in schedule if b.model_name == "model-a")
-    
+
     # batch2 has n=2, batch1 has n=4
     # Formula: q_i = (c/n_i) * (α - Σ(1/n_k))
     # With small n values and default c=1.0, quotas should be inversely proportional to n
     # Both should have positive quotas
     assert batch2_entry[1] > 0
     assert batch1_entry[1] > 0
-    
+
     # Due to the (c/n_i) factor, smaller n_i gets larger c/n_i multiplier
     # So batch2 (n=2) should get quota >= batch1 (n=4) if α - Σ(1/n) > 0
     assert batch2_entry[1] >= batch1_entry[1]

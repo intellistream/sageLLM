@@ -17,26 +17,6 @@ The Control Plane sits between users and vLLM execution instances, providing:
 
 # Import autoscaling components
 from .autoscaler import Autoscaler, AutoscalerConfig
-from .load_predictor import (
-    LoadPredictor,
-    ConstantPredictor,
-    MovingAveragePredictor,
-    ExponentialSmoothingPredictor,
-)
-from .metrics_collector import MetricsCollector, SystemMetrics
-from .performance_interpolator import DecodeInterpolator, PrefillInterpolator
-
-# Import types
-from .executors import ExecutionCoordinatorBase
-
-# Import manager
-from .manager import ControlPlaneManager
-
-# Import monitoring
-from .monitoring import MetricsCollector
-
-# Import GPU resource management
-from .gpu_manager import GPUResourceManager, GPUStatus
 
 # Import engine lifecycle management
 from .engine_lifecycle import (
@@ -45,6 +25,25 @@ from .engine_lifecycle import (
     EngineRuntime,
     EngineStatus,
 )
+
+# Import types
+from .executors import ExecutionCoordinatorBase
+
+# Import GPU resource management
+from .gpu_manager import GPUResourceManager, GPUStatus
+from .load_predictor import (
+    ConstantPredictor,
+    ExponentialSmoothingPredictor,
+    LoadPredictor,
+    MovingAveragePredictor,
+)
+
+# Import manager
+from .manager import ControlPlaneManager
+from .metrics_collector import MetricsCollector, SystemMetrics
+
+# Import monitoring
+from .monitoring import MetricsCollector
 
 # Import parallelism strategies
 from .parallelism import (
@@ -60,6 +59,7 @@ from .parallelism import (
 
 # Import PD separation routing
 from .pd_routing import PDRoutingStrategy
+from .performance_interpolator import DecodeInterpolator, PrefillInterpolator
 
 # Import request classifier for hybrid scheduling
 from .request_classifier import (

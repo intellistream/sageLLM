@@ -5,7 +5,6 @@
 
 import pytest
 from aioresponses import aioresponses
-
 from control_plane import ControlPlaneManager, ExecutionInstance, RequestMetadata
 
 
